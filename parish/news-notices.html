@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parish - News & Notices | Our Lady of Fatima Church</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="../index.html">Our Lady of Fatima Church</a>
+            </div>
+            <ul>
+                <li class="dropdown">
+                    <a href="../about/about-history.html" class="dropbtn">About</a>
+                    <div class="dropdown-content">
+                        <a href="../about/about-history.html">History</a>
+                        <a href="../about/about-mass-schedule.html">Mass Schedule</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="../parish/parish-team.html" class="dropbtn">Parish</a>
+                    <div class="dropdown-content">
+                        <a href="../parish/parish-team.html">Parish Team</a>
+                        <a href="../parish/news-notices.html">News/Notices</a>
+                        <a href="../parish/newsletter.html">Newsletter</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="../councils/ppc.html" class="dropbtn">Councils</a>
+                    <div class="dropdown-content">
+                        <a href="../councils/ppc.html">PPC</a>
+                        <a href="../councils/scc.html">SCC</a>
+                        <a href="../councils/pyc.html">PYC</a>
+                        <a href="../councils/altar-servers.html">Altar Servers</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="../contact.html" class="dropbtn">Contact</a>
+                    <div class="dropdown-content">
+                        <a href="../contact.html#write-to-us">Write to us</a>
+                        <a href="../contact.html#request-certificates">Request Certificates</a>
+                        <a href="../contact.html#update-family-book">Update family book</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="menu-toggle">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </nav>
+    </header>
+    <main class="with-sidebar">
+        <div id="sidebar"></div>
+        <section class="page-content">
+            <h2>News/Notices</h2>
+            <main>
+                <section class="news-notices-section">
+                    <ul class="news-list">
+                        <li><strong>July 7, 2025:</strong> Parish Feast Novena begins. All are welcome!</li>
+                        <li><strong>July 14, 2025:</strong> Annual Parish Feast Mass at 7:00 PM followed by fellowship dinner.</li>
+                        <li><strong>July 20, 2025:</strong> Youth Group meeting in the parish hall at 5:00 PM.</li>
+                        <li><strong>Ongoing:</strong> Catechism classes every Sunday at 8:30 AM in the parish classrooms.</li>
+                        <li><strong>Notice:</strong> Registration open for First Holy Communion and Confirmation classes. Please contact the parish office.</li>
+                    </ul>
+                </section>
+            </main>
+        </section>
+    </main>
+    <footer>
+        <div class="container">
+            <p class="copyright">&copy; 2025 Our Lady of Fatima Church. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <script src="../js/script.js"></script>
+    <script>
+    // Load Parish sidebar
+    fetch('./sidebar-parish.html')
+      .then(res => res.text())
+      .then(html => { document.getElementById('sidebar').innerHTML = html; });
+    </script>
+</body>
+</html> 

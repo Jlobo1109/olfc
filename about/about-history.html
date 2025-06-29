@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - History | Our Lady of Fatima Church</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="../index.html">Our Lady of Fatima Church</a>
+            </div>
+            <ul>
+                <li class="dropdown">
+                    <a href="../about/about-history.html" class="dropbtn">About</a>
+                    <div class="dropdown-content">
+                        <a href="../about/about-history.html">History</a>
+                        <a href="../about/about-mass-schedule.html">Mass Schedule</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="../parish/parish-team.html" class="dropbtn">Parish</a>
+                    <div class="dropdown-content">
+                        <a href="../parish/parish-team.html">Parish Team</a>
+                        <a href="../parish/news-notices.html">News/Notices</a>
+                        <a href="../parish/newsletter.html">Newsletter</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="../councils/ppc.html" class="dropbtn">Councils</a>
+                    <div class="dropdown-content">
+                        <a href="../councils/ppc.html">PPC</a>
+                        <a href="../councils/scc.html">SCC</a>
+                        <a href="../councils/pyc.html">PYC</a>
+                        <a href="../councils/altar-servers.html">Altar Servers</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="../contact.html" class="dropbtn">Contact</a>
+                    <div class="dropdown-content">
+                        <a href="../contact.html#write-to-us">Write to us</a>
+                        <a href="../contact.html#request-certificates">Request Certificates</a>
+                        <a href="../contact.html#update-family-book">Update family book</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="menu-toggle">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </nav>
+    </header>
+    <main class="with-sidebar">
+        <div id="sidebar"></div>
+        <section class="page-content">
+            <h2>History</h2>
+            <section class="history-section">
+                <h1>Brief History of Our Parish</h1>
+                <p><strong>Majiwada</strong> is a village situated on Old Agra Road (Off. Ghodbunder Road) and is about 5kms. away from Thane Railway Station.</p>
+                <p>Our Lady of Fatima Church is more than 60 years old. It was built in the year 1954 on 6th June (as per the marble slab placed at the entrance of our Church) by His Eminence Valerian Cardinal Gracias, Archbishop of Bombay. It was then a small Chapel with most of the faithful being the local East Indian community. The Eucharist was celebrated by a Priest from St. John the Baptist Thane, since this Majiwada Chapel was one of its many units. But over a period of time, the village and its surrounding areas started developing and the number of the faithful in the area also started growing gradually. We are happy to learn that Our Lady of Fatima Church celebrated its Silver Jubilee in June, 1979.</p>
+                <p>Majiwada-Gaon is no longer a village and it was approaching the status of a city. This was the time when the Majiwada Chapel was demerged from St. John the Baptist Church and became an independent Registered Trust in 1992. Today, we have a rebuilt, full-fledged Church blessed on 10th April, 2005. This Church has two mass centres, one at Manpada, Our Lady of Vailankani Chapel, situated along the Ghodbunder Road about 4 kms away from Majiwada which was inaugurated / blessed on 15th October, 1982. The second one at Dhokali, situated along the Kolshet Road, known as Seva Sadan, Convent of Helpers of Mary Sisters.</p>
+                <p>We Parishioners feel proud to have Our Lady of Fatima Church, a complete Parish, with nearly 1000 families registered, 26 Small Christian Communities and Associations/Cells catering to the needs of our Parishioners.</p>
+                <p class="history-signature"><strong>(Fr. G. H. D'souza)</strong><br>Priest-in-Charge</p>
+            </section>
+        </section>
+    </main>
+    <footer>
+        <div class="container">
+            <p class="copyright">&copy; 2025 Our Lady of Fatima Church. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <script src="../js/script.js"></script>
+    <script>
+    // Load About sidebar
+    fetch('./sidebar-about.html')
+      .then(res => res.text())
+      .then(html => { document.getElementById('sidebar').innerHTML = html; });
+    </script>
+</body>
+</html> 

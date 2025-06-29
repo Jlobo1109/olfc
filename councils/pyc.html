@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Councils - PYC | Our Lady of Fatima Church</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a href="../index.html">Our Lady of Fatima Church</a>
+            </div>
+            <ul>
+                <li class="dropdown">
+                    <a href="../about/about-history.html" class="dropbtn">About</a>
+                    <div class="dropdown-content">
+                        <a href="../about/about-history.html">History</a>
+                        <a href="../about/about-mass-schedule.html">Mass Schedule</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="../parish/parish-team.html" class="dropbtn">Parish</a>
+                    <div class="dropdown-content">
+                        <a href="../parish/parish-team.html">Parish Team</a>
+                        <a href="../parish/news-notices.html">News/Notices</a>
+                        <a href="../parish/newsletter.html">Newsletter</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="../councils/ppc.html" class="dropbtn">Councils</a>
+                    <div class="dropdown-content">
+                        <a href="../councils/ppc.html">PPC</a>
+                        <a href="../councils/scc.html">SCC</a>
+                        <a href="../councils/pyc.html">PYC</a>
+                        <a href="../councils/altar-servers.html">Altar Servers</a>
+                    </div>
+                </li>
+                <li class="dropdown">
+                    <a href="../contact.html" class="dropbtn">Contact</a>
+                    <div class="dropdown-content">
+                        <a href="../contact.html#write-to-us">Write to us</a>
+                        <a href="../contact.html#request-certificates">Request Certificates</a>
+                        <a href="../contact.html#update-family-book">Update family book</a>
+                    </div>
+                </li>
+            </ul>
+            <div class="menu-toggle">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+        </nav>
+    </header>
+    <main class="with-sidebar">
+        <div id="sidebar"></div>
+        <section class="page-content">
+            <h2>Parish Youth Council (PYC)</h2>
+            <p>The PYC organizes youth activities, retreats, and outreach programs, encouraging young people to grow in faith and leadership.</p>
+            <div class="council-members-list">
+                <div class="council-member-card">
+                    <img src="https://via.placeholder.com/120" alt="Ms. Lorna Fernandes">
+                    <h3>Ms. Lorna Fernandes</h3>
+                    <p>Youth President</p>
+                </div>
+                <div class="council-member-card">
+                    <img src="https://via.placeholder.com/120" alt="Mr. Kevin D'Souza">
+                    <h3>Mr. Kevin D'Souza</h3>
+                    <p>Vice President</p>
+                </div>
+                <div class="council-member-card">
+                    <img src="https://via.placeholder.com/120" alt="Ms. Priya Pinto">
+                    <h3>Ms. Priya Pinto</h3>
+                    <p>Secretary</p>
+                </div>
+                <div class="council-member-card">
+                    <img src="https://via.placeholder.com/120" alt="Mr. Ryan Gomes">
+                    <h3>Mr. Ryan Gomes</h3>
+                    <p>Sports Coordinator</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <div class="container">
+            <p class="copyright">&copy; 2025 Our Lady of Fatima Church. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <script src="../js/script.js"></script>
+    <script>
+    // Load Councils sidebar
+    fetch('./sidebar-councils.html')
+      .then(res => res.text())
+      .then(html => { document.getElementById('sidebar').innerHTML = html; });
+    </script>
+</body>
+</html> 
