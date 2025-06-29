@@ -17,16 +17,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Prevent link navigation
                 e.preventDefault();
                 
-                // Close other open dropdowns
-                const currentDropdown = this.parentElement;
-                document.querySelectorAll('.dropdown.active').forEach(openDropdown => {
-                    if(openDropdown !== currentDropdown) {
-                        openDropdown.classList.remove('active');
-                    }
-                });
-
                 // Toggle current dropdown
-                currentDropdown.classList.toggle('active');
+                const currentDropdown = this.parentElement;
+                const isActive = currentDropdown.classList.contains('active');
+                // Close all dropdowns
+                document.querySelectorAll('.dropdown.active').forEach(openDropdown => {
+                    openDropdown.classList.remove('active');
+                });
+                // Open only if it was not already active
+                if (!isActive) {
+                    currentDropdown.classList.add('active');
+                }
             }
         });
     });
