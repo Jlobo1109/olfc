@@ -10,7 +10,7 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    padding-top: 70px; /* To offset fixed header */
+    padding-top: 62px; /* To offset fixed header */
     line-height: 1.6;
     background: var(--light-color);
     color: var(--primary-color);
@@ -154,15 +154,18 @@ header ul li > a.dropbtn::after {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    min-height: 70vh;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     color: var(--light-color);
     position: relative;
-    margin-top: -70px;
+    margin-top: 0;
     overflow: hidden;
+    /* Offset for fixed header */
+    padding-top: 70px;
+    box-sizing: border-box;
 }
 .hero::before {
     content: '';
@@ -972,11 +975,40 @@ header ul li.dropdown:last-child .dropdown-content {
     color: var(--primary-color);
     box-shadow: 0 4px 16px rgba(30,58,138,0.13);
 }
+.homepage-contact .contact-form select {
+    padding: 14px 14px;
+    border-radius: 10px;
+    border: 1.5px solid #c7d7ee;
+    font-size: 1.08rem;
+    outline: none;
+    background: #fff url('data:image/svg+xml;utf8,<svg fill="%234fc3f7" height="20" viewBox="0 0 24 24" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 1rem center/1.2em 1.2em;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    transition: border 0.2s, box-shadow 0.2s;
+    margin-bottom: 0.2rem;
+    box-shadow: 0 1px 4px rgba(30,58,138,0.04);
+}
+.homepage-contact .contact-form select:focus {
+    border: 1.5px solid var(--accent-color);
+    box-shadow: 0 2px 8px rgba(79,195,247,0.10);
+}
 @media (max-width: 900px) {
     .homepage-contact .contact-form {
         padding: 1.2rem 1rem;
         min-width: 90vw;
         max-width: 98vw;
+    }
+    .homepage-contact .contact-form select {
+        padding: 1.2rem 1rem;
+        min-width: 90vw;
+        max-width: 98vw;
+    }
+}
+@media (max-width: 480px) {
+    .homepage-contact .contact-form select {
+        font-size: 0.98rem;
+        padding: 10px 8px;
     }
 }
 
@@ -1423,4 +1455,25 @@ html, body {
     font-weight: bold !important;
     letter-spacing: 0.02em !important;
   }
+}
+
+.council-chips {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    align-items: stretch;
+    margin-top: 0.5em;
+}
+.council-chip {
+    background: #e3f0ff;
+    color: #205081;
+    border-radius: 10px;
+    padding: 0.13em 0.5em;
+    font-size: 1em;
+    font-weight: 600;
+    margin: 0;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
 } 

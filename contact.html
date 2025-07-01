@@ -10,127 +10,141 @@
 </head>
 
 <body>
-    <header>
-        <nav>
-            <div class="logo">
-                <a href="index.html">Our Lady of Fatima Church</a>
-            </div>
-            <ul>
-                <li class="dropdown">
-                    <a href="about/about-history.html" class="dropbtn">About</a>
-                    <div class="dropdown-content">
-                        <a href="about/about-history.html">History</a>
-                        <a href="about/about-mass-schedule.html">Mass Schedule</a>
-                    </div>
-                </li>
-                <li class="dropdown">
-                    <a href="parish/parish-team.html" class="dropbtn">Parish</a>
-                    <div class="dropdown-content">
-                        <a href="parish/parish-team.html">Parish Team</a>
-                        <a href="parish/news-notices.html">News/Notices</a>
-                        <a href="parish/newsletter.html">Newsletter</a>
-                    </div>
-                </li>
-                <li class="dropdown">
-                    <a href="councils/ppc.html" class="dropbtn">Councils</a>
-                    <div class="dropdown-content">
-                        <a href="councils/ppc.html">PPC</a>
-                        <a href="councils/scc.html">SCC</a>
-                        <a href="councils/pyc.html">PYC</a>
-                        <a href="councils/altar-servers.html">Altar Servers</a>
-                    </div>
-                </li>
-                <li class="dropdown">
-                    <a href="contact.html" class="dropbtn">Contact</a>
-                    <div class="dropdown-content">
-                        <a href="contact.html#write-to-us">Write to us</a>
-                        <a href="contact.html#request-certificates">Request Certificates</a>
-                        <a href="contact.html#update-family-book">Update family book</a>
-                    </div>
-                </li>
-            </ul>
-            <div class="menu-toggle">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </div>
-        </nav>
-    </header>
-
     <main>
-        <section class="map">
-            <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d482247.3084526944!2d72.40499337343748!3d19.2145377!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b948a1390de7%3A0xa304cd0c08473a2!2sOur%20Lady%20of%20Fatima%20Church!5e0!3m2!1sen!2sin!4v1750601801431!5m2!1sen!2sin"
-                width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <!-- Contact Section (modern UI) -->
+        <section class="homepage-contact">
+            <h2>Contact Us</h2>
+            <div class="homepage-contact-flex">
+                <form class="contact-form">
+                    <input type="text" name="name" placeholder="Your Name" required>
+                    <input type="email" name="email" placeholder="Your Email" required>
+                    <textarea name="message" placeholder="Your Message" required></textarea>
+                    <button type="submit">Send Message</button>
+                </form>
+                <div class="contact-address">
+                    <h3>Our Address</h3>
+                    <p>Our Lady of Fatima Church<br>
+                    Opp. Municipal Office,<br>
+                    Majiwada, Thane 400 601<br>
+                    India</p>
+                    <p><strong>Phone:</strong> +91-22-25428204</p>
+                    <p><strong>Email:</strong> andrew138@rediffmail.com<br>
+                    thomasrego@rediffmail.com</p>
+                    <div class="social-icons">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <section class="write-to-us">
+        <!-- Certificate Request Section -->
+        <section id="request-certificates" class="homepage-contact certificate-section">
             <div class="container">
-                <h2>Get In Touch</h2>
-                <div class="contact-page-container">
-                    <div class="contact-form-container">
-                        <p>If you have any questions or inquiries, please feel free to get in touch with us. We will reply to you as soon as possible.</p>
-                        <form action="#">
-                            <div class="form-group">
-                                <input type="text" name="name" placeholder="Your Name" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="email" name="email" placeholder="Your Email" required>
-                            </div>
-                            <div class="form-group">
-                                <input type="text" name="subject" placeholder="Subject" required>
-                            </div>
-                            <div class="form-group">
-                                <textarea name="message" placeholder="Your Message" required rows="6"></textarea>
-                            </div>
-                            <button type="submit" class="btn">Send Message</button>
-                        </form>
-                    </div>
-                    <div class="contact-info-container">
-                        <h3>Contact Information</h3>
-                        <div class="info-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <p><strong>Our Lady of Fatima Church</strong><br>Majiwada Village Rd, Tirumala Society, Sainath Nagar,<br>Majiwada, Thane, Maharashtra 400601</p>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-phone"></i>
-                            <p>+91-123-456-7890</p>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-envelope"></i>
-                            <p>info@fatimachurchmajorda.com</p>
-                        </div>
-                        <h3>Follow Us</h3>
-                        <div class="social-icons">
-                            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                            <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                <h2>Request Certificates</h2>
+                <div class="homepage-contact-flex">
+                    <form class="contact-form">
+                        <input type="text" name="cert-name" placeholder="Full Name" required>
+                        <input type="email" name="cert-email" placeholder="Email" required>
+                        <input type="tel" name="cert-phone" placeholder="Phone Number" required>
+                        <select name="certificate-type" required>
+                            <option value="">Select Certificate Type</option>
+                            <option value="baptism">Baptism Certificate</option>
+                            <option value="marriage">Marriage Certificate</option>
+                            <option value="confirmation">Confirmation Certificate</option>
+                            <option value="death">Death Certificate</option>
+                            <option value="parishioner">Parishioner Certificate</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <input type="date" name="cert-date" placeholder="Date of Event (if applicable)">
+                        <textarea name="cert-purpose" placeholder="Purpose of Certificate" rows="3"></textarea>
+                        <button type="submit">Request Certificate</button>
+                    </form>
+                    <div class="contact-address">
+                        <h3><i class="fas fa-info-circle"></i> Certificate Information</h3>
+                        <div class="council-chips" style="align-items: flex-start;">
+                            <span class="council-chip"><i class="fas fa-clock"></i> Processed in 3-5 working days</span>
+                            <span class="council-chip"><i class="fas fa-id-card"></i> Provide accurate info to avoid delays</span>
+                            <span class="council-chip"><i class="fas fa-bolt"></i> For urgent requests, contact the parish office</span>
+                            <span class="council-chip"><i class="fas fa-file-alt"></i> Some certificates may require extra documents</span>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="request-certificates">
-            <h2>Request Certificates</h2>
-            <p>Dummy text for requesting certificates.</p>
+        <!-- Family Book Update Section -->
+        <section id="update-family-book" class="homepage-contact family-book-section">
+            <div class="container">
+                <h2>Update Family Book</h2>
+                <div class="homepage-contact-flex">
+                    <form class="contact-form">
+                        <input type="text" name="family-name" placeholder="Family Name" required>
+                        <input type="text" name="head-of-family" placeholder="Head of Family" required>
+                        <textarea name="family-address" placeholder="Address" rows="3" required></textarea>
+                        <input type="tel" name="family-phone" placeholder="Phone Number" required>
+                        <input type="email" name="family-email" placeholder="Email">
+                        <input type="number" name="family-members" placeholder="Number of Family Members" min="1">
+                        <input type="text" name="scc-group" placeholder="SCC Group (if known)">
+                        <select name="update-type">
+                            <option value="address-change">Address Change</option>
+                            <option value="phone-change">Phone Number Change</option>
+                            <option value="email-change">Email Change</option>
+                            <option value="member-addition">Add Family Member</option>
+                            <option value="member-removal">Remove Family Member</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <textarea name="update-details" placeholder="Additional Details" rows="3"></textarea>
+                        <button type="submit">Update Family Book</button>
+                    </form>
+                    <div class="contact-address">
+                        <h3><i class="fas fa-book"></i> Family Book Information</h3>
+                        <div class="council-chips" style="align-items: flex-start;">
+                            <span class="council-chip"><i class="fas fa-check-circle"></i> Keep your family info updated</span>
+                            <span class="council-chip"><i class="fas fa-bell"></i> Receive parish announcements & invitations</span>
+                            <span class="council-chip"><i class="fas fa-lock"></i> Your info is confidential</span>
+                            <span class="council-chip"><i class="fas fa-user-friends"></i> Visit the parish office for help</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
-        <section class="update-family-book">
-            <h2>Update Family Book</h2>
-            <p>Dummy text for updating family book.</p>
+        <!-- Map Section -->
+        <section class="map-section">
+            <div class="container">
+                <h2>Find Us</h2>
+                <div class="map-container">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4101.939074292814!2d72.97911172671623!3d19.215231908475484!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b948a1390de7%3A0xa304cd0c08473a2!2sOur%20Lady%20of%20Fatima%20Church!5e0!3m2!1sen!2sin!4v1751367945126!5m2!1sen!2sin"
+                        width="100%" 
+                        height="450" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+                <div class="map-info">
+                    <h3>How to Reach Us</h3>
+                    <p><strong>By Road:</strong> Our Lady of Fatima Church is located off the Ghodbunder Road at the Majiwada Junction, opposite the Municipal Office.</p>
+                    <p><strong>By Train:</strong> The nearest railway station is Thane Railway Station, approximately 5 km away.</p>
+                    <p><strong>By Bus:</strong> Several bus routes pass through Majiwada Junction, making it easily accessible by public transport.</p>
+                </div>
+            </div>
         </section>
     </main>
-
-    <footer>
-        <div class="container">
-            <p class="copyright">&copy; 2025 Our Lady of Fatima Church. All Rights Reserved.</p>
-        </div>
-    </footer>
-
-    <script src="js/script.js"></script>
+    <div id="footer"></div>
+    <script src="js/utils.js"></script>
+    <script>
+        fetch('widgets/navbar.html')
+            .then(res => res.text())
+            .then(html => {
+                document.body.insertAdjacentHTML('afterbegin', html);
+            });
+        loadWidgetUniversal('footer.html', 'footer');
+    </script>
 </body>
 
 </html>

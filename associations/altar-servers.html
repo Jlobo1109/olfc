@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Councils - Altar Servers | Our Lady of Fatima Church</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div id="navbar"></div>
+    <main class="with-sidebar">
+        <div id="sidebar"></div>
+        <section class="page-content">
+            <h2>Altar Servers</h2>
+            <p>The Altar Servers assist the priest during Mass and other liturgical celebrations, serving with dedication and reverence.</p>
+            <div class="council-members-list">
+                <div class="council-member-card">
+                    <img src="https://via.placeholder.com/120" alt="Master Samuel Fernandes">
+                    <h3>Master Samuel Fernandes</h3>
+                    <p>Head Altar Server</p>
+                </div>
+                <div class="council-member-card">
+                    <img src="https://via.placeholder.com/120" alt="Ms. Rachel D'Souza">
+                    <h3>Ms. Rachel D'Souza</h3>
+                    <p>Assistant Head</p>
+                </div>
+                <div class="council-member-card">
+                    <img src="https://via.placeholder.com/120" alt="Mr. Aaron Pinto">
+                    <h3>Mr. Aaron Pinto</h3>
+                    <p>Senior Server</p>
+                </div>
+                <div class="council-member-card">
+                    <img src="https://via.placeholder.com/120" alt="Ms. Maria Dias">
+                    <h3>Ms. Maria Dias</h3>
+                    <p>Junior Server</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div id="footer"></div>
+    <script src="../js/utils.js"></script>
+    <script>
+        loadWidgetUniversal('navbar.html', 'navbar');
+        loadWidgetUniversal('footer.html', 'footer');
+    </script>
+    <script src="../js/script.js"></script>
+    <script>
+    // Load Councils sidebar
+    fetch('./sidebar-councils.html')
+      .then(res => res.text())
+      .then(html => { document.getElementById('sidebar').innerHTML = html; });
+    </script>
+</body>
+</html> 

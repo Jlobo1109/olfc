@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worship Ministries | Our Lady of Fatima Church</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .tabbar { display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 1em; }
+        .tabbar button { background: none; border: none; padding: 1em 2em; cursor: pointer; font-size: 1em; border-radius: 10px 10px 0 0; margin-right: 0.5em; }
+        .tabbar button.active { background: #e3f0ff; color: #0a3d62; font-weight: bold; }
+        .tabview { display: none; }
+        .tabview.active { display: block; }
+    </style>
+</head>
+<body>
+    <div id="navbar"></div>
+    <div class="with-sidebar">
+        <div id="sidebar-content"></div>
+        <main class="page-content">
+            <h2>Worship Ministries</h2>
+            <div class="tabbar">
+                <button class="tablink active" onclick="showTab('music')">Music Ministry</button>
+                <button class="tablink" onclick="showTab('liturgy')">Liturgy Ministry</button>
+            </div>
+            <div id="music" class="tabview active">
+                <h3>Music Ministry</h3>
+                <p>The Music Ministry animates the liturgy by leading the congregation in song and providing instrumental accompaniment. The ministry includes choir members, musicians, and cantors who serve at Sunday Masses, feast days, and special parish events. Their goal is to foster active participation and a prayerful atmosphere through music.</p>
+            </div>
+            <div id="liturgy" class="tabview">
+                <h3>Liturgy Ministry</h3>
+                <p>The Liturgy Ministry works closely with the priest and other parish groups to plan and execute all liturgical celebrations. This includes preparing the church, organizing processions, and ensuring that all aspects of the liturgy are carried out with devotion and care. The ministry helps make each celebration meaningful for the parish community.</p>
+            </div>
+        </main>
+    </div>
+    <div id="footer"></div>
+    <script src="../js/script.js"></script>
+    <script src="../js/utils.js"></script>
+    <script>
+        loadWidgetUniversal('navbar.html', 'navbar');
+        loadWidgetUniversal('footer.html', 'footer');
+        fetch('sidebar-associations.html')
+            .then(response => response.text())
+            .then(data => { document.getElementById('sidebar-content').innerHTML = data; });
+        function showTab(tab) {
+            document.querySelectorAll('.tablink').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tabview').forEach(view => view.classList.remove('active'));
+            document.querySelector('.tablink[onclick*="'+tab+'" ]').classList.add('active');
+            document.getElementById(tab).classList.add('active');
+        }
+    </script>
+</body>
+</html> 

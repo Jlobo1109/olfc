@@ -10,63 +10,30 @@
 </head>
 
 <body>
-    <header>
-        <nav>
-            <div class="logo">
-                <a href="index.html">Our Lady of Fatima Church</a>
-            </div>
-            <ul>
-                <li class="dropdown">
-                    <a href="about.html" class="dropbtn">About</a>
-                    <div class="dropdown-content">
-                        <a href="about/about-history.html">History</a>
-                        <a href="about/about-mass-schedule.html">Mass Schedule</a>
-                    </div>
-                </li>
-                <li class="dropdown">
-                    <a href="parish.html" class="dropbtn">Parish</a>
-                    <div class="dropdown-content">
-                        <a href="parish/parish-team.html">Parish Team</a>
-                        <a href="parish/news-notices.html">News/Notices</a>
-                        <a href="parish/newsletter.html">Newsletter</a>
-                    </div>
-                </li>
-                <li class="dropdown">
-                    <a href="councils.html" class="dropbtn">Councils</a>
-                    <div class="dropdown-content">
-                        <a href="councils/ppc.html">PPC</a>
-                        <a href="councils/scc.html">SCC</a>
-                        <a href="councils/pyc.html">PYC</a>
-                        <a href="councils/altar-servers.html">Altar Servers</a>
-                    </div>
-                </li>
-                <li class="dropdown">
-                    <a href="contact.html" class="dropbtn">Contact</a>
-                    <div class="dropdown-content">
-                        <a href="contact.html#write-to-us">Write to us</a>
-                        <a href="contact.html#request-certificates">Request Certificates</a>
-                        <a href="contact.html#update-family-book">Update family book</a>
-                    </div>
-                </li>
-            </ul>
-            <div class="menu-toggle">
-                <div class="bar"></div>
-                <div class="bar"></div>
-                <div class="bar"></div>
-            </div>
-        </nav>
-    </header>
-
     <main>
         <!-- Hero Section -->
         <section class="hero" style="background-image: url('assets/hero-bg.jpg'); background-size: cover; background-position: center;">
             <div class="hero-content">
-                <h1>Welcome to Our Lady of Fatima Church</h1>
-                <p>Serving the community of Majiwada with faith, love, and service.</p>
+                <h1>Our Lady of Fatima Church</h1>
+                <p>A Community of Faith and Love</p>
                 <div class="hero-buttons">
                     <a href="about/about-history.html" class="btn">Our History</a>
                     <a href="parish/news-notices.html" class="btn btn-secondary">Latest News</a>
                 </div>
+            </div>
+        </section>
+
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <div class="container">
+                <h2>Welcome to Our Parish</h2>
+                <p>Our Lady of Fatima Church is situated off the Ghodbunder Road at the Majiwada Junction. Around a thousand families reside in this parish which is divided into 24 Small Christian Communities.</p>
+                
+                <p>Voluntary Church organizations, cells and groups such as Sodality, SVP, Senior Citizens Group, HR Cell, Family Cell, Communications Cell, Prison Ministry, Choir, Extraordinary Ministers of Holy Communion, Social Justice Cell, Legion of Mary, Pre-baptismal Catechesis Team, Lector's Ministry, Sunday School Teachers and Bombay Catholic Sabha work in assigned areas to support the Priest in Charge in Church functions.</p>
+                
+                <p>A Parish Pastoral Council and an Executive Committee perform the consultative function in administrative duties of the Parish. Other committees such as the Finance Committee, Cemetery Committee are appointed to assist the Priest in Charge.</p>
+                
+                <p>This site is launched with the purpose of providing a platform for communication between the church and the faithful. The communications cell is committed to keep this site updated with the current information for the benefit of the faithful and others who wish to know about our parish and its activities.</p>
             </div>
         </section>
 
@@ -75,19 +42,19 @@
             <h2>Upcoming Events</h2>
             <div class="events-slideshow">
                 <div class="event-slide">
-                    <h3>Parish Feast Novena</h3>
-                    <p>July 7-14, 2025 | 7:00 PM</p>
-                    <p>Join us for the annual novena in preparation for our parish feast.</p>
+                    <h3>Christmas Mass</h3>
+                    <p>December 15, 2024 | 6:00 PM</p>
+                    <p>Join us for the celebration of the birth of our Lord Jesus Christ</p>
                 </div>
                 <div class="event-slide">
-                    <h3>Annual Parish Feast Mass</h3>
-                    <p>July 14, 2025 | 7:00 PM</p>
-                    <p>Celebrate with us! Mass followed by a fellowship dinner for all parishioners.</p>
+                    <h3>Christmas Day Mass</h3>
+                    <p>December 25, 2024 | 8:00 AM</p>
+                    <p>Special Christmas Day celebration with the parish community</p>
                 </div>
                 <div class="event-slide">
-                    <h3>Youth Group Meeting</h3>
-                    <p>July 20, 2025 | 5:00 PM</p>
-                    <p>All youth are invited to join the meeting in the parish hall.</p>
+                    <h3>New Year Mass</h3>
+                    <p>January 1, 2025 | 7:00 AM</p>
+                    <p>Begin the new year with prayer and thanksgiving</p>
                 </div>
             </div>
         </section>
@@ -115,19 +82,28 @@
                 </form>
                 <div class="contact-address">
                     <h3>Our Address</h3>
-                    <p>Our Lady of Fatima Church<br>Majiwada Village Rd, Tirumala Society, Sainath Nagar,<br>Majiwada, Thane, Maharashtra 400601</p>
+                    <p>Our Lady of Fatima Church<br>
+                    Opp. Municipal Office,<br>
+                    Majiwada, Thane 400 601<br>
+                    India</p>
+                    <p><strong>Phone:</strong> +91-22-25428204</p>
+                    <p><strong>Email:</strong> andrew138@rediffmail.com<br>
+                    thomasrego@rediffmail.com</p>
                 </div>
             </div>
         </section>
     </main>
-
-    <footer>
-        <div class="container">
-            <p class="copyright">&copy; 2025 Our Lady of Fatima Church. All Rights Reserved.</p>
-        </div>
-    </footer>
-
+    <div id="footer"></div>
     <script src="js/script.js"></script>
+    <script src="js/utils.js"></script>
+    <script>
+        fetch('widgets/navbar.html')
+            .then(res => res.text())
+            .then(html => {
+                document.body.insertAdjacentHTML('afterbegin', html);
+            });
+        loadWidgetUniversal('footer.html', 'footer');
+    </script>
 </body>
 
 </html>
