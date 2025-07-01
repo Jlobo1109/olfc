@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
+    <div id="navbar"></div>
     <main class="with-sidebar">
         <div id="sidebar"></div>
         <section class="page-content">
@@ -29,11 +30,7 @@
     <script src="../js/script.js"></script>
     <script src="../js/utils.js"></script>
     <script>
-        fetch('../widgets/navbar.html')
-            .then(res => res.text())
-            .then(html => {
-                document.body.insertAdjacentHTML('afterbegin', html);
-            });
+        loadWidgetUniversal('navbar.html', 'navbar');
         loadWidgetUniversal('footer.html', 'footer');
     </script>
 </body>

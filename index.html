@@ -10,6 +10,7 @@
 </head>
 
 <body>
+    <div id="navbar"></div>
     <main>
         <!-- Hero Section -->
         <section class="hero" style="background-image: url('assets/hero-bg.jpg'); background-size: cover; background-position: center;">
@@ -97,11 +98,7 @@
     <script src="js/script.js"></script>
     <script src="js/utils.js"></script>
     <script>
-        fetch('widgets/navbar.html')
-            .then(res => res.text())
-            .then(html => {
-                document.body.insertAdjacentHTML('afterbegin', html);
-            });
+        loadWidgetUniversal('navbar.html', 'navbar');
         loadWidgetUniversal('footer.html', 'footer');
     </script>
 </body>

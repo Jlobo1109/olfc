@@ -15,14 +15,12 @@ const fonts = {
  * @param {string} targetId - The id of the element to inject the widget into
  */
 function loadWidgetUniversal(widgetName, targetId) {
-    // Find the path from the current page to the widgets folder
-    let path = window.location.pathname;
-    let depth = (path.match(/\//g) || []).length - 1;
-    let prefix = '';
-    if (depth > 0) {
-        prefix = '../'.repeat(depth);
-    }
-    fetch(prefix + 'widgets/' + widgetName)
+    // Get the project root (e.g., '/olfc/')
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const projectRoot = pathParts.length > 0 ? '/' + pathParts[0] : '';
+    // Always use absolute path from project root
+    const widgetPath = `${projectRoot}/widgets/${widgetName}`;
+    fetch(widgetPath)
         .then(res => res.text())
         .then(html => { document.getElementById(targetId).innerHTML = html; });
 } 

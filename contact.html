@@ -10,6 +10,7 @@
 </head>
 
 <body>
+    <div id="navbar"></div>
     <main>
         <!-- Contact Section (modern UI) -->
         <section class="homepage-contact">
@@ -138,11 +139,7 @@
     <div id="footer"></div>
     <script src="js/utils.js"></script>
     <script>
-        fetch('widgets/navbar.html')
-            .then(res => res.text())
-            .then(html => {
-                document.body.insertAdjacentHTML('afterbegin', html);
-            });
+        loadWidgetUniversal('navbar.html', 'navbar');
         loadWidgetUniversal('footer.html', 'footer');
     </script>
 </body>
