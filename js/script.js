@@ -1,12 +1,29 @@
 // JavaScript for slideshows and other interactive features will go here. 
 
 document.addEventListener('DOMContentLoaded', function() {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navUl = document.querySelector('header ul');
 
-    menuToggle.addEventListener('click', () => {
-        navUl.classList.toggle('active');
-    });
+    function initHamburgerMenu() {
+        const menuToggle = document.querySelector('.menu-toggle');
+        const navUl = document.querySelector('header ul');
+        
+        if (menuToggle && navUl) {
+            menuToggle.addEventListener('click', () => {
+                navUl.classList.toggle('active');
+            });
+            return true; // Success
+        }
+        return false; // Not ready yet
+    }
+    
+    // Try immediately, then poll if needed
+    if (!initHamburgerMenu()) {
+        let attempts = 0;
+        const pollInterval = setInterval(() => {
+            if (initHamburgerMenu() || attempts++ > 100) {
+                clearInterval(pollInterval);
+            }
+        }, 50);
+    }
 
     // Mobile dropdown toggle
     const dropdowns = document.querySelectorAll('.dropdown .dropbtn');
