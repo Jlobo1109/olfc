@@ -2,57 +2,161 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - Our Lady of Fatima Church</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us - Our Lady of Fatima Church</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+  </style>
 </head>
 
 <body>
-    <div id="navbar"></div>
-    <main class="with-sidebar">
-        <aside class="sidebar-nav">
-            <h3>About</h3>
-            <ul>
-                <li><a href="#" data-page="about/about-history.html">History</a></li>
-                <li><a href="#" data-page="about/about-mass-schedule.html">Mass Schedule</a></li>
-            </ul>
-        </aside>
-        <section class="page-content" id="about-content">
-            <!-- Dynamic content will be loaded here -->
-        </section>
-    </main>
-    <div id="footer"></div>
-    <script src="js/script.js"></script>
-    <script>
-    // Dynamic content loader for About section
-    function loadAboutContent(page) {
-        fetch(page)
-            .then(res => res.text())
-            .then(html => {
-                // Extract only the main content from the fetched page
-                const temp = document.createElement('div');
-                temp.innerHTML = html;
-                const mainContent = temp.querySelector('.page-content');
-                document.getElementById('about-content').innerHTML = mainContent ? mainContent.innerHTML : html;
-            });
-    }
-    // Sidebar link click handler
-    document.querySelectorAll('.sidebar-nav a[data-page]').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            loadAboutContent(this.getAttribute('data-page'));
+  <!-- Header/Navbar -->
+  <header>
+    <nav class="navbar">
+      <a href="index.html">
+        <div class="logo">Our Lady of Fatima Church</div>
+      </a>
+
+      <!-- Menu Button (hamburger) -->
+      <div class="menu-toggle" id="menu-toggle">
+        ☰
+      </div>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="parish.html">Parish</a></li>
+        <li><a href="associations.html">Associations</a></li>
+        <li><a href="index.html#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Tabs -->
+    <div class="about-container">
+      <div class="tab-menu">
+        <h3>About</h3>
+        <button class="tab-link active" data-tab="history">History</button>
+        <button class="tab-link" data-tab="mass">Mass Schedule</button>
+      </div>
+
+      <div id="history" class="tab-content active">
+        <h2>History</h2><br>
+        <p><b>Majiwada</b> is a village situated on Old Agra Road (Off. Ghodbunder Road) and is about 5kms away from
+          Thane Railway Station.</p>
+        <p>Our Lady of Fatima Church is more than 60 years old. It was built in the year 1954 on 6th June (as per the
+          marble slab placed at the entrance of our Church) by His Eminence Valerian Cardinal Gracias, Archbishop of
+          Bombay. It was then a small Chapel with most of the faithful being the local East Indian community. The
+          Eucharist was celebrated by a Priest from St. John the Baptist Thane, since this Majiwada Chapel was one of
+          its many units. But over a period of time, the village and its surrounding areas started developing and the
+          number of the faithful in the area also started growing gradually. We are happy to learn that Our Lady of
+          Fatima Church celebrated its Silver Jubilee in June, 1979.</p>
+        <p>Majiwada-Gaon is no longer a village and it was approaching the status of a city. This was the time when the
+          Majiwada Chapel was demerged from St. John the Baptist Church and became an independent Registered Trust in
+          1992. Today, we have a rebuilt, full-fledged Church blessed on 10th April, 2005. This Church has two mass
+          centres, one at Manpada, Our Lady of Vailankani Chapel, situated along the Ghodbunder Road about 4 kms away
+          from Majiwada which was inaugurated / blessed on 15th October, 1982. The second one at Dhokali, situated along
+          the Kolshet Road, known as Seva Sadan, Convent of Helpers of Mary Sisters.</p>
+        <p>We Parishioners feel proud to have Our Lady of Fatima Church, a complete Parish, with nearly 1000 families
+          registered, 24 Small Christian Communities and Associations/Cells catering to the needs of our Parishioners.
+        </p>
+        <p><b>(Fr. G. H. D'souza)</b><br>Priest-in-Charge</p>
+      </div>
+
+      <div id="mass" class="tab-content">
+        <h2>Mass Schedule</h2><br>
+        <table class="mass-schedule-table">
+          <tbody>
+            <tr>
+              <th>Day</th>
+              <th>Time</th>
+              <th>Details</th>
+            </tr>
+            <tr>
+              <td>Monday - Friday</td>
+              <td>6:30 AM</td>
+              <td>Morning Mass (English)</td>
+            </tr>
+            <tr>
+              <td>Monday - Friday</td>
+              <td>7:00 PM</td>
+              <td>Evening Mass (Konkani)</td>
+            </tr>
+            <tr>
+              <td>Saturday</td>
+              <td>6:30 AM</td>
+              <td>Morning Mass (English)</td>
+            </tr>
+            <tr>
+              <td>Saturday</td>
+              <td>7:00 PM</td>
+              <td>Anticipated Sunday Mass (Konkani)</td>
+            </tr>
+            <tr>
+              <td>Sunday</td>
+              <td>7:00 AM</td>
+              <td>Mass (Konkani)</td>
+            </tr>
+            <tr>
+              <td>Sunday</td>
+              <td>8:30 AM</td>
+              <td>Children's Mass (English)</td>
+            </tr>
+            <tr>
+              <td>Sunday</td>
+              <td>10:00 AM</td>
+              <td>Mass (English)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+  <!-- Footer -->
+  <footer>
+    <h3>Made with ❤️ at OLFC</h3>
+  </footer>
+  <!-- ...your HTML... -->
+
+  <!-- Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const menuToggle = document.getElementById('menu-toggle');   // <div id="menu-toggle">☰</div>
+        const navLinks = document.getElementById('nav-links');      // <ul id="nav-links" class="nav-links">...</ul>
+        const navbar = document.querySelector('.navbar');
+
+        if (!menuToggle || !navLinks) {
+            console.warn('Missing #menu-toggle or #nav-links in the HTML.');
+            return;
+        }
+
+        menuToggle.addEventListener('click', () => {
+            // Support either CSS pattern:
+            navLinks.classList.toggle('active');   // .nav-links.active { display:flex }
+            navbar.classList.toggle('active');     // .navbar.active .nav-links { display:flex }
+
+            console.log('Menu btn clicked >>>>', menuToggle);
+            console.log('Nav Links >>>>>', navLinks);
         });
     });
-    // Load default page on first load
-    loadAboutContent('about/about-history.html');
-    </script>
-    <script src="js/utils.js"></script>
-    <script>
-        loadWidgetUniversal('navbar.html', 'navbar');
-        loadWidgetUniversal('footer.html', 'footer');
-    </script>
+    document.querySelectorAll('.tab-link').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // Mobile nav toggle
+    const menuToggle = document.getElementById('menu-toggle');
+    const navLinks = document.getElementById('nav-links');
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('active');
+    });
+  </script>
 </body>
 
-</html> 
+</html>
