@@ -43,55 +43,25 @@
 
         <!-- Events Section -->
         <section class="events">
-            <div id="events-content">
-                <h2>Upcoming Events</h2>
-                <div class="event-cards">
-                    <div class="card">
-                        <img class="event-card" src="images/event.jpeg" alt="Event 1">
-                        <div class="card-content">
-                            <h3>Easter Mass</h3>
-                            <p>April 20, 2025 | 6:00 PM</p>
-                            <p>Join us for the celebration of the mass</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <img class="event-card" src="images/event.jpeg" alt="Event 1">
-                        <div class="card-content">
-                            <h3>Christmas Day Mass</h3>
-                            <p>December 25, 2024 | 8:00 AM</p>
-                            <p>Special Christmas Day celebration with the parish community</p>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <img class="event-card" src="images/event.jpeg" alt="Event 1">
-                        <div class="card-content">
-                            <h3>New Year Mass</h3>
-                            <p>January 1, 2025 | 7:00 AM</p>
-                            <p>Begin the new year with prayer and thanksgiving</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div id="events-content"></div>
         </section>
 
         <!-- Gallery Section -->
         <section class="gallery">
-            <h2>Parish Gallery</h2>
-            <div class="gallery-grid">
-                <div class="card">
-                    <img src="images/church.jpg" alt="Church Exterior">
-                </div>
-                <div class="card">
-                    <img src="images/feast.jpg" alt="Feast Celebration">
-                </div>
-                <div class="card">
-                    <img src="images/youth.jpg" alt="Youth Retreat">
-                </div>
-                <div class="card">
-                    <img src="images/christmas.jpg" alt="Christmas Mass">
+            <div id="gallery-grid"></div>
+        </section>
+
+        <!-- Lightbox -->
+        <div id="lightbox" class="lightbox">
+            <span class="close" onclick="closeLightbox()">&times;</span>
+            <div class="lightbox-content">
+                <img id="lightbox-img" src="" alt="Gallery Image">
+                <div class="lightbox-controls">
+                    <span class="prev" onclick="changeSlide(-1)">&#10094;</span>
+                    <span class="next" onclick="changeSlide(1)">&#10095;</span>
                 </div>
             </div>
-        </section>
+        </div>
 
         <!-- Contact Section -->
         <section class="contact" id="contact">
@@ -100,9 +70,9 @@
                 <!-- Contact Form Card -->
                 <div class="contact-card">
                     <form class="contact-form">
-                        <input type="text" placeholder="Your Name" required>
-                        <input type="email" placeholder="Your Email" required>
-                        <textarea placeholder="Your Message" required></textarea>
+                        <input type="text" placeholder="Your Name" id="user-name" required>
+                        <input type="email" placeholder="Your Email" id="user-email" required>
+                        <textarea placeholder="Your Message" id="user-message" required></textarea>
                         <button type="submit" class="btn btn-dark">Send Message</button>
                     </form>
                 </div>
@@ -174,7 +144,7 @@
             });
         });
     </script>
-    <script src="script/content.js"></script>
+    <script src="script/home_content.js"></script>
 </body>
 
 </html>
