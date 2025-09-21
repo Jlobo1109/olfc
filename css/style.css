@@ -129,7 +129,7 @@ main {
     display: inline-block;
     padding: 1rem 2.5rem;
     margin: 0.5rem 2rem;
-    border-radius: 50px;
+    border-radius: 10px;
     text-decoration: none;
     font-size: 1.2rem;
     font-weight: bold;
@@ -142,8 +142,8 @@ main {
 
 .btn-dark {
     background: #0d1b2a;
-    color: #48cae4;
-    border: 2px solid #48cae4;
+    color: #fff;
+    border: none;
 }
 
 /* Section Styles */
@@ -224,6 +224,43 @@ h2::after {
 
 .gallery-card img:hover {
     transform: scale(1.05);
+}
+
+/* Whatsapp */
+.whatsapp {
+    background: #f1f1f1;
+}
+
+.whatsapp-qr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.whatsapp-qr img {
+    width: 200px;
+    height: 200px;
+    border-radius: 12px;
+    border: 4px solid #25D366;
+    background: white;
+    object-fit: contain;
+}
+
+.whatsapp-qr .btn {
+    background-color: #25D366;
+    border: none;
+    padding: 12px 24px;
+    font-size: 1rem;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    transition: background 0.3s;
+}
+
+.whatsapp-qr .btn:hover {
+    background-color: #1ebe5d;
 }
 
 /* Scroll buttons */
@@ -424,7 +461,7 @@ h2::after {
     background: white;
     border-radius: 15px;
     margin: 0;
-    padding: 0;
+    padding: 20px;
     /* curved edges */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     overflow: hidden;
@@ -810,14 +847,31 @@ footer {
 
 
     .tab-menu {
-        flex-direction: column;
-        align-items: stretch;
-        margin-bottom: 40px;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        margin: 0px 40px 40px 40px;
+        width: 95%;
+        overflow-x: auto;
+        scrollbar-width: none;
+        /* Firefox */
     }
 
-    .tab-menu button {
-        width: 100%;
-        text-align: left;
+    .tab-menu h3 {
+        display: none;
+    }
+
+    .tab-link {
+        /* width: 100%; */
+        /* flex: auto; */
+        /* prevent shrinking */
+        flex: auto;
+        height: auto;
+        text-align: center;
+    }
+
+    .tab-link.active {
+        height: 70px;
     }
 
     .tab-content.active {

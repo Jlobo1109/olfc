@@ -8,11 +8,11 @@ let index_hero = {
 
 const hero_content = document.getElementById("hero-content");
 
+{/* <a href="parish.html" class="btn btn-dark">Latest News</a> */}
 hero_content.innerHTML = `<h1>${index_hero.title}</h1>
                 <p>${index_hero.sub_title}</p>
                 <div class="hero-buttons">
                     <a href="about.html" class="btn btn-light">Our History</a>
-                    <a href="parish.html" class="btn btn-dark">Latest News</a>
                 </div>`;
 
 //welcome

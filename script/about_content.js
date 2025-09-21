@@ -23,13 +23,13 @@ let about_timings = {
     "title": "Mass Schedule",
     "table_th": ['Day', 'Time', 'Details'],
     "content": [
-        ['Monday - Friday', '6:30 AM', 'Morning Mass (English)'],
-        ['Monday - Friday', '7:00 AM', 'Morning Mass (Konkani)'],
-        ['Monday - Friday', '7:00 AM', 'Morning Mass (Konkani)'],
-        ['Monday - Friday', '7:00 AM', 'Morning Mass (Konkani)'],
-        ['Monday - Friday', '7:00 AM', 'Morning Mass (Konkani)'],
-        ['Monday - Friday', '7:00 AM', 'Morning Mass (Konkani)'],
-        ['Monday - Friday', '7:00 AM', 'Morning Mass (Konkani)'],
+        ['Weekdays', '7:00 AM', 'English'],
+        ['', '7:00 PM', 'English'],
+        ['Sundays', '8:00 AM', 'Marathi'],
+        ['', '9:00 AM', 'English'],
+        ['', '5:00 PM', 'English'],
+        ['Special Masses', '2nd Sunday, 11:00 AM', 'Tamil'],
+        ['', '1st & 3rd Saturday, 7:00 PM', 'Konkani'],
     ],
 };
 

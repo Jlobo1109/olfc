@@ -38,7 +38,7 @@
             <div class="tab-menu">
                 <h3>Parish</h3>
                 <button class="tab-link active" data-tab="parish-team">Parish Team</button>
-                <button class="tab-link" data-tab="news">New/Notices</button>
+                <!-- <button class="tab-link" data-tab="news">New/Notices</button> -->
                 <button class="tab-link" data-tab="articles">Events</button>
                 <button class="tab-link" data-tab="communities">Communities</button>
             </div>
@@ -61,6 +61,31 @@
 
     <!-- Script -->
     <script>
+        const tabMenu = document.querySelector(".tab-menu");
+        const tabLinks = document.querySelectorAll(".tab-menu .tab-link");
+
+        tabLinks.forEach((link, index) => {
+            link.addEventListener("click", () => {
+                // If clicked element is the last visible item
+                const linkRight = link.getBoundingClientRect().right;
+                const menuRight = tabMenu.getBoundingClientRect().right;
+
+                if (linkRight >= menuRight - 50) {
+                    // Scroll right by the width of one button
+                    tabMenu.scrollBy({ left: link.offsetWidth, behavior: "smooth" });
+                }
+
+                // If clicked element is the first visible item
+                const linkLeft = link.getBoundingClientRect().left;
+                const menuLeft = tabMenu.getBoundingClientRect().left;
+
+                if (linkLeft <= menuLeft + 50) {
+                    // Scroll left by the width of one button
+                    tabMenu.scrollBy({ left: -link.offsetWidth, behavior: "smooth" });
+                }
+            });
+        });
+
         document.addEventListener('DOMContentLoaded', function () {
             const menuToggle = document.getElementById('menu-toggle');   // <div id="menu-toggle">☰</div>
             const navLinks = document.getElementById('nav-links');      // <ul id="nav-links" class="nav-links">...</ul>

@@ -7,12 +7,20 @@ let parish_team = {
     "content": [
         {
             "img_url": "images/event.jpeg",
-            "name": "Parish Priest",
+            "name": "Fr. Christopher Pereira",
+            "title": "Parish Priest",
             "desc": "Our parish priest leads the spiritual life of our community, celebrating Mass, administering sacraments, and providing pastoral care to all parishioners."
         },
         {
             "img_url": "images/event.jpeg",
-            "name": "Assistant Priest",
+            "name": "Fr. Ashton Pinto",
+            "title": "Assistant Priest",
+            "desc": "Assists the parish priest in various pastoral duties and liturgical celebrations."
+        },
+        {
+            "img_url": "images/event.jpeg",
+            "name": "Dcn. Everest Mascarenhas",
+            "title": "Deacon",
             "desc": "Assists the parish priest in various pastoral duties and liturgical celebrations."
         },
     ],
@@ -25,6 +33,7 @@ team_content.innerHTML = `<h2>${parish_team.title}</h2><br><div class="event-car
                         <img class="team-card" src="${details.img_url}" alt="${details.name}">
                         <div class="card-content">
                             <h3>${details.name}</h3>
+                            <p>${details.title}</p>
                             <p>${details.desc}</p>
                         </div>
                     </div>`).join("")}
@@ -85,7 +94,7 @@ let parish_events = {
             "title": "Christmas Midnight Mass",
             "date": "December 24, 2024",
             "author": "Fr. Ashton",
-            "images": ["images/hero.jpg", "images/event.jpeg",],
+            "images": [],
             "desc": "The Christmas Midnight Mass is one of the most awaited celebrations. It begins with carols sung by the parish choir, followed by the solemn liturgy. Families gather to celebrate, share joy, and strengthen their faith. The church is beautifully decorated for the occasion.",
         },
     ],
@@ -100,11 +109,14 @@ articles_content.innerHTML = `<h2>${parish_events.title}</h2><br>
                             <h3>${article.title}</h3>
                             <span class="meta">${article.date} | ${article.author}</span>
                         </div>
-                        <div class="article-gallery">
+                        ${article.images && article.images.length > 0 ?
+        `<div class="article-gallery">
                             <span class="gallery-prev">&#10092;</span>
                             ${article.images.map((image, index) => `<img src=${image} alt=${article.title} class="gallery-img ${index === 0 ? 'active' : ''}">`).join("")}
                             <span class="gallery-next">&#10093;</span>
-                        </div>
+                        </div>`
+        : ""
+    }
                         <div class="article-description">
                             <p class="short">${article.desc.substring(0, 200)}...</p>
                             <p class="full hidden">${article.desc}</p>
@@ -122,15 +134,22 @@ document.querySelectorAll(".article-card").forEach(card => {
         images.forEach((img, i) => img.classList.toggle("active", i === index));
     };
 
-    card.querySelector(".gallery-prev").addEventListener("click", () => {
-        currentIndex = (currentIndex - 1 + images.length) % images.length;
-        showImage(currentIndex);
-    });
+    const prevBtn = card.querySelector(".gallery-prev");
+    if (prevBtn) {
+        prevBtn.addEventListener("click", () => {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            showImage(currentIndex);
+        });
+    }
 
-    card.querySelector(".gallery-next").addEventListener("click", () => {
-        currentIndex = (currentIndex + 1) % images.length;
-        showImage(currentIndex);
-    });
+    const nextBtn = card.querySelector(".gallery-next");
+    if (nextBtn) {
+        nextBtn.addEventListener("click", () => {
+            currentIndex = (currentIndex + 1) % images.length;
+            showImage(currentIndex);
+        });
+    }
+
 });
 
 // Read more toggle
@@ -227,7 +246,7 @@ function applyFilters() {
             area.location.toLowerCase().includes(searchTerm) ||
             area.ppc.toLowerCase().includes(searchTerm) ||
             area.scc.toLowerCase().includes(searchTerm) ||
-            area.nyg.toLowerCase().includes(searchTerm);
+            area.nyg.toLowerCase().replace("\'", "").includes(searchTerm);
 
         const matchesLocation = location === "" || area.location === location;
 
@@ -251,8 +270,8 @@ function renderCards() {
     filteredCommunities.forEach(area => {
         const card = document.createElement("div");
         card.classList.add("card");
-/* <h3><i>${area.families_count}</i></h3> */
-        card.innerHTML = 
+        /* <h3><i>${area.families_count}</i></h3> */
+        card.innerHTML =
             `<div class="area-card-content">
                 <h3>${area.name}</h3>
                 <p><i>${area.location}</i></p>
