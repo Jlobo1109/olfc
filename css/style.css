@@ -725,6 +725,17 @@ footer {
     /* center align */
 }
 
+#articleFilter {
+    flex: 0 0 20%;
+    /* 20% width on desktop */
+    min-width: 180px;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    background: #fff;
+}
+
 #searchInput {
     flex: 0 0 60%;
     /* 40% width on desktop */

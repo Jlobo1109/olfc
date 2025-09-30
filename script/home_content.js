@@ -64,17 +64,17 @@ let index_events = {
 
 const events_content = document.getElementById("events-content");
 
-events_content.innerHTML = `<h2>${index_events.title}</h2>
-                <div class="event-cards">
-                ${index_events.content.map(events => `<div class="card">
-                    <img class="event-card" src=${events.url} alt=${events.name}>
-                    <div class="card-content">
-                        <h3>${events.name}</h3>
-                        <p>${events.date}</p>
-                        <p>${events.description}</p>
-                    </div>
-                </div>`).join("")}
-                </div>`;
+// events_content.innerHTML = `<h2>${index_events.title}</h2>
+//                 <div class="event-cards">
+//                 ${index_events.content.map(events => `<div class="card">
+//                     <img class="event-card" src=${events.url} alt=${events.name}>
+//                     <div class="card-content">
+//                         <h3>${events.name}</h3>
+//                         <p>${events.date}</p>
+//                         <p>${events.description}</p>
+//                     </div>
+//                 </div>`).join("")}
+//                 </div>`;
 
 //Parish Gallery
 let index_gallery = {

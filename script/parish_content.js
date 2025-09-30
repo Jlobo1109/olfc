@@ -87,90 +87,163 @@ let parish_events = {
             "title": "Easter Celebration",
             "date": "April 20, 2025",
             "author": "Parish Office",
-            "images": ["images/hero.jpg", "images/event.jpeg",],
+            "category": "All",
+            "images": ["images/hero.jpg", "images/event.jpeg"],
             "desc": "The Easter Celebration at OLFC includes a solemn vigil mass, a procession, choir hymns, and community fellowship. Families come together to share joy and renew their faith. After the mass, there will be refreshments in the parish hall.",
         },
         {
             "title": "Christmas Midnight Mass",
             "date": "December 24, 2024",
             "author": "Fr. Ashton",
+            "category": "All",
             "images": [],
             "desc": "The Christmas Midnight Mass is one of the most awaited celebrations. It begins with carols sung by the parish choir, followed by the solemn liturgy. Families gather to celebrate, share joy, and strengthen their faith. The church is beautifully decorated for the occasion.",
         },
-    ],
+        {
+            "title": "Youth Retreat",
+            "date": "May 15, 2025",
+            "author": "Chris Ferrao",
+            "category": "youth",
+            "images": [],
+            "desc": "The Youth Ministry of OLFC organized a vibrant retreat bringing together young members of the parish for a day filled with prayer, music, and laughter. The program began with a short prayer service, followed by engaging sessions where participants reflected on faith and personal growth. Games and team activities added an energetic spirit, helping the youth bond with one another while learning the value of teamwork and friendship. Music and hymns lifted the atmosphere, creating a balance of fun and spirituality. Group discussions allowed everyone to share experiences and challenges, deepening their understanding of how faith can guide them in everyday life. The retreat ended with a joyful celebration, leaving the youth inspired, connected, and renewed in their commitment to walk with Christ."
+        },
+        {
+            "title": "Sunday School Annual Day",
+            "date": "Feb 2, 2025",
+            "author": "Sunday School Teachers",
+            "category": "catechism",
+            "images": [],
+            "desc": "Children of Sunday School will present skits, songs, and dances as part of the Annual Day celebration. Prizes will also be distributed."
+        }
+    ]
 };
+
 const articles_content = document.getElementById("articles");
 
 articles_content.innerHTML = `<h2>${parish_events.title}</h2><br>
-                <div class="articles-feed">
-                ${parish_events.content.map(article =>
-    `<div class="article-card">
-                        <div class="article-header">
+                <div class="filter-container">
+                    <!-- Filters -->
+                    <select id="articleFilter">
+                        <option value="All">All events</option>
+                        <option value="youth">Youth</option>
+                        <option value="catechism">Sunday School</option>
+                        <option value="community">Community</option>
+                        <option value="ppc">PPC</option>
+                        <!-- Add more events -->
+                    </select>
+                </div>
+
+                <div class="articles-feed" id="articles-feed"></div>`;
+
+let filteredArticles = [];
+
+// DOM elements
+const articleFilter = document.getElementById("articleFilter");
+
+// Event listeners for search + filter
+articleFilter.addEventListener("change", applyArticleFilters);
+
+function applyArticleFilters() {
+    const article = articleFilter.value;
+
+    // For now, just log since array is empty
+    filteredArticles = parish_events.content.filter(area => {
+        const matchesArticle = article === "All" || area.category === article;
+
+        return matchesArticle;
+    });
+
+    renderArticles();
+}
+
+const articleContainer = document.getElementById("articles-feed");
+
+// Render cards in container
+function renderArticles() {
+    articleContainer.innerHTML = ""; // clear old results
+
+    if (filteredArticles.length === 0) {
+        articleContainer.innerHTML = "<p>No matching articles found.</p>";
+        return;
+    }
+
+    filteredArticles.forEach(article => {
+        const card = document.createElement("div");
+        card.classList.add("article-card");
+        /* <h3><i>${area.families_count}</i></h3> */
+        card.innerHTML =
+            `<div class="article-header">
                             <h3>${article.title}</h3>
                             <span class="meta">${article.date} | ${article.author}</span>
                         </div>
                         ${article.images && article.images.length > 0 ?
-        `<div class="article-gallery">
+                `<div class="article-gallery">
                             <span class="gallery-prev">&#10092;</span>
                             ${article.images.map((image, index) => `<img src=${image} alt=${article.title} class="gallery-img ${index === 0 ? 'active' : ''}">`).join("")}
                             <span class="gallery-next">&#10093;</span>
                         </div>`
-        : ""
-    }
+                : ""
+            }
                         <div class="article-description">
                             <p class="short">${article.desc.substring(0, 200)}...</p>
                             <p class="full hidden">${article.desc}</p>
                             <a href="#" class="read-more">Read more</a>
                         </div>
-                    </div>`).join("")}
-                </div>`;
+                    </div>`;
 
-// Gallery navigation
-document.querySelectorAll(".article-card").forEach(card => {
-    const images = card.querySelectorAll(".gallery-img");
-    let currentIndex = 0;
-
-    const showImage = (index) => {
-        images.forEach((img, i) => img.classList.toggle("active", i === index));
-    };
-
-    const prevBtn = card.querySelector(".gallery-prev");
-    if (prevBtn) {
-        prevBtn.addEventListener("click", () => {
-            currentIndex = (currentIndex - 1 + images.length) % images.length;
-            showImage(currentIndex);
-        });
-    }
-
-    const nextBtn = card.querySelector(".gallery-next");
-    if (nextBtn) {
-        nextBtn.addEventListener("click", () => {
-            currentIndex = (currentIndex + 1) % images.length;
-            showImage(currentIndex);
-        });
-    }
-
-});
-
-// Read more toggle
-document.querySelectorAll(".read-more").forEach(link => {
-    link.addEventListener("click", e => {
-        e.preventDefault();
-        const desc = link.closest(".article-description");
-        const short = desc.querySelector(".short");
-        const full = desc.querySelector(".full");
-
-        if (full.classList.contains("hidden")) {
-            full.classList.remove("hidden");
-            short.style.display = "none";
-            link.textContent = "Read less";
-        } else {
-            full.classList.add("hidden");
-            short.style.display = "block";
-            link.textContent = "Read more";
-        }
+        articleContainer.appendChild(card);
     });
-});
+
+    // Gallery navigation
+    document.querySelectorAll(".article-card").forEach(card => {
+        const images = card.querySelectorAll(".gallery-img");
+        let currentIndex = 0;
+
+        const showImage = (index) => {
+            images.forEach((img, i) => img.classList.toggle("active", i === index));
+        };
+
+        const prevBtn = card.querySelector(".gallery-prev");
+        if (prevBtn) {
+            prevBtn.addEventListener("click", () => {
+                currentIndex = (currentIndex - 1 + images.length) % images.length;
+                showImage(currentIndex);
+            });
+        }
+
+        const nextBtn = card.querySelector(".gallery-next");
+        if (nextBtn) {
+            nextBtn.addEventListener("click", () => {
+                currentIndex = (currentIndex + 1) % images.length;
+                showImage(currentIndex);
+            });
+        }
+
+    });
+
+    // Read more toggle
+    document.querySelectorAll(".read-more").forEach(link => {
+        link.addEventListener("click", e => {
+            e.preventDefault();
+            const desc = link.closest(".article-description");
+            const short = desc.querySelector(".short");
+            const full = desc.querySelector(".full");
+
+            if (full.classList.contains("hidden")) {
+                full.classList.remove("hidden");
+                short.style.display = "none";
+                link.textContent = "Read less";
+            } else {
+                full.classList.add("hidden");
+                short.style.display = "block";
+                link.textContent = "Read more";
+            }
+        });
+    });
+}
+
+// Show all by default when page loads
+applyArticleFilters();
 
 
 //notices
@@ -246,7 +319,7 @@ function applyFilters() {
             area.location.toLowerCase().includes(searchTerm) ||
             area.ppc.toLowerCase().includes(searchTerm) ||
             area.scc.toLowerCase().includes(searchTerm) ||
-            area.nyg.toLowerCase().replace("\'", "").includes(searchTerm);
+            area.nyg.toLowerCase().replace(/['\s]/g, "").includes(searchTerm);
 
         const matchesLocation = location === "" || area.location === location;
 
