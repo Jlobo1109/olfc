@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Lady of Fatima Church</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Header/Navbar -->
+    <header>
+        <nav class="navbar">
+            <a href="index.html">
+                <div class="logo">Our Lady of Fatima Church</div>
+            </a>
+
+            <!-- Menu Button (hamburger) -->
+            <div class="menu-toggle" id="menu-toggle">
+                ☰
+            </div>
+
+            <ul class="nav-links" id="nav-links">
+                <li><a href="about.html" class="active">About</a></li>
+                <li><a href="parish.html">Parish</a></li>
+                <li><a href="associations.html">Associations</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content" id="hero-content"></div>
+        </section>
+
+        <!-- Parish Section -->
+        <section class="parish">
+            <div id="welcome-content"></div>
+        </section>
+
+        <!-- Events Section -->
+        <!-- <section class="events">
+            <div id="events-content"></div>
+        </section> -->
+
+        <!-- WhatsApp Channel Section -->
+        <section class="whatsapp">
+            <h2>New/Notices</h2>
+            <p>Stay updated with the latest parish news, notices, and events by joining our official WhatsApp channel.
+            </p>
+            <div class="whatsapp-qr">
+                <img src="images/whatsapp-qr.jpeg" alt="WhatsApp Channel QR Code" width="200px">
+                <a href="https://whatsapp.com/channel/0029VbAVjHmLdQeWWhhG5g0I" target="_blank" class="btn btn-dark">
+                    Join Now
+                </a>
+            </div>
+        </section>
+
+        <!-- Gallery Section -->
+        <section class="gallery">
+            <div id="gallery-grid"></div>
+        </section>
+
+        <!-- Lightbox -->
+        <div id="lightbox" class="lightbox">
+            <span class="close" onclick="closeLightbox()">&times;</span>
+            <div class="lightbox-content">
+                <img id="lightbox-img" src="" alt="Gallery Image">
+                <div class="lightbox-controls">
+                    <span class="prev" onclick="changeSlide(-1)">&#10094;</span>
+                    <span class="next" onclick="changeSlide(1)">&#10095;</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <section class="contact" id="contact">
+            <h2>Contact Us</h2>
+            <div class="contact-container">
+                <!-- Contact Form Card -->
+                <div class="contact-card">
+                    <form class="contact-form">
+                        <input type="text" placeholder="Your Name" id="user-name" required>
+                        <input type="email" placeholder="Your Email" id="user-email" required>
+                        <textarea placeholder="Your Message" id="user-message" required></textarea>
+                        <button type="submit" class="btn btn-dark">Send Message</button>
+                    </form>
+                </div>
+
+                <!-- Contact Info Card -->
+                <div class="contact-card contact-info">
+                    <h3>Our Address</h3>
+                    <p>
+                        Our Lady of Fatima Church<br>
+                        Opp. Municipal Office,<br>
+                        Majiwada, Thane 400 601, India
+                    </p>
+                    <p><b>Phone:</b> +91-22-25428204</p>
+                    <p>
+                        <b>Email:</b><br>
+                        andrew138@rediffmail.com<br>
+                        thomasrego@rediffmail.com
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Find Us Section -->
+        <section class="find">
+            <h2>Find Us</h2>
+            <div class="map-container-home">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4101.939074292814!2d72.97911172671623!3d19.215231908475484!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b948a1390de7%3A0xa304cd0c08473a2!2sOur%20Lady%20of%20Fatima%20Church!5e0!3m2!1sen!2sin!4v1751367945126!5m2!1sen!2sin"
+                    width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+            <div class="map-info">
+                <h3>How to Reach Us</h3>
+                <p><strong>By Road:</strong> Our Lady of Fatima Church is located off the Ghodbunder Road at the
+                    Majiwada Junction, opposite the Municipal Office.</p>
+                <p><strong>By Train:</strong> The nearest railway station is Thane Railway Station, approximately 5 km
+                    away.</p>
+                <p><strong>By Bus:</strong> Several bus routes pass through Majiwada Junction, making it easily
+                    accessible by public transport.</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Disclaimer: The information provided on this website is upto date and accurate to best of our knowledge. A few data viz days and timings of masses and other services are, however, subject to change for various reasons. You are requested to contact the Parish office or connect to WhatsApp channel to validate this information.</p>
+    </footer>
+    <!-- ...your HTML... -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuToggle = document.getElementById('menu-toggle');   // <div id="menu-toggle">☰</div>
+            const navLinks = document.getElementById('nav-links');      // <ul id="nav-links" class="nav-links">...</ul>
+            const navbar = document.querySelector('.navbar');
+
+            if (!menuToggle || !navLinks) {
+                console.warn('Missing #menu-toggle or #nav-links in the HTML.');
+                return;
+            }
+
+            menuToggle.addEventListener('click', () => {
+                // Support either CSS pattern:
+                navLinks.classList.toggle('active');   // .nav-links.active { display:flex }
+                navbar.classList.toggle('active');     // .navbar.active .nav-links { display:flex }
+
+                console.log('Menu btn clicked >>>>', menuToggle);
+                console.log('Nav Links >>>>>', navLinks);
+            });
+        });
+    </script>
+    <script src="script/home_content.js"></script>
+</body>
+
+</html>
