@@ -302,15 +302,15 @@ let filteredCommunities = [];
 
 // DOM elements
 const searchInput = document.getElementById("searchInput");
-const locationFilter = document.getElementById("locationFilter");
+// const locationFilter = document.getElementById("locationFilter");
 
 // Event listeners for search + filter
 searchInput.addEventListener("input", applyFilters);
-locationFilter.addEventListener("change", applyFilters);
+// locationFilter.addEventListener("change", applyFilters);
 
 function applyFilters() {
     const searchTerm = searchInput.value.toLowerCase();
-    const location = locationFilter.value;
+    // const location = locationFilter.value;
 
     // For now, just log since array is empty
     filteredCommunities = parish_communities.content.filter(area => {
@@ -322,7 +322,7 @@ function applyFilters() {
             area.societies.some(soc => soc.toLowerCase().includes(searchTerm)) ||
             area.nyg.toLowerCase().replace(/['\s]/g, "").includes(searchTerm);
 
-        const matchesLocation = location === "" || area.location === location;
+        const matchesLocation = location === "";
 
         return matchesSearch && matchesLocation;
     });
