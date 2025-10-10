@@ -280,20 +280,20 @@ let parish_communities = {
 
 const communities_content = document.getElementById("communities");
 
+// <!-- Filters -->
+// <select id="locationFilter">
+//     <option value="">All Locations</option>
+//     <option value="Waghbil">Waghbil</option>
+//     <option value="Highland">Highland</option>
+//     <option value="Majiwada">Majiwada</option>
+//     <option value="Dhokali">Dhokali</option>
+//     <!-- Add more locations -->
+// </select>
 communities_content.innerHTML = `<h2>${parish_communities.title}</h2><br>
                 <div class="filter-container">
                     <!-- Search Bar -->
-                    <input type="text" id="searchInput" placeholder="Search by name, location, PPC, SCC...">
+                    <input type="text" id="searchInput" placeholder="Search by name, location, PPC, SCC, NYG...">
 
-                    <!-- Filters -->
-                    <select id="locationFilter">
-                        <option value="">All Locations</option>
-                        <option value="Waghbil">Waghbil</option>
-                        <option value="Highland">Highland</option>
-                        <option value="Majiwada">Majiwada</option>
-                        <option value="Dhokali">Dhokali</option>
-                        <!-- Add more locations -->
-                    </select>
                 </div>
 
                 <div class="event-cards" id="event-cards"></div>`;
