@@ -83,51 +83,7 @@ let index_gallery = {
     "content": [
         {
             "url": "images/event.jpeg",
-            "name": "Easter Mass",
-        },
-        {
-            "url": "images/event.jpeg",
-            "name": "Easter Mass",
-        },
-        {
-            "url": "images/event.jpeg",
-            "name": "Easter Mass",
-        },
-        {
-            "url": "images/event.jpeg",
-            "name": "Easter Mass",
-        },
-        {
-            "url": "images/event.jpeg",
-            "name": "Easter Mass",
-        },
-        {
-            "url": "images/event.jpeg",
-            "name": "Easter Mass",
-        },
-        {
-            "url": "images/event.jpeg",
-            "name": "Easter Mass",
-        },
-        {
-            "url": "images/event.jpeg",
-            "name": "Easter Mass",
-        },
-        {
-            "url": "images/event.jpeg",
-            "name": "Easter Mass",
-        },
-        {
-            "url": "images/event.jpeg",
-            "name": "Easter Mass",
-        },
-        {
-            "url": "images/event.jpeg",
-            "name": "Easter Mass",
-        },
-        {
-            "url": "images/event.jpeg",
-            "name": "Easter Mass",
+            "name": "Coming Soon...",
         },
     ]
 };

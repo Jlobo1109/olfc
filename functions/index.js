@@ -11,7 +11,23 @@ const db = admin.firestore();
 const app = express();
 
 // Allow requests from your frontend
-app.use(cors({ origin: "https://olfatimachurch-b8123.web.app" }));
+const allowedOrigins = [
+    "https://olfatimachurch-b8123.web.app",
+    "https://olfcmajiwada.com"
+];
+
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.includes(origin)) {
+                callback(null, true);
+            } else {
+                callback(new Error("Not allowed by CORS"));
+            }
+        },
+    })
+);
+
 
 // Get about_history from Firestore
 app.get("/about/about_history", async (req, res) => {
