@@ -13,7 +13,8 @@ const app = express();
 // Allow requests from your frontend
 const allowedOrigins = [
     "https://olfatimachurch-b8123.web.app",
-    "https://olfcmajiwada.com"
+    "https://olfcmajiwada.com",
+    "https://www.olfcmajiwada.com",
 ];
 
 app.use(
