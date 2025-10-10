@@ -322,9 +322,9 @@ function applyFilters() {
             area.societies.some(soc => soc.toLowerCase().includes(searchTerm)) ||
             area.nyg.toLowerCase().replace(/['\s]/g, "").includes(searchTerm);
 
-        const matchesLocation = location === "";
+        // const matchesLocation = location === "";
 
-        return matchesSearch && matchesLocation;
+        return matchesSearch;
     });
 
     renderCards();
