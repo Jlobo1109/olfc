@@ -1,15 +1,7 @@
 // Firebase Website Integration
 // This script loads content from Firestore for the main website
 
-// Firebase Configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyB4VkZb5Avvz6At_umIMNgsw7u0TbBP5VM",
-    authDomain: "olfatimachurch-b8123.firebaseapp.com",
-    projectId: "olfatimachurch-b8123",
-    storageBucket: "olfatimachurch-b8123.firebasestorage.app",
-    messagingSenderId: "148360742215",
-    appId: "1:148360742215:web:4caac837a9ff30298ef862"
-};
+// Firebase Configuration is loaded from firebase-config.js
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);

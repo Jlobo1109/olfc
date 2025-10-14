@@ -78,7 +78,7 @@ main {
 
 /* Hero Section */
 .hero {
-    background: url('../images/hero.webp') no-repeat center center/cover;
+    background: url('https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/hero.webp') no-repeat center center/cover;
     height: 100vh;
     top: 60px;
     display: flex;

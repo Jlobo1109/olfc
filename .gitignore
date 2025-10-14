@@ -12,6 +12,12 @@ firebase-debug.*.log
 **/service-account-key.json
 **/*-key.json
 
+# Firebase Configuration (contains API keys)
+js/firebase-config.js
+.env
+.env.local
+.env.production
+
 # Environment variables
 .env
 .env.local
