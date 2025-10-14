@@ -3,13 +3,13 @@
 // IMPORTANT: Never commit firebase-config.js to version control
 
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY_HERE",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID",
-    measurementId: "YOUR_MEASUREMENT_ID"
+    apiKey: "AIzaSyB4VkZb5Avvz6At_umIMNgsw7u0TbBP5VM",
+    authDomain: "olfatimachurch-b8123.firebaseapp.com",
+    projectId: "olfatimachurch-b8123",
+    storageBucket: "olfatimachurch-b8123.firebasestorage.app",
+    messagingSenderId: "148360742215",
+    appId: "1:148360742215:web:4caac837a9ff30298ef862",
+    measurementId: "G-GW38JPL144"
 };
 
 // Export for use in other files

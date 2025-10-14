@@ -2,9 +2,10 @@
 // This script loads content from Firestore for the main website
 
 // Firebase Configuration is loaded from firebase-config.js
+// firebaseConfig is available globally from firebase-config.js
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(window.firebaseConfig);
 const db = firebase.firestore();
 
 // Content loading functions
