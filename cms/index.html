@@ -261,24 +261,16 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 
     <script>
-        // Firebase Configuration - Secure Approach
-        let firebaseConfig;
-
-        // Try to get config from Firebase Hosting (production)
-        if (window.__FIREBASE_CONFIG__) {
-            firebaseConfig = window.__FIREBASE_CONFIG__;
-        } else {
-            // Fallback for development
-            firebaseConfig = {
-                apiKey: "AIzaSyB4VkZb5Avvz6At_umIMNgsw7u0TbBP5VM",
-                authDomain: "olfatimachurch-b8123.firebaseapp.com",
-                projectId: "olfatimachurch-b8123",
-                storageBucket: "olfatimachurch-b8123.firebasestorage.app",
-                messagingSenderId: "148360742215",
-                appId: "1:148360742215:web:4caac837a9ff30298ef862",
-                measurementId: "G-GW38JPL144"
-            };
-        }
+        // Firebase Configuration - Browser-compatible approach
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4VkZb5Avvz6At_umIMNgsw7u0TbBP5VM",
+            authDomain: "olfatimachurch-b8123.firebaseapp.com",
+            projectId: "olfatimachurch-b8123",
+            storageBucket: "olfatimachurch-b8123.firebasestorage.app",
+            messagingSenderId: "148360742215",
+            appId: "1:148360742215:web:4caac837a9ff30298ef862",
+            measurementId: "G-GW38JPL144"
+        };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -622,43 +614,314 @@
 
             // Placeholder methods for other sections
             async loadWelcomeContent() {
-                // Implementation for welcome content
-                this.showToast('Welcome content section - coming soon', 'info');
+                try {
+                    const doc = await db.collection('content').doc('welcome').get();
+                    const content = document.getElementById('welcomeForm');
+                    
+                    if (doc.exists) {
+                        const data = doc.data();
+                        content.innerHTML = `
+                            <div class="content-card">
+                                <h3>Welcome Message</h3>
+                                <div class="content-preview">
+                                    <h4>${data.title || 'Welcome to Our Parish'}</h4>
+                                    <div class="content-text">
+                                        ${data.content ? data.content.map(para => `<p>${para}</p>`).join('') : '<p>No content available</p>'}
+                                    </div>
+                                </div>
+                                <div class="content-actions">
+                                    <button class="btn btn-primary" onclick="cmsApp.editWelcomeContent()">
+                                        <i class="fas fa-edit"></i> Edit Content
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        content.innerHTML = '<p>No welcome content found. <button class="btn btn-primary" onclick="cmsApp.editWelcomeContent()">Create Content</button></p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading welcome content:', error);
+                    this.showToast('Error loading welcome content', 'error');
+                }
             }
 
             async loadAboutContent() {
-                // Implementation for about content
-                this.showToast('About content section - coming soon', 'info');
+                try {
+                    const doc = await db.collection('content').doc('about').get();
+                    const content = document.getElementById('aboutForm');
+                    
+                    if (doc.exists) {
+                        const data = doc.data();
+                        content.innerHTML = `
+                            <div class="content-card">
+                                <h3>About & History</h3>
+                                <div class="content-preview">
+                                    <h4>${data.title || 'Our History'}</h4>
+                                    <div class="content-text">
+                                        ${data.content ? data.content.map(para => `<p>${para}</p>`).join('') : '<p>No content available</p>'}
+                                    </div>
+                                </div>
+                                <div class="content-actions">
+                                    <button class="btn btn-primary" onclick="cmsApp.editAboutContent()">
+                                        <i class="fas fa-edit"></i> Edit Content
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        content.innerHTML = '<p>No about content found. <button class="btn btn-primary" onclick="cmsApp.editAboutContent()">Create Content</button></p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading about content:', error);
+                    this.showToast('Error loading about content', 'error');
+                }
             }
 
             async loadMassSchedule() {
-                // Implementation for mass schedule
-                this.showToast('Mass schedule section - coming soon', 'info');
+                try {
+                    const doc = await db.collection('content').doc('mass').get();
+                    const content = document.getElementById('massForm');
+                    
+                    if (doc.exists) {
+                        const data = doc.data();
+                        content.innerHTML = `
+                            <div class="content-card">
+                                <h3>Mass Schedule</h3>
+                                <div class="content-preview">
+                                    <h4>${data.title || 'Mass Schedule'}</h4>
+                                    <div class="mass-schedule-preview">
+                                        ${data.schedule ? data.schedule.map(item => `
+                                            <div class="mass-item">
+                                                <span class="mass-day">${item.day}</span>
+                                                <span class="mass-time">${item.time}</span>
+                                                <span class="mass-details">${item.details || ''}</span>
+                                            </div>
+                                        `).join('') : '<p>No schedule available</p>'}
+                                    </div>
+                                </div>
+                                <div class="content-actions">
+                                    <button class="btn btn-primary" onclick="cmsApp.editMassSchedule()">
+                                        <i class="fas fa-edit"></i> Edit Schedule
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        content.innerHTML = '<p>No mass schedule found. <button class="btn btn-primary" onclick="cmsApp.editMassSchedule()">Create Schedule</button></p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading mass schedule:', error);
+                    this.showToast('Error loading mass schedule', 'error');
+                }
             }
 
             async loadTeamMembers() {
-                // Implementation for team members
-                this.showToast('Team members section - coming soon', 'info');
+                try {
+                    const snapshot = await db.collection('parish_team').orderBy('order', 'asc').get();
+                    const content = document.getElementById('teamList');
+                    
+                    if (!snapshot.empty) {
+                        const teamMembers = [];
+                        snapshot.forEach(doc => {
+                            teamMembers.push({ id: doc.id, ...doc.data() });
+                        });
+                        
+                        content.innerHTML = `
+                            <div class="content-card">
+                                <h3>Parish Team</h3>
+                                <div class="team-preview">
+                                    ${teamMembers.map(member => `
+                                        <div class="team-member-preview">
+                                            <div class="member-info">
+                                                <h4>${member.name}</h4>
+                                                <p class="member-title">${member.title}</p>
+                                                <p class="member-description">${member.description || ''}</p>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="content-actions">
+                                    <button class="btn btn-primary" onclick="cmsApp.editTeamMembers()">
+                                        <i class="fas fa-edit"></i> Manage Team
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        content.innerHTML = '<p>No team members found. <button class="btn btn-primary" onclick="cmsApp.editTeamMembers()">Add Team Members</button></p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading team members:', error);
+                    this.showToast('Error loading team members', 'error');
+                }
             }
 
             async loadEvents() {
-                // Implementation for events
-                this.showToast('Events section - coming soon', 'info');
+                try {
+                    const snapshot = await db.collection('events').orderBy('date', 'desc').get();
+                    const content = document.getElementById('eventsList');
+                    
+                    if (!snapshot.empty) {
+                        const events = [];
+                        snapshot.forEach(doc => {
+                            events.push({ id: doc.id, ...doc.data() });
+                        });
+                        
+                        content.innerHTML = `
+                            <div class="content-card">
+                                <h3>Events & Articles</h3>
+                                <div class="events-preview">
+                                    ${events.map(event => `
+                                        <div class="event-preview">
+                                            <h4>${event.title}</h4>
+                                            <p class="event-date">${event.date}</p>
+                                            <p class="event-description">${event.description || ''}</p>
+                                            <div class="event-status">
+                                                <span class="status-badge ${event.isPublished ? 'published' : 'draft'}">
+                                                    ${event.isPublished ? 'Published' : 'Draft'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="content-actions">
+                                    <button class="btn btn-primary" onclick="cmsApp.editEvents()">
+                                        <i class="fas fa-edit"></i> Manage Events
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        content.innerHTML = '<p>No events found. <button class="btn btn-primary" onclick="cmsApp.editEvents()">Add Events</button></p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading events:', error);
+                    this.showToast('Error loading events', 'error');
+                }
             }
 
             async loadCommunities() {
-                // Implementation for communities
-                this.showToast('Communities section - coming soon', 'info');
+                try {
+                    const snapshot = await db.collection('communities').get();
+                    const content = document.getElementById('communitiesList');
+                    
+                    if (!snapshot.empty) {
+                        const communities = [];
+                        snapshot.forEach(doc => {
+                            communities.push({ id: doc.id, ...doc.data() });
+                        });
+                        
+                        content.innerHTML = `
+                            <div class="content-card">
+                                <h3>Communities</h3>
+                                <div class="communities-preview">
+                                    ${communities.map(community => `
+                                        <div class="community-preview">
+                                            <h4>${community.name}</h4>
+                                            <p class="community-description">${community.description || ''}</p>
+                                            <p class="community-contact">Contact: ${community.contact || ''}</p>
+                                            <div class="community-status">
+                                                <span class="status-badge ${community.isActive ? 'active' : 'inactive'}">
+                                                    ${community.isActive ? 'Active' : 'Inactive'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="content-actions">
+                                    <button class="btn btn-primary" onclick="cmsApp.editCommunities()">
+                                        <i class="fas fa-edit"></i> Manage Communities
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        content.innerHTML = '<p>No communities found. <button class="btn btn-primary" onclick="cmsApp.editCommunities()">Add Communities</button></p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading communities:', error);
+                    this.showToast('Error loading communities', 'error');
+                }
             }
 
             async loadAssociations() {
-                // Implementation for associations
-                this.showToast('Associations section - coming soon', 'info');
+                try {
+                    const snapshot = await db.collection('associations').get();
+                    const content = document.getElementById('associationsList');
+                    
+                    if (!snapshot.empty) {
+                        const associations = [];
+                        snapshot.forEach(doc => {
+                            associations.push({ id: doc.id, ...doc.data() });
+                        });
+                        
+                        content.innerHTML = `
+                            <div class="content-card">
+                                <h3>Associations</h3>
+                                <div class="associations-preview">
+                                    ${associations.map(association => `
+                                        <div class="association-preview">
+                                            <h4>${association.name}</h4>
+                                            <p class="association-description">${association.description || ''}</p>
+                                            <p class="association-contact">Contact: ${association.contact || ''}</p>
+                                            <div class="association-status">
+                                                <span class="status-badge ${association.isActive ? 'active' : 'inactive'}">
+                                                    ${association.isActive ? 'Active' : 'Inactive'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="content-actions">
+                                    <button class="btn btn-primary" onclick="cmsApp.editAssociations()">
+                                        <i class="fas fa-edit"></i> Manage Associations
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        content.innerHTML = '<p>No associations found. <button class="btn btn-primary" onclick="cmsApp.editAssociations()">Add Associations</button></p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading associations:', error);
+                    this.showToast('Error loading associations', 'error');
+                }
             }
 
             async loadSettings() {
-                // Implementation for settings
-                this.showToast('Settings section - coming soon', 'info');
+                try {
+                    const content = document.getElementById('settingsForm');
+                    content.innerHTML = `
+                        <div class="content-card">
+                            <h3>Site Settings</h3>
+                            <div class="settings-preview">
+                                <div class="setting-item">
+                                    <h4>Firebase Configuration</h4>
+                                    <p>Project ID: olfatimachurch-b8123</p>
+                                    <p>Status: <span class="status-badge active">Connected</span></p>
+                                </div>
+                                <div class="setting-item">
+                                    <h4>Content Management</h4>
+                                    <p>All content is managed through Firestore</p>
+                                    <p>Images are stored in Firebase Storage</p>
+                                </div>
+                                <div class="setting-item">
+                                    <h4>User Management</h4>
+                                    <p>Current User: ${this.currentUser ? this.currentUser.email : 'Not logged in'}</p>
+                                    <p>Authentication: Firebase Auth</p>
+                                </div>
+                            </div>
+                            <div class="content-actions">
+                                <button class="btn btn-secondary" onclick="cmsApp.refreshData()">
+                                    <i class="fas fa-sync"></i> Refresh Data
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } catch (error) {
+                    console.error('Error loading settings:', error);
+                    this.showToast('Error loading settings', 'error');
+                }
             }
 
             showLoading(show) {
@@ -668,6 +931,41 @@
                 } else {
                     overlay.classList.remove('show');
                 }
+            }
+
+            // Edit functions for content management
+            editWelcomeContent() {
+                this.showToast('Welcome content editor - coming soon', 'info');
+            }
+
+            editAboutContent() {
+                this.showToast('About content editor - coming soon', 'info');
+            }
+
+            editMassSchedule() {
+                this.showToast('Mass schedule editor - coming soon', 'info');
+            }
+
+            editTeamMembers() {
+                this.showToast('Team members editor - coming soon', 'info');
+            }
+
+            editEvents() {
+                this.showToast('Events editor - coming soon', 'info');
+            }
+
+            editCommunities() {
+                this.showToast('Communities editor - coming soon', 'info');
+            }
+
+            editAssociations() {
+                this.showToast('Associations editor - coming soon', 'info');
+            }
+
+            refreshData() {
+                this.showToast('Refreshing data...', 'info');
+                this.loadDashboardData();
+                this.showSection(this.currentSection);
             }
 
             showToast(message, type = 'success') {

@@ -482,3 +482,132 @@
         justify-content: flex-end;
     }
 }
+
+/* Content Preview Styles */
+.content-card {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.content-preview {
+    margin-bottom: 20px;
+}
+
+.content-text p {
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+.team-preview, .events-preview, .communities-preview, .associations-preview {
+    display: grid;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.team-member-preview, .event-preview, .community-preview, .association-preview {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 6px;
+    border-left: 4px solid #667eea;
+}
+
+.member-info h4, .event-preview h4, .community-preview h4, .association-preview h4 {
+    margin: 0 0 8px 0;
+    color: #333;
+}
+
+.member-title, .event-date, .community-contact, .association-contact {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 4px 0;
+}
+
+.member-description, .event-description, .community-description, .association-description {
+    color: #555;
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+.mass-schedule-preview {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 6px;
+    margin: 16px 0;
+}
+
+.mass-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.mass-item:last-child {
+    border-bottom: none;
+}
+
+.mass-day {
+    font-weight: 600;
+    color: #333;
+}
+
+.mass-time {
+    color: #667eea;
+    font-weight: 500;
+}
+
+.mass-details {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.status-badge.published, .status-badge.active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-badge.draft, .status-badge.inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.settings-preview {
+    display: grid;
+    gap: 20px;
+}
+
+.setting-item {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 6px;
+    border-left: 4px solid #667eea;
+}
+
+.setting-item h4 {
+    margin: 0 0 8px 0;
+    color: #333;
+}
+
+.setting-item p {
+    margin: 4px 0;
+    color: #666;
+}
+
+.content-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}

@@ -1,27 +1,19 @@
 // Firebase Website Integration
 // This script loads content from Firestore for the main website
 
-// Firebase Configuration - Secure Approach
-// Firebase will automatically load configuration when deployed to Firebase Hosting
-// For local development, we provide a fallback config
+// Firebase Configuration - Browser-compatible approach
+// Configuration is loaded from Firebase Hosting or uses fallback values
 
-let firebaseConfig;
-
-// Try to get config from Firebase Hosting (production)
-if (window.__FIREBASE_CONFIG__) {
-    firebaseConfig = window.__FIREBASE_CONFIG__;
-} else {
-    // Fallback for development or if config not available
-    firebaseConfig = {
-        apiKey: "AIzaSyB4VkZb5Avvz6At_umIMNgsw7u0TbBP5VM",
-        authDomain: "olfatimachurch-b8123.firebaseapp.com",
-        projectId: "olfatimachurch-b8123",
-        storageBucket: "olfatimachurch-b8123.firebasestorage.app",
-        messagingSenderId: "148360742215",
-        appId: "1:148360742215:web:4caac837a9ff30298ef862",
-        measurementId: "G-GW38JPL144"
-    };
-}
+// Initialize Firebase with configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyB4VkZb5Avvz6At_umIMNgsw7u0TbBP5VM",
+    authDomain: "olfatimachurch-b8123.firebaseapp.com",
+    projectId: "olfatimachurch-b8123",
+    storageBucket: "olfatimachurch-b8123.firebasestorage.app",
+    messagingSenderId: "148360742215",
+    appId: "1:148360742215:web:4caac837a9ff30298ef862",
+    measurementId: "G-GW38JPL144"
+};
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
@@ -50,7 +42,7 @@ class WebsiteContentLoader {
         try {
             this.showLoading('hero-content');
             const doc = await db.collection('content').doc('hero').get();
-            
+
             if (doc.exists) {
                 const data = doc.data();
                 const heroContent = document.getElementById('hero-content');
@@ -75,7 +67,7 @@ class WebsiteContentLoader {
         try {
             this.showLoading('welcome-content');
             const doc = await db.collection('content').doc('welcome').get();
-            
+
             if (doc.exists) {
                 const data = doc.data();
                 const welcomeContent = document.getElementById('welcome-content');
@@ -104,7 +96,7 @@ class WebsiteContentLoader {
                 .orderBy('date', 'desc')
                 .limit(3)
                 .get();
-            
+
             const events = [];
             snapshot.forEach(doc => {
                 events.push({ id: doc.id, ...doc.data() });
@@ -113,17 +105,22 @@ class WebsiteContentLoader {
             const eventsContent = document.getElementById('events-content');
             if (eventsContent && events.length > 0) {
                 eventsContent.innerHTML = `
-                    <h2>Latest Events</h2>
-                    <div class="events-grid">
-                        ${events.map(event => `
-                            <div class="event-card">
-                                <h3>${event.title}</h3>
-                                <p class="event-date">${new Date(event.date.seconds * 1000).toLocaleDateString()}</p>
-                                <p>${event.description}</p>
-                            </div>
-                        `).join('')}
+                    <h2>Events</h2>
+                    <div class="event-cards">
+                ${events.map(event => {
+                    const imageUrl = event.images && event.images.length > 0 ? getImageUrl(event.images[0]) : '';
+                    const shortDescription = event.description ? event.description.slice(0, 50) + '...' : '';
+                    
+                    return `<div class="card">
+                    ${imageUrl ? `<img class="event-card" src="${imageUrl}" alt="${event.title}">` : ''}
+                    <div class="card-content">
+                        <h3>${event.title}</h3>
+                        <p>${event.date}</p>
+                        <p>${shortDescription}</p>
                     </div>
-                `;
+                </div>`;
+                }).join("")}
+                </div>`;
             }
             this.hideLoading('events-content');
         } catch (error) {
@@ -144,12 +141,15 @@ class WebsiteContentLoader {
     // Load about page content
     async loadAboutContent() {
         try {
-            this.showLoading('about-history');
+            this.showLoading('history-content');
+            console.log('Loading about content from Firestore...');
             const doc = await db.collection('content').doc('about').get();
-            
+
+            console.log('About document exists:', doc.exists);
             if (doc.exists) {
                 const data = doc.data();
-                const aboutContent = document.getElementById('about-history');
+                console.log('About data:', data);
+                const aboutContent = document.getElementById('history-content');
                 if (aboutContent) {
                     aboutContent.innerHTML = `
                         <h2>${data.title || 'Our History'}</h2>
@@ -157,42 +157,52 @@ class WebsiteContentLoader {
                             ${data.content ? data.content.map(paragraph => `<p>${paragraph}</p>`).join('') : ''}
                         </div>
                     `;
+                    console.log('About content loaded successfully');
+                } else {
+                    console.error('Element with ID "history-content" not found');
+                }
+            } else {
+                console.log('No about content found in Firestore');
+                const aboutContent = document.getElementById('history-content');
+                if (aboutContent) {
+                    aboutContent.innerHTML = '<p>No content available</p>';
                 }
             }
-            this.hideLoading('about-history');
+            this.hideLoading('history-content');
         } catch (error) {
             console.error('Error loading about content:', error);
-            this.hideLoading('about-history');
+            this.hideLoading('history-content');
         }
     }
 
     // Load mass schedule
     async loadMassSchedule() {
         try {
-            this.showLoading('mass-schedule');
+            this.showLoading('mass');
             const doc = await db.collection('content').doc('mass').get();
-            
+
             if (doc.exists) {
                 const data = doc.data();
-                const massContent = document.getElementById('mass-schedule');
+                const massContent = document.getElementById('mass');
                 if (massContent) {
                     massContent.innerHTML = `
                         <h2>${data.title || 'Mass Schedule'}</h2>
-                        <div class="mass-schedule">
-                            ${data.schedule ? data.schedule.map(item => `
-                                <div class="mass-item">
-                                    <span class="mass-day">${item.day}</span>
-                                    <span class="mass-time">${item.time}</span>
-                                </div>
-                            `).join('') : ''}
-                        </div>
-                    `;
+                        <table class="mass-schedule-table">
+          <tbody>
+            <tr>
+            <th>Day</th>
+            <th>Time</th>
+            <th>Details</th>
+            </tr>
+            ${data.schedule ? data.schedule.map(body => `<tr><td>${body.day}</td><td>${body.time.replace(', ', ',<br>')}</td><td>${body.details}</td></tr>`).join("") : ""}
+          </tbody>
+        </table>`;
                 }
             }
-            this.hideLoading('mass-schedule');
+            this.hideLoading('mass');
         } catch (error) {
             console.error('Error loading mass schedule:', error);
-            this.hideLoading('mass-schedule');
+            this.hideLoading('mass');
         }
     }
 
@@ -203,7 +213,7 @@ class WebsiteContentLoader {
             const snapshot = await db.collection('team')
                 .orderBy('order', 'asc')
                 .get();
-            
+
             const team = [];
             snapshot.forEach(doc => {
                 team.push({ id: doc.id, ...doc.data() });
@@ -212,21 +222,17 @@ class WebsiteContentLoader {
             const teamContent = document.getElementById('parish-team');
             if (teamContent && team.length > 0) {
                 teamContent.innerHTML = `
-                    <h2>Parish Team</h2>
-                    <div class="team-grid">
-                        ${team.map(member => {
-                            const imageUrl = member.image ? getImageUrl(member.image) : 'https://via.placeholder.com/100x100?text=No+Image';
-                            return `
-                            <div class="team-member">
-                                <img src="${imageUrl}" alt="${member.name}">
-                                <h3>${member.name}</h3>
-                                <p class="role">${member.role}</p>
-                                <p>${member.description || ''}</p>
-                            </div>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
+                    <h2>Parish Team</h2><br>
+                    <div class="event-cards">
+                    ${team.map(member => `<div class="card">
+                        <img class="team-card" src="${member.image ? getImageUrl(member.image) : 'https://media.istockphoto.com/id/587805156/vector/profile-picture-vector-illustration.jpg?s=612x612&w=0&k=20&c=gkvLDCgsHH-8HeQe7JsjhlOY6vRBJk_sKW9lyaLgmLo='}" alt="${member.name}">
+                        <div class="card-content">
+                            <h3>${member.name}</h3>
+                            <p>${member.role}</p>
+                            <p>${member.description}</p>
+                        </div>
+                    </div>`).join("")}
+                    </div>`;
             }
             this.hideLoading('parish-team');
         } catch (error) {
@@ -242,7 +248,7 @@ class WebsiteContentLoader {
             const snapshot = await db.collection('communities')
                 .where('isActive', '==', true)
                 .get();
-            
+
             const communities = [];
             snapshot.forEach(doc => {
                 communities.push({ id: doc.id, ...doc.data() });
@@ -277,7 +283,7 @@ class WebsiteContentLoader {
             const snapshot = await db.collection('associations')
                 .where('isActive', '==', true)
                 .get();
-            
+
             const associations = [];
             snapshot.forEach(doc => {
                 associations.push({ id: doc.id, ...doc.data() });
@@ -321,28 +327,37 @@ function getImageUrl(imagePath) {
     return imageUrls[imagePath] || `https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/${imagePath}`;
 }
 
-// Initialize content loader
-const contentLoader = new WebsiteContentLoader();
-
 // Auto-load content based on current page
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('DOM loaded, initializing content...');
     const currentPage = window.location.pathname.split('/').pop();
-    
-    switch(currentPage) {
+    console.log('Current page:', currentPage);
+
+    // Initialize content loader
+    const contentLoader = new WebsiteContentLoader();
+
+    switch (currentPage) {
         case 'index.html':
         case '':
+            console.log('Loading homepage content...');
             contentLoader.loadHomePageContent();
             break;
         case 'about.html':
+            console.log('Loading about content...');
             contentLoader.loadAboutContent();
             contentLoader.loadMassSchedule();
             break;
         case 'parish.html':
+            console.log('Loading parish content...');
             contentLoader.loadParishTeam();
             break;
         case 'associations.html':
+            console.log('Loading associations content...');
             contentLoader.loadCommunities();
             contentLoader.loadAssociations();
             break;
+        default:
+            console.log('Unknown page, loading homepage content...');
+            contentLoader.loadHomePageContent();
     }
 });
