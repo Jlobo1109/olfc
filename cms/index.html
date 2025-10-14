@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLFC CMS Dashboard</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/cms.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="cms-container">
+        <!-- Sidebar -->
+        <nav class="cms-sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-church"></i> OLFC CMS</h2>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#dashboard" class="active" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a></li>
+                <li><a href="#hero" data-section="hero">
+                        <i class="fas fa-home"></i> Hero Content
+                    </a></li>
+                <li><a href="#welcome" data-section="welcome">
+                        <i class="fas fa-handshake"></i> Welcome Message
+                    </a></li>
+                <li><a href="#about" data-section="about">
+                        <i class="fas fa-info-circle"></i> About & History
+                    </a></li>
+                <li><a href="#mass" data-section="mass">
+                        <i class="fas fa-clock"></i> Mass Schedule
+                    </a></li>
+                <li><a href="#team" data-section="team">
+                        <i class="fas fa-users"></i> Parish Team
+                    </a></li>
+                <li><a href="#events" data-section="events">
+                        <i class="fas fa-calendar-alt"></i> Events & Articles
+                    </a></li>
+                <li><a href="#communities" data-section="communities">
+                        <i class="fas fa-building"></i> Communities
+                    </a></li>
+                <li><a href="#associations" data-section="associations">
+                        <i class="fas fa-users-cog"></i> Associations
+                    </a></li>
+                <li><a href="#settings" data-section="settings">
+                        <i class="fas fa-cog"></i> Site Settings
+                    </a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="cms-main">
+            <!-- Header -->
+            <header class="cms-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle" id="sidebarToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 id="pageTitle">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <span id="userEmail">admin@olfcmajiwada.com</span>
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Sections -->
+            <div class="cms-content">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="content-section active">
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <div class="card-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="totalEvents">0</h3>
+                                <p>Total Events</p>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="card-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="totalTeam">0</h3>
+                                <p>Team Members</p>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="card-icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="totalCommunities">0</h3>
+                                <p>Communities</p>
+                            </div>
+                        </div>
+                        <div class="dashboard-card">
+                            <div class="card-icon">
+                                <i class="fas fa-users-cog"></i>
+                            </div>
+                            <div class="card-content">
+                                <h3 id="totalAssociations">0</h3>
+                                <p>Associations</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="recent-activity">
+                        <h3>Recent Activity</h3>
+                        <div id="recentActivity">
+                            <!-- Recent activity items will be loaded here -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Hero Content Section -->
+                <section id="hero" class="content-section">
+                    <div class="section-header">
+                        <h2>Hero Content</h2>
+                        <button class="btn btn-primary" id="editHeroBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    <div class="content-form" id="heroForm">
+                        <!-- Hero content form will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Welcome Content Section -->
+                <section id="welcome" class="content-section">
+                    <div class="section-header">
+                        <h2>Welcome Message</h2>
+                        <button class="btn btn-primary" id="editWelcomeBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    <div class="content-form" id="welcomeForm">
+                        <!-- Welcome content form will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- About & History Section -->
+                <section id="about" class="content-section">
+                    <div class="section-header">
+                        <h2>About & History</h2>
+                        <button class="btn btn-primary" id="editAboutBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    <div class="content-form" id="aboutForm">
+                        <!-- About content form will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Mass Schedule Section -->
+                <section id="mass" class="content-section">
+                    <div class="section-header">
+                        <h2>Mass Schedule</h2>
+                        <button class="btn btn-primary" id="editMassBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    <div class="content-form" id="massForm">
+                        <!-- Mass schedule form will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Parish Team Section -->
+                <section id="team" class="content-section">
+                    <div class="section-header">
+                        <h2>Parish Team</h2>
+                        <button class="btn btn-primary" id="addTeamMemberBtn">
+                            <i class="fas fa-plus"></i> Add Member
+                        </button>
+                    </div>
+                    <div class="content-list" id="teamList">
+                        <!-- Team members list will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Events & Articles Section -->
+                <section id="events" class="content-section">
+                    <div class="section-header">
+                        <h2>Events & Articles</h2>
+                        <button class="btn btn-primary" id="addEventBtn">
+                            <i class="fas fa-plus"></i> Add Event
+                        </button>
+                    </div>
+                    <div class="content-list" id="eventsList">
+                        <!-- Events list will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Communities Section -->
+                <section id="communities" class="content-section">
+                    <div class="section-header">
+                        <h2>Communities</h2>
+                        <button class="btn btn-primary" id="addCommunityBtn">
+                            <i class="fas fa-plus"></i> Add Community
+                        </button>
+                    </div>
+                    <div class="content-list" id="communitiesList">
+                        <!-- Communities list will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Associations Section -->
+                <section id="associations" class="content-section">
+                    <div class="section-header">
+                        <h2>Associations</h2>
+                        <button class="btn btn-primary" id="addAssociationBtn">
+                            <i class="fas fa-plus"></i> Add Association
+                        </button>
+                    </div>
+                    <div class="content-list" id="associationsList">
+                        <!-- Associations list will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Site Settings Section -->
+                <section id="settings" class="content-section">
+                    <div class="section-header">
+                        <h2>Site Settings</h2>
+                        <button class="btn btn-primary" id="editSettingsBtn">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                    </div>
+                    <div class="content-form" id="settingsForm">
+                        <!-- Settings form will be loaded here -->
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script>
+        // Firebase Configuration - REPLACE WITH YOUR ACTUAL CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4VkZb5Avvz6At_umIMNgsw7u0TbBP5VM",
+            authDomain: "olfatimachurch-b8123.firebaseapp.com",
+            projectId: "olfatimachurch-b8123",
+            storageBucket: "olfatimachurch-b8123.firebasestorage.app",
+            messagingSenderId: "148360742215",
+            appId: "1:148360742215:web:4caac837a9ff30298ef862",
+            measurementId: "G-GW38JPL144"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Initialize services
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+        const auth = firebase.auth();
+
+        // CMS Application
+        class CMSApp {
+            constructor() {
+                this.currentUser = null;
+                this.currentSection = 'dashboard';
+                this.init();
+            }
+
+            async init() {
+                this.setupEventListeners();
+                this.setupAuth();
+                await this.loadDashboardData();
+            }
+
+            setupEventListeners() {
+                // Sidebar navigation
+                document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const section = link.dataset.section;
+                        this.showSection(section);
+                    });
+                });
+
+                // Sidebar toggle for mobile
+                document.getElementById('sidebarToggle').addEventListener('click', () => {
+                    document.querySelector('.cms-sidebar').classList.toggle('open');
+                });
+
+                // Logout
+                document.getElementById('logoutBtn').addEventListener('click', () => {
+                    this.logout();
+                });
+
+                // Content management buttons
+                this.setupContentButtons();
+            }
+
+            setupContentButtons() {
+                // Hero content
+                document.getElementById('editHeroBtn').addEventListener('click', () => {
+                    this.editHeroContent();
+                });
+
+                // Welcome content
+                document.getElementById('editWelcomeBtn').addEventListener('click', () => {
+                    this.editWelcomeContent();
+                });
+
+                // About content
+                document.getElementById('editAboutBtn').addEventListener('click', () => {
+                    this.editAboutContent();
+                });
+
+                // Mass schedule
+                document.getElementById('editMassBtn').addEventListener('click', () => {
+                    this.editMassSchedule();
+                });
+
+                // Team management
+                document.getElementById('addTeamMemberBtn').addEventListener('click', () => {
+                    this.addTeamMember();
+                });
+
+                // Events management
+                document.getElementById('addEventBtn').addEventListener('click', () => {
+                    this.addEvent();
+                });
+
+                // Communities management
+                document.getElementById('addCommunityBtn').addEventListener('click', () => {
+                    this.addCommunity();
+                });
+
+                // Associations management
+                document.getElementById('addAssociationBtn').addEventListener('click', () => {
+                    this.addAssociation();
+                });
+
+                // Settings
+                document.getElementById('editSettingsBtn').addEventListener('click', () => {
+                    this.editSettings();
+                });
+            }
+
+            setupAuth() {
+                auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        this.currentUser = user;
+                        document.getElementById('userEmail').textContent = user.email;
+                        this.showLoading(false);
+
+                        // For now, allow any authenticated user to access CMS
+                        // TODO: Add proper admin role checking later
+                        console.log('User authenticated:', user.email);
+                    } else {
+                        this.redirectToLogin();
+                    }
+                });
+            }
+
+            redirectToLogin() {
+                window.location.href = 'login.html';
+            }
+
+            async logout() {
+                try {
+                    await auth.signOut();
+                    this.redirectToLogin();
+                } catch (error) {
+                    this.showToast('Error logging out', 'error');
+                }
+            }
+
+            showSection(sectionName) {
+                // Hide all sections
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+
+                // Show selected section
+                document.getElementById(sectionName).classList.add('active');
+
+                // Update sidebar active state
+                document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.querySelector(`[data-section="${sectionName}"]`).classList.add('active');
+
+                // Update page title
+                const pageTitle = document.getElementById('pageTitle');
+                const sectionTitle = document.querySelector(`[data-section="${sectionName}"]`).textContent.trim();
+                pageTitle.textContent = sectionTitle;
+
+                // Load section-specific data
+                this.loadSectionData(sectionName);
+            }
+
+            async loadSectionData(sectionName) {
+                switch (sectionName) {
+                    case 'dashboard':
+                        await this.loadDashboardData();
+                        break;
+                    case 'hero':
+                        await this.loadHeroContent();
+                        break;
+                    case 'welcome':
+                        await this.loadWelcomeContent();
+                        break;
+                    case 'about':
+                        await this.loadAboutContent();
+                        break;
+                    case 'mass':
+                        await this.loadMassSchedule();
+                        break;
+                    case 'team':
+                        await this.loadTeamMembers();
+                        break;
+                    case 'events':
+                        await this.loadEvents();
+                        break;
+                    case 'communities':
+                        await this.loadCommunities();
+                        break;
+                    case 'associations':
+                        await this.loadAssociations();
+                        break;
+                    case 'settings':
+                        await this.loadSettings();
+                        break;
+                }
+            }
+
+            async loadDashboardData() {
+                try {
+                    this.showLoading(true);
+
+                    const [events, team, communities, associations] = await Promise.all([
+                        this.getEvents(),
+                        this.getParishTeam(),
+                        this.getCommunities(),
+                        this.getAssociations()
+                    ]);
+
+                    document.getElementById('totalEvents').textContent = events.length;
+                    document.getElementById('totalTeam').textContent = team.length;
+                    document.getElementById('totalCommunities').textContent = communities.length;
+                    document.getElementById('totalAssociations').textContent = associations.length;
+
+                    this.showLoading(false);
+                } catch (error) {
+                    console.error('Error loading dashboard data:', error);
+                    this.showToast('Error loading dashboard data', 'error');
+                    this.showLoading(false);
+                }
+            }
+
+            // Content loading methods
+            async getEvents() {
+                const snapshot = await db.collection('events')
+                    .where('isActive', '==', true)
+                    .where('isPublished', '==', true)
+                    .get();
+
+                const events = [];
+                snapshot.forEach(doc => {
+                    events.push({ id: doc.id, ...doc.data() });
+                });
+                return events;
+            }
+
+            async getParishTeam() {
+                const snapshot = await db.collection('parish_team')
+                    .where('isActive', '==', true)
+                    .orderBy('order', 'asc')
+                    .get();
+
+                const team = [];
+                snapshot.forEach(doc => {
+                    team.push({ id: doc.id, ...doc.data() });
+                });
+                return team;
+            }
+
+            async getCommunities() {
+                const snapshot = await db.collection('communities')
+                    .where('isActive', '==', true)
+                    .get();
+
+                const communities = [];
+                snapshot.forEach(doc => {
+                    communities.push({ id: doc.id, ...doc.data() });
+                });
+                return communities;
+            }
+
+            async getAssociations() {
+                const snapshot = await db.collection('associations')
+                    .where('isActive', '==', true)
+                    .get();
+
+                const associations = [];
+                snapshot.forEach(doc => {
+                    associations.push({ id: doc.id, ...doc.data() });
+                });
+                return associations;
+            }
+
+            async loadHeroContent() {
+                try {
+                    const doc = await db.collection('hero_content').doc('main').get();
+                    const heroContent = doc.exists ? doc.data() : null;
+                    const form = document.getElementById('heroForm');
+
+                    form.innerHTML = `
+                        <form id="heroContentForm">
+                            <div class="form-group">
+                                <label for="heroTitle">Title</label>
+                                <input type="text" id="heroTitle" value="${heroContent?.title || ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="heroSubtitle">Subtitle</label>
+                                <input type="text" id="heroSubtitle" value="${heroContent?.subtitle || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label for="heroBackgroundImage">Background Image</label>
+                                <input type="file" id="heroBackgroundImage" accept="image/*">
+                                ${heroContent?.backgroundImage ? `<p>Current: <a href="${heroContent.backgroundImage}" target="_blank">View Image</a></p>` : ''}
+                            </div>
+                            <div class="form-group">
+                                <label for="heroCTA">Call-to-Action Button Text</label>
+                                <input type="text" id="heroCTA" value="${heroContent?.ctaButtons?.[0]?.text || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label for="heroCTALink">Call-to-Action Button Link</label>
+                                <input type="text" id="heroCTALink" value="${heroContent?.ctaButtons?.[0]?.link || ''}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                    `;
+
+                    document.getElementById('heroContentForm').addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.saveHeroContent();
+                    });
+                } catch (error) {
+                    console.error('Error loading hero content:', error);
+                    this.showToast('Error loading hero content', 'error');
+                }
+            }
+
+            async saveHeroContent() {
+                try {
+                    this.showLoading(true);
+
+                    const formData = {
+                        title: document.getElementById('heroTitle').value,
+                        subtitle: document.getElementById('heroSubtitle').value,
+                        ctaButtons: [{
+                            text: document.getElementById('heroCTA').value,
+                            link: document.getElementById('heroCTALink').value,
+                            style: 'primary'
+                        }]
+                    };
+
+                    // Handle image upload if provided
+                    const imageFile = document.getElementById('heroBackgroundImage').files[0];
+                    if (imageFile) {
+                        const imageUrl = await this.uploadFile(imageFile, `images/hero/${Date.now()}_${imageFile.name}`);
+                        formData.backgroundImage = imageUrl;
+                    }
+
+                    await db.collection('hero_content').doc('main').set({
+                        ...formData,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+
+                    this.showToast('Hero content updated successfully', 'success');
+                    this.showLoading(false);
+                } catch (error) {
+                    console.error('Error saving hero content:', error);
+                    this.showToast('Error saving hero content', 'error');
+                    this.showLoading(false);
+                }
+            }
+
+            async uploadFile(file, path) {
+                const storageRef = storage.ref(path);
+                const snapshot = await storageRef.put(file);
+                return await snapshot.ref.getDownloadURL();
+            }
+
+            // Placeholder methods for other sections
+            async loadWelcomeContent() {
+                // Implementation for welcome content
+                this.showToast('Welcome content section - coming soon', 'info');
+            }
+
+            async loadAboutContent() {
+                // Implementation for about content
+                this.showToast('About content section - coming soon', 'info');
+            }
+
+            async loadMassSchedule() {
+                // Implementation for mass schedule
+                this.showToast('Mass schedule section - coming soon', 'info');
+            }
+
+            async loadTeamMembers() {
+                // Implementation for team members
+                this.showToast('Team members section - coming soon', 'info');
+            }
+
+            async loadEvents() {
+                // Implementation for events
+                this.showToast('Events section - coming soon', 'info');
+            }
+
+            async loadCommunities() {
+                // Implementation for communities
+                this.showToast('Communities section - coming soon', 'info');
+            }
+
+            async loadAssociations() {
+                // Implementation for associations
+                this.showToast('Associations section - coming soon', 'info');
+            }
+
+            async loadSettings() {
+                // Implementation for settings
+                this.showToast('Settings section - coming soon', 'info');
+            }
+
+            showLoading(show) {
+                const overlay = document.getElementById('loadingOverlay');
+                if (show) {
+                    overlay.classList.add('show');
+                } else {
+                    overlay.classList.remove('show');
+                }
+            }
+
+            showToast(message, type = 'success') {
+                const container = document.getElementById('toastContainer');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                `;
+
+                container.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.remove();
+                }, 5000);
+            }
+        }
+
+        // Initialize the CMS app
+        const cmsApp = new CMSApp();
+    </script>
+</body>
+
+</html>

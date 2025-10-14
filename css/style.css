@@ -78,7 +78,7 @@ main {
 
 /* Hero Section */
 .hero {
-    background: url('../images/hero.jpg') no-repeat center center/cover;
+    background: url('../images/hero.webp') no-repeat center center/cover;
     height: 100vh;
     top: 60px;
     display: flex;
@@ -1000,4 +1000,76 @@ footer {
         /* both take 90% width */
         min-width: unset;
     }
+}
+
+/* Loading States */
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    font-style: italic;
+    color: #666;
+}
+
+.loading-spinner::before {
+    content: "⏳";
+    margin-right: 0.5rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Content Grids */
+.events-grid, .team-grid, .communities-grid, .associations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.event-card, .team-member, .community-card, .association-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.event-card:hover, .team-member:hover, .community-card:hover, .association-card:hover {
+    transform: translateY(-5px);
+}
+
+.team-member img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+}
+
+.mass-schedule {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.mass-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 5px;
+}
+
+.mass-day {
+    font-weight: bold;
+}
+
+.mass-time {
+    color: #666;
 }
