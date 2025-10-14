@@ -203,7 +203,7 @@ class WebsiteContentLoader {
                     <h2>Parish Team</h2>
                     <div class="team-grid">
                         ${team.map(member => {
-                            const imageUrl = member.image && imageUrls[member.image] ? imageUrls[member.image] : 'images/placeholder.jpg';
+                            const imageUrl = member.image ? getImageUrl(member.image) : 'https://via.placeholder.com/100x100?text=No+Image';
                             return `
                             <div class="team-member">
                                 <img src="${imageUrl}" alt="${member.name}">
@@ -303,6 +303,11 @@ const imageUrls = {
     "event.jpeg": "https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/event.jpeg",
     "whatsapp-qr.jpeg": "https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/whatsapp-qr.jpeg"
 };
+
+// Helper function to get image URL
+function getImageUrl(imagePath) {
+    return imageUrls[imagePath] || `https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/${imagePath}`;
+}
 
 // Initialize content loader
 const contentLoader = new WebsiteContentLoader();
