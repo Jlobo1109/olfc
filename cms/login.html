@@ -153,10 +153,26 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="../js/firebase-config.js"></script>
 
     <script>
-        // Firebase Configuration is loaded from firebase-config.js
+        // Firebase Configuration - Secure Approach
+        let firebaseConfig;
+
+        // Try to get config from Firebase Hosting (production)
+        if (window.__FIREBASE_CONFIG__) {
+            firebaseConfig = window.__FIREBASE_CONFIG__;
+        } else {
+            // Fallback for development
+            firebaseConfig = {
+                apiKey: "AIzaSyB4VkZb5Avvz6At_umIMNgsw7u0TbBP5VM",
+                authDomain: "olfatimachurch-b8123.firebaseapp.com",
+                projectId: "olfatimachurch-b8123",
+                storageBucket: "olfatimachurch-b8123.firebasestorage.app",
+                messagingSenderId: "148360742215",
+                appId: "1:148360742215:web:4caac837a9ff30298ef862",
+                measurementId: "G-GW38JPL144"
+            };
+        }
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);

@@ -1,11 +1,30 @@
 // Firebase Website Integration
 // This script loads content from Firestore for the main website
 
-// Firebase Configuration is loaded from firebase-config.js
-// firebaseConfig is available globally from firebase-config.js
+// Firebase Configuration - Secure Approach
+// Firebase will automatically load configuration when deployed to Firebase Hosting
+// For local development, we provide a fallback config
+
+let firebaseConfig;
+
+// Try to get config from Firebase Hosting (production)
+if (window.__FIREBASE_CONFIG__) {
+    firebaseConfig = window.__FIREBASE_CONFIG__;
+} else {
+    // Fallback for development or if config not available
+    firebaseConfig = {
+        apiKey: "AIzaSyB4VkZb5Avvz6At_umIMNgsw7u0TbBP5VM",
+        authDomain: "olfatimachurch-b8123.firebaseapp.com",
+        projectId: "olfatimachurch-b8123",
+        storageBucket: "olfatimachurch-b8123.firebasestorage.app",
+        messagingSenderId: "148360742215",
+        appId: "1:148360742215:web:4caac837a9ff30298ef862",
+        measurementId: "G-GW38JPL144"
+    };
+}
 
 // Initialize Firebase
-firebase.initializeApp(window.firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 // Content loading functions
