@@ -51,9 +51,9 @@
                 <h2>Parish Youth Council</h2><br>
                 <div class="event-cards">
                     <div class="card">
-                        <img class="team-card" src="https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/event.jpeg" alt="Event 1">
+                        <!-- <img class="team-card" src="https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/event.jpeg" alt="Event 1"> -->
                         <div class="card-content">
-                            <h3>Fr. Ashton</h3>
+                            <h3>Fr. Ashton Pinto</h3>
                             <p>President</p>
                         </div>
                     </div>
@@ -62,59 +62,65 @@
 
             <div id="legion" class="tab-content">
                 <h2>Legion of Mary</h2><br>
-                <p>The Legion of Mary is a lay apostolic association of Catholics who, with the sanction of the Church
-                    and under the powerful leadership of Mary Immaculate, serve the Church and their neighbor on a
-                    voluntary basis in about 170 countries. The group meets weekly for prayer, planning, and discussion
-                    in a family setting, and performs apostolic work in the parish community.</p>
+                <div class="loading-spinner" id="legion-loading">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+                <div id="legion-content"></div>
             </div>
 
             <div id="altar-servers" class="tab-content">
                 <h2>Altar Servers</h2><br>
-                <p>The Altar Servers are a dedicated group of young parishioners who assist the priest during Mass and
-                    other liturgical services. They are trained in the rituals and responsibilities of the altar,
-                    helping to ensure that the liturgy is conducted with reverence and order. The group meets regularly
-                    for practice and spiritual formation.</p>
+                <div class="loading-spinner" id="altar-servers-loading">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+                <div id="altar-servers-content"></div>
             </div>
 
             <div id="liturgy" class="tab-content">
                 <h2>Lectors Ministry</h2><br>
-                <p>The Lectors Team is responsible for the preparation and smooth conduct of all liturgical celebrations
-                    in the parish. This includes organizing lectors, extraordinary ministers of Holy Communion, altar
-                    servers, and coordinating with the choir. The team ensures that every Mass and service is prayerful
-                    and meaningful for the congregation.</p>
+                <div class="loading-spinner" id="liturgy-loading">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+                <div id="liturgy-content"></div>
             </div>
 
             <div id="music" class="tab-content">
                 <h2>Music Ministry</h2><br>
-                <p>The Music Ministry animates the liturgy by leading the congregation in song and providing
-                    instrumental accompaniment. The ministry includes choir members, musicians, and cantors who serve at
-                    Sunday Masses, feast days, and special parish events. Their goal is to foster active participation
-                    and a prayerful atmosphere through music.</p>
+                <div class="loading-spinner" id="music-loading">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+                <div id="music-content"></div>
             </div>
 
             <div id="eucharistic" class="tab-content">
                 <h2>Eucharistic Ministry</h2><br>
-                <p>The Eucharistic Ministry assists in the distribution of Holy Communion during Mass, ensuring that the
-                    Body of Christ are shared reverently and efficiently with the congregation. Ministers also bring the
-                    Eucharist to the sick, elderly, and homebound who cannot attend Mass, extending Christ’s presence to
-                    them. Their mission is to serve with humility, respect, and devotion, helping the faithful
-                    experience the fullness of the Eucharistic celebration.</p>
+                <div class="loading-spinner" id="eucharistic-loading">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+                <div id="eucharistic-content"></div>
             </div>
 
             <div id="ladies" class="tab-content">
                 <h2>Ladies Sodality</h2><br>
-                <p>The Ladies Sodality is a group of women parishioners dedicated to fostering devotion to Our Lady,
-                    supporting parish activities, and engaging in charitable works. Members meet regularly for prayer,
-                    spiritual formation, and to organize events that benefit the parish and the wider community.</p>
+                <div class="loading-spinner" id="ladies-loading">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+                <div id="ladies-content"></div>
             </div>
 
             <div id="senior" class="tab-content">
                 <h2>Charismatic Prayer Group</h2><br>
-                <p>The Charismatic Prayer Group is a vibrant community of believers who come together to experience the
-                    power of the Holy Spirit through prayer, praise, worship, and the Word of God. Guided by Scripture
-                    and open to the gifts of the Spirit, we seek a deeper personal relationship with Jesus Christ and
-                    strive to live out our faith with joy, love, and service. All are welcome to join us in prayer,
-                    song, and fellowship as we grow together in the Spirit every Wednesday after 7:00PM Mass.</p>
+                <div class="loading-spinner" id="senior-loading">
+                    <div class="spinner"></div>
+                    <p>Loading...</p>
+                </div>
+                <div id="senior-content"></div>
             </div>
         </div>
     </main>
@@ -152,8 +158,8 @@
         });
 
         document.addEventListener('DOMContentLoaded', function () {
-            const menuToggle = document.getElementById('menu-toggle');   // <div id="menu-toggle">☰</div>
-            const navLinks = document.getElementById('nav-links');      // <ul id="nav-links" class="nav-links">...</ul>
+            const menuToggle = document.getElementById('menu-toggle');
+            const navLinks = document.getElementById('nav-links');
             const navbar = document.querySelector('.navbar');
 
             if (!menuToggle || !navLinks) {
@@ -162,14 +168,11 @@
             }
 
             menuToggle.addEventListener('click', () => {
-                // Support either CSS pattern:
-                navLinks.classList.toggle('active');   // .nav-links.active { display:flex }
-                navbar.classList.toggle('active');     // .navbar.active .nav-links { display:flex }
-
-                console.log('Menu btn clicked >>>>', menuToggle);
-                console.log('Nav Links >>>>>', navLinks);
+                navLinks.classList.toggle('active');
+                navbar.classList.toggle('active');
             });
         });
+        
         document.querySelectorAll('.tab-link').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
@@ -179,17 +182,11 @@
                 document.getElementById(btn.dataset.tab).classList.add('active');
             });
         });
-
-        // Mobile nav toggle
-        const menuToggle = document.getElementById('menu-toggle');
-        const navLinks = document.getElementById('nav-links');
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
     </script>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="js/analytics.js"></script>
     <script src="js/firebase-website.js"></script>
 </body>
 

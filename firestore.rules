@@ -32,9 +32,9 @@ service cloud.firestore {
       allow write: if request.auth != null; // Only authenticated users can write
     }
     
-    // Associations collection - read active associations for public, all for authenticated users
+    // Associations collection - read for public, write for authenticated users
     match /associations/{document} {
-      allow read: if resource.data.isActive == true || request.auth != null; // Active for public, all for authenticated
+      allow read: if true; // Public read access
       allow write: if request.auth != null; // Only authenticated users can write
     }
     
@@ -48,6 +48,18 @@ service cloud.firestore {
     match /site_settings/{document} {
       allow read: if true; // Public read access
       allow write: if request.auth != null; // Only authenticated users can write
+    }
+    
+    // Analytics - write for public (to track visitors), read for authenticated users
+    match /analytics/{document} {
+      allow read: if request.auth != null; // Only authenticated users can read analytics
+      allow write: if true; // Public write access for tracking
+    }
+    
+    // Analytics events - write for public, read for authenticated users
+    match /analytics_events/{document} {
+      allow read: if request.auth != null; // Only authenticated users can read events
+      allow write: if true; // Public write access for tracking
     }
     
     // Allow authenticated users to perform queries on all collections

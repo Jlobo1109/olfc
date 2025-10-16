@@ -45,6 +45,9 @@
                 <li><a href="#associations" data-section="associations">
                         <i class="fas fa-users-cog"></i> Associations
                     </a></li>
+                <li><a href="#analytics" data-section="analytics">
+                        <i class="fas fa-chart-line"></i> Traffic Insights
+                    </a></li>
                 <li><a href="#settings" data-section="settings">
                         <i class="fas fa-cog"></i> Site Settings
                     </a></li>
@@ -228,6 +231,19 @@
                     </div>
                 </section>
 
+                <!-- Traffic Insights Section -->
+                <section id="analytics" class="content-section">
+                    <div class="section-header">
+                        <h2>Traffic Insights</h2>
+                        <button class="btn btn-secondary" id="refreshAnalyticsBtn">
+                            <i class="fas fa-sync"></i> Refresh Data
+                        </button>
+                    </div>
+                    <div class="analytics-content" id="analyticsContent">
+                        <!-- Analytics data will be loaded here -->
+                    </div>
+                </section>
+
                 <!-- Site Settings Section -->
                 <section id="settings" class="content-section">
                     <div class="section-header">
@@ -247,8 +263,7 @@
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner">
-            <i class="fas fa-spinner fa-spin"></i>
-            <p>Loading...</p>
+            <div class="spinner"></div>
         </div>
     </div>
 
@@ -279,6 +294,14 @@
         const db = firebase.firestore();
         const storage = firebase.storage();
         const auth = firebase.auth();
+
+        // Helper function to get image URL
+        function getImageUrl(imagePath) {
+            if (imagePath.startsWith('http')) {
+                return imagePath; // Already a full URL
+            }
+            return `https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/${imagePath}`;
+        }
 
         // CMS Application
         class CMSApp {
@@ -357,6 +380,11 @@
                 // Associations management
                 document.getElementById('addAssociationBtn').addEventListener('click', () => {
                     this.addAssociation();
+                });
+
+                // Analytics
+                document.getElementById('refreshAnalyticsBtn').addEventListener('click', () => {
+                    this.loadAnalytics();
                 });
 
                 // Settings
@@ -446,6 +474,9 @@
                         break;
                     case 'associations':
                         await this.loadAssociations();
+                        break;
+                    case 'analytics':
+                        await this.loadAnalytics();
                         break;
                     case 'settings':
                         await this.loadSettings();
@@ -629,11 +660,6 @@
                                         ${data.content ? data.content.map(para => `<p>${para}</p>`).join('') : '<p>No content available</p>'}
                                     </div>
                                 </div>
-                                <div class="content-actions">
-                                    <button class="btn btn-primary" onclick="cmsApp.editWelcomeContent()">
-                                        <i class="fas fa-edit"></i> Edit Content
-                                    </button>
-                                </div>
                             </div>
                         `;
                     } else {
@@ -661,11 +687,6 @@
                                         ${data.content ? data.content.map(para => `<p>${para}</p>`).join('') : '<p>No content available</p>'}
                                     </div>
                                 </div>
-                                <div class="content-actions">
-                                    <button class="btn btn-primary" onclick="cmsApp.editAboutContent()">
-                                        <i class="fas fa-edit"></i> Edit Content
-                                    </button>
-                                </div>
                             </div>
                         `;
                     } else {
@@ -690,19 +711,27 @@
                                 <div class="content-preview">
                                     <h4>${data.title || 'Mass Schedule'}</h4>
                                     <div class="mass-schedule-preview">
-                                        ${data.schedule ? data.schedule.map(item => `
-                                            <div class="mass-item">
-                                                <span class="mass-day">${item.day}</span>
-                                                <span class="mass-time">${item.time}</span>
-                                                <span class="mass-details">${item.details || ''}</span>
-                                            </div>
-                                        `).join('') : '<p>No schedule available</p>'}
+                                        ${data.schedule && data.schedule.length > 0 ? `
+                                            <table class="mass-schedule-display-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Day</th>
+                                                        <th>Time</th>
+                                                        <th>Details</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    ${data.schedule.map(item => `
+                                                        <tr>
+                                                            <td>${item.day}</td>
+                                                            <td>${item.time}</td>
+                                                            <td>${item.details || ''}</td>
+                                                        </tr>
+                                                    `).join('')}
+                                                </tbody>
+                                            </table>
+                                        ` : '<p>No schedule available</p>'}
                                     </div>
-                                </div>
-                                <div class="content-actions">
-                                    <button class="btn btn-primary" onclick="cmsApp.editMassSchedule()">
-                                        <i class="fas fa-edit"></i> Edit Schedule
-                                    </button>
                                 </div>
                             </div>
                         `;
@@ -717,7 +746,7 @@
 
             async loadTeamMembers() {
                 try {
-                    const snapshot = await db.collection('parish_team').orderBy('order', 'asc').get();
+                    const snapshot = await db.collection('team').orderBy('order', 'asc').get();
                     const content = document.getElementById('teamList');
                     
                     if (!snapshot.empty) {
@@ -734,21 +763,25 @@
                                         <div class="team-member-preview">
                                             <div class="member-info">
                                                 <h4>${member.name}</h4>
-                                                <p class="member-title">${member.title}</p>
+                                                <p class="member-title">${member.role}</p>
                                                 <p class="member-description">${member.description || ''}</p>
+                                                ${member.image ? `<img src="${getImageUrl(member.image)}" alt="${member.name}" style="max-width: 80px; height: auto; border-radius: 5px; margin-top: 10px;">` : ''}
+                                            </div>
+                                            <div class="member-actions">
+                                                <button class="btn btn-sm btn-primary" onclick="cmsApp.showTeamModal(${JSON.stringify(member).replace(/"/g, '&quot;')})">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="cmsApp.deleteTeamMember('${member.id}')">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
                                             </div>
                                         </div>
                                     `).join('')}
                                 </div>
-                                <div class="content-actions">
-                                    <button class="btn btn-primary" onclick="cmsApp.editTeamMembers()">
-                                        <i class="fas fa-edit"></i> Manage Team
-                                    </button>
-                                </div>
                             </div>
                         `;
                     } else {
-                        content.innerHTML = '<p>No team members found. <button class="btn btn-primary" onclick="cmsApp.editTeamMembers()">Add Team Members</button></p>';
+                        content.innerHTML = '<p>No team members found. <button class="btn btn-primary" onclick="cmsApp.showTeamModal()">Add Team Member</button></p>';
                     }
                 } catch (error) {
                     console.error('Error loading team members:', error);
@@ -770,24 +803,39 @@
                         content.innerHTML = `
                             <div class="content-card">
                                 <h3>Events & Articles</h3>
-                                <div class="events-preview">
-                                    ${events.map(event => `
-                                        <div class="event-preview">
-                                            <h4>${event.title}</h4>
-                                            <p class="event-date">${event.date}</p>
-                                            <p class="event-description">${event.description || ''}</p>
-                                            <div class="event-status">
-                                                <span class="status-badge ${event.isPublished ? 'published' : 'draft'}">
-                                                    ${event.isPublished ? 'Published' : 'Draft'}
-                                                </span>
+                                <div class="events-list">
+                                    ${events.map(event => {
+                                        // Format date properly
+                                        let displayDate = event.date;
+                                        if (event.date && typeof event.date === 'object' && event.date.seconds) {
+                                            const date = new Date(event.date.seconds * 1000);
+                                            displayDate = date.toLocaleDateString();
+                                        }
+                                        
+                                        return `
+                                        <div class="event-item">
+                                            <div class="event-info">
+                                                <h4>${event.title || 'Untitled Event'}</h4>
+                                                <p class="event-date">${displayDate}</p>
+                                                <p class="event-description">${event.description || 'No description'}</p>
+                                                <div class="event-status">
+                                                    <span class="status-badge ${event.isPublished ? 'published' : 'draft'}">
+                                                        ${event.isPublished ? 'Published' : 'Draft'}
+                                                    </span>
+                                                    ${event.featured ? '<span class="status-badge featured">Featured</span>' : ''}
+                                                </div>
+                                            </div>
+                                            <div class="event-actions">
+                                                <button class="btn btn-sm btn-primary" onclick="cmsApp.editEvent('${event.id}')">
+                                                    Edit
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="cmsApp.deleteEvent('${event.id}')">
+                                                    Delete
+                                                </button>
                                             </div>
                                         </div>
-                                    `).join('')}
-                                </div>
-                                <div class="content-actions">
-                                    <button class="btn btn-primary" onclick="cmsApp.editEvents()">
-                                        <i class="fas fa-edit"></i> Manage Events
-                                    </button>
+                                        `;
+                                    }).join('')}
                                 </div>
                             </div>
                         `;
@@ -817,9 +865,23 @@
                                 <div class="communities-preview">
                                     ${communities.map(community => `
                                         <div class="community-preview">
-                                            <h4>${community.name}</h4>
-                                            <p class="community-description">${community.description || ''}</p>
-                                            <p class="community-contact">Contact: ${community.contact || ''}</p>
+                                            <div class="community-header">
+                                                <h4>${community.name}</h4>
+                                                <div class="community-actions">
+                                                    <button class="btn btn-sm btn-primary" onclick="cmsApp.editCommunity('${community.id}')">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </button>
+                                                    <button class="btn btn-sm btn-danger" onclick="cmsApp.deleteCommunity('${community.id}')">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <p><strong>Location:</strong> ${community.location || 'Not specified'}</p>
+                                            <p><strong>Feast Day:</strong> ${community.feast_day || 'Not specified'}</p>
+                                            <p><strong>PPC:</strong> ${community.ppc || 'Not specified'}</p>
+                                            <p><strong>SCC:</strong> ${community.scc || 'Not specified'}</p>
+                                            <p><strong>NYG:</strong> ${community.nyg || 'Not specified'}</p>
+                                            <p><strong>Societies:</strong> ${community.societies && community.societies.length > 0 ? community.societies.length + ' societies' : 'No societies'}</p>
                                             <div class="community-status">
                                                 <span class="status-badge ${community.isActive ? 'active' : 'inactive'}">
                                                     ${community.isActive ? 'Active' : 'Inactive'}
@@ -827,11 +889,6 @@
                                             </div>
                                         </div>
                                     `).join('')}
-                                </div>
-                                <div class="content-actions">
-                                    <button class="btn btn-primary" onclick="cmsApp.editCommunities()">
-                                        <i class="fas fa-edit"></i> Manage Communities
-                                    </button>
                                 </div>
                             </div>
                         `;
@@ -861,21 +918,25 @@
                                 <div class="associations-preview">
                                     ${associations.map(association => `
                                         <div class="association-preview">
-                                            <h4>${association.name}</h4>
-                                            <p class="association-description">${association.description || ''}</p>
-                                            <p class="association-contact">Contact: ${association.contact || ''}</p>
-                                            <div class="association-status">
-                                                <span class="status-badge ${association.isActive ? 'active' : 'inactive'}">
-                                                    ${association.isActive ? 'Active' : 'Inactive'}
-                                                </span>
+                                            <div class="association-info">
+                                                <h4>${association.title || 'Untitled'}</h4>
+                                                <p class="association-description">${association.description || ''}</p>
+                                                <div class="association-status">
+                                                    <span class="status-badge ${association.isActive ? 'active' : 'inactive'}">
+                                                        ${association.isActive ? 'ACTIVE' : 'INACTIVE'}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="association-actions">
+                                                <button class="btn btn-sm btn-primary" onclick="cmsApp.showAssociationModal('${association.id}')">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="cmsApp.deleteAssociation('${association.id}')">
+                                                    <i class="fas fa-trash"></i> Delete
+                                                </button>
                                             </div>
                                         </div>
                                     `).join('')}
-                                </div>
-                                <div class="content-actions">
-                                    <button class="btn btn-primary" onclick="cmsApp.editAssociations()">
-                                        <i class="fas fa-edit"></i> Manage Associations
-                                    </button>
                                 </div>
                             </div>
                         `;
@@ -935,31 +996,1092 @@
 
             // Edit functions for content management
             editWelcomeContent() {
-                this.showToast('Welcome content editor - coming soon', 'info');
+                this.showWelcomeModal();
+            }
+
+            showWelcomeModal() {
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Edit Welcome Content</h3>
+                            <button class="modal-close">&times;</button>
+                        </div>
+                        <form id="welcomeForm">
+                            <div class="form-group">
+                                <label for="welcomeTitle">Title</label>
+                                <input type="text" id="welcomeTitle" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="welcomeContent">Content</label>
+                                <textarea id="welcomeContent" name="content" rows="8" placeholder="Enter welcome message. Use double line breaks to create paragraphs." required></textarea>
+                                <small class="form-help">Tip: Use double line breaks to create separate paragraphs. The system will automatically convert this into structured content.</small>
+                                <div id="welcomePreview" class="description-preview" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px; display: none;">
+                                    <strong>Preview:</strong>
+                                    <div id="welcomePreviewContent"></div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary modal-save" onclick="cmsApp.saveWelcomeContent()">Save Changes</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+
+                // Load existing content
+                this.loadWelcomeContentForEdit();
+
+                // Event listeners
+                modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+                modal.querySelector('.modal-cancel').addEventListener('click', () => modal.remove());
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.remove();
+                });
+
+                // Content preview functionality
+                const contentTextarea = document.getElementById('welcomeContent');
+                const previewDiv = document.getElementById('welcomePreview');
+                const previewContent = document.getElementById('welcomePreviewContent');
+                
+                contentTextarea.addEventListener('input', () => {
+                    const text = contentTextarea.value;
+                    if (text.trim()) {
+                        const paragraphs = this.parseDescriptionToParagraphs(text);
+                        if (paragraphs.length > 0) {
+                            previewContent.innerHTML = paragraphs.map(para => `<p style="margin: 5px 0;">${para}</p>`).join('');
+                            previewDiv.style.display = 'block';
+                        } else {
+                            previewDiv.style.display = 'none';
+                        }
+                    } else {
+                        previewDiv.style.display = 'none';
+                    }
+                });
+            }
+
+            async loadWelcomeContentForEdit() {
+                try {
+                    const doc = await db.collection('content').doc('welcome').get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        document.getElementById('welcomeTitle').value = data.title || '';
+                        document.getElementById('welcomeContent').value = Array.isArray(data.content) ? data.content.join('\n\n') : (data.content || '');
+                    }
+                } catch (error) {
+                    console.error('Error loading welcome content:', error);
+                    this.showToast('Error loading welcome content', 'error');
+                }
+            }
+
+            async saveWelcomeContent() {
+                try {
+                    this.showLoading(true);
+
+                    const title = document.getElementById('welcomeTitle').value;
+                    const contentText = document.getElementById('welcomeContent').value;
+                    const contentParagraphs = this.parseDescriptionToParagraphs(contentText);
+
+                    const welcomeData = {
+                        title: title,
+                        content: contentParagraphs,
+                        contentText: contentText,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    await db.collection('content').doc('welcome').set(welcomeData, { merge: true });
+                    
+                    this.showToast('Welcome content updated successfully!', 'success');
+                    document.querySelector('.modal-overlay').remove();
+                    this.loadWelcomeContent();
+                } catch (error) {
+                    console.error('Error saving welcome content:', error);
+                    this.showToast('Error saving welcome content', 'error');
+                } finally {
+                    this.showLoading(false);
+                }
             }
 
             editAboutContent() {
-                this.showToast('About content editor - coming soon', 'info');
+                this.showAboutModal();
+            }
+
+            showAboutModal() {
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Edit About & History</h3>
+                            <button class="modal-close">&times;</button>
+                        </div>
+                        <form id="aboutForm">
+                            <div class="form-group">
+                                <label for="aboutTitle">Title</label>
+                                <input type="text" id="aboutTitle" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="aboutContent">History Content</label>
+                                <textarea id="aboutContent" name="content" rows="10" placeholder="Enter the history and information about the parish. Use double line breaks to create paragraphs." required></textarea>
+                                <small class="form-help">Tip: Use double line breaks to create separate paragraphs. The system will automatically convert this into structured content.</small>
+                                <div id="aboutPreview" class="description-preview" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px; display: none;">
+                                    <strong>Preview:</strong>
+                                    <div id="aboutPreviewContent"></div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary modal-save" onclick="cmsApp.saveAboutContent()">Save Changes</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+
+                // Load existing content
+                this.loadAboutContentForEdit();
+
+                // Event listeners
+                modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+                modal.querySelector('.modal-cancel').addEventListener('click', () => modal.remove());
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.remove();
+                });
+
+                // Content preview functionality
+                const contentTextarea = document.getElementById('aboutContent');
+                const previewDiv = document.getElementById('aboutPreview');
+                const previewContent = document.getElementById('aboutPreviewContent');
+                
+                contentTextarea.addEventListener('input', () => {
+                    const text = contentTextarea.value;
+                    if (text.trim()) {
+                        const paragraphs = this.parseDescriptionToParagraphs(text);
+                        if (paragraphs.length > 0) {
+                            previewContent.innerHTML = paragraphs.map(para => `<p style="margin: 5px 0;">${para}</p>`).join('');
+                            previewDiv.style.display = 'block';
+                        } else {
+                            previewDiv.style.display = 'none';
+                        }
+                    } else {
+                        previewDiv.style.display = 'none';
+                    }
+                });
+            }
+
+            async loadAboutContentForEdit() {
+                try {
+                    const doc = await db.collection('content').doc('about').get();
+                    if (doc.exists) {
+                        const data = doc.data();
+                        document.getElementById('aboutTitle').value = data.title || '';
+                        document.getElementById('aboutContent').value = Array.isArray(data.content) ? data.content.join('\n\n') : (data.content || '');
+                    }
+                } catch (error) {
+                    console.error('Error loading about content:', error);
+                    this.showToast('Error loading about content', 'error');
+                }
+            }
+
+            async saveAboutContent() {
+                try {
+                    this.showLoading(true);
+
+                    const title = document.getElementById('aboutTitle').value;
+                    const contentText = document.getElementById('aboutContent').value;
+                    const contentParagraphs = this.parseDescriptionToParagraphs(contentText);
+
+                    const aboutData = {
+                        title: title,
+                        content: contentParagraphs,
+                        contentText: contentText,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    await db.collection('content').doc('about').set(aboutData, { merge: true });
+                    
+                    this.showToast('About content updated successfully!', 'success');
+                    document.querySelector('.modal-overlay').remove();
+                    this.loadAboutContent();
+                } catch (error) {
+                    console.error('Error saving about content:', error);
+                    this.showToast('Error saving about content', 'error');
+                } finally {
+                    this.showLoading(false);
+                }
             }
 
             editMassSchedule() {
-                this.showToast('Mass schedule editor - coming soon', 'info');
+                this.showMassModal();
+            }
+
+            showMassModal() {
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content mass-schedule-modal">
+                        <div class="modal-header">
+                            <h3>Edit Mass Schedule</h3>
+                            <button class="modal-close">&times;</button>
+                        </div>
+                        <form id="massForm">
+                            <div class="form-group">
+                                <label for="massTitle">Title</label>
+                                <input type="text" id="massTitle" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Mass Schedule</label>
+                                <div class="mass-schedule-table-container">
+                                    <table class="mass-schedule-table" id="massScheduleTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Day</th>
+                                                <th>Time</th>
+                                                <th>Details</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="massScheduleTableBody">
+                                            <!-- Rows will be added dynamically -->
+                                        </tbody>
+                                    </table>
+                                    <button type="button" class="btn btn-secondary btn-sm" id="addMassRowBtn">
+                                        <i class="fas fa-plus"></i> Add Row
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary modal-save" onclick="cmsApp.saveMassSchedule()">Save Changes</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+
+                // Load existing content
+                this.loadMassScheduleForEdit();
+
+                // Event listeners
+                modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+                modal.querySelector('.modal-cancel').addEventListener('click', () => modal.remove());
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.remove();
+                });
+
+                // Add row button
+                document.getElementById('addMassRowBtn').addEventListener('click', () => {
+                    this.addMassScheduleRow();
+                });
+            }
+
+            async loadMassScheduleForEdit() {
+                try {
+                    const doc = await db.collection('content').doc('mass').get();
+                    const tableBody = document.getElementById('massScheduleTableBody');
+                    
+                    if (doc.exists) {
+                        const data = doc.data();
+                        document.getElementById('massTitle').value = data.title || '';
+                        
+                        // Clear existing rows
+                        tableBody.innerHTML = '';
+                        
+                        // Load existing schedule data
+                        if (data.schedule && Array.isArray(data.schedule)) {
+                            data.schedule.forEach((item, index) => {
+                                this.addMassScheduleRow(item.day, item.time, item.details);
+                            });
+                        } else {
+                            // Add one empty row if no data exists
+                            this.addMassScheduleRow();
+                        }
+                    } else {
+                        // Add one empty row for new schedule
+                        this.addMassScheduleRow();
+                    }
+                } catch (error) {
+                    console.error('Error loading mass schedule:', error);
+                    this.showToast('Error loading mass schedule', 'error');
+                }
+            }
+
+            addMassScheduleRow(day = '', time = '', details = '') {
+                const tableBody = document.getElementById('massScheduleTableBody');
+                const rowIndex = tableBody.children.length;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <input type="text" class="form-control" name="day" value="${day}" placeholder="e.g., Monday, Sunday" required>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" name="time" value="${time}" placeholder="e.g., 6:00 AM, 7:30 PM" required>
+                    </td>
+                    <td>
+                        <input type="text" class="form-control" name="details" value="${details}" placeholder="Language, location, or additional details">
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="cmsApp.removeMassScheduleRow(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            }
+
+            removeMassScheduleRow(button) {
+                const row = button.closest('tr');
+                row.remove();
+            }
+
+            async saveMassSchedule() {
+                try {
+                    this.showLoading(true);
+
+                    const title = document.getElementById('massTitle').value;
+                    const tableBody = document.getElementById('massScheduleTableBody');
+                    const schedule = [];
+
+                    // Collect data from all rows
+                    Array.from(tableBody.children).forEach(row => {
+                        const day = row.querySelector('input[name="day"]').value.trim();
+                        const time = row.querySelector('input[name="time"]').value.trim();
+                        const details = row.querySelector('input[name="details"]').value.trim();
+
+                        if (day && time) {
+                            schedule.push({
+                                day: day,
+                                time: time,
+                                details: details
+                            });
+                        }
+                    });
+
+                    const massData = {
+                        title: title,
+                        schedule: schedule,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    await db.collection('content').doc('mass').set(massData, { merge: true });
+                    
+                    this.showToast('Mass schedule updated successfully!', 'success');
+                    document.querySelector('.modal-overlay').remove();
+                    this.loadMassSchedule();
+                } catch (error) {
+                    console.error('Error saving mass schedule:', error);
+                    this.showToast('Error saving mass schedule', 'error');
+                } finally {
+                    this.showLoading(false);
+                }
             }
 
             editTeamMembers() {
-                this.showToast('Team members editor - coming soon', 'info');
+                this.showTeamModal();
+            }
+
+            showTeamModal(member = null) {
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>${member ? 'Edit Team Member' : 'Add Team Member'}</h3>
+                            <button class="modal-close">&times;</button>
+                        </div>
+                        <form id="teamForm">
+                            <div class="form-group">
+                                <label for="memberName">Name</label>
+                                <input type="text" id="memberName" name="name" value="${member ? member.name : ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="memberRole">Role</label>
+                                <input type="text" id="memberRole" name="role" value="${member ? member.role : ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="memberDescription">Description</label>
+                                <textarea id="memberDescription" name="description" rows="4" placeholder="Enter member description" required>${member ? member.description : ''}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="memberOrder">Display Order</label>
+                                <input type="number" id="memberOrder" name="order" value="${member ? member.order : ''}" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Member Photo</label>
+                                <div id="memberImagePreview" class="image-preview">
+                                    ${member && member.image ? `
+                                        <div class="image-item">
+                                            <img src="${getImageUrl(member.image)}" alt="Member photo">
+                                            <button type="button" class="remove-image" onclick="cmsApp.removeImage(this)">×</button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                <input type="file" id="memberImageUpload" accept="image/*" style="display: none;">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('memberImageUpload').click()">
+                                    <i class="fas fa-plus"></i> ${member && member.image ? 'Change Photo' : 'Add Photo'}
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="memberActive" name="isActive" ${member && member.isActive !== false ? 'checked' : ''}>
+                                    <span class="checkmark"></span>
+                                    Active
+                                </label>
+                            </div>
+                        </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary modal-save" onclick="cmsApp.saveTeamMember('${member ? member.id : ''}')">${member ? 'Update' : 'Add'} Member</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+
+                // Event listeners
+                modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+                modal.querySelector('.modal-cancel').addEventListener('click', () => modal.remove());
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.remove();
+                });
+
+                // Image upload handler
+                const imageUpload = modal.querySelector('#memberImageUpload');
+                imageUpload.addEventListener('change', (e) => {
+                    this.handleImageUpload(e.target.files);
+                });
+            }
+
+            async saveTeamMember(memberId = null) {
+                try {
+                    this.showLoading(true);
+
+                    const name = document.getElementById('memberName').value;
+                    const role = document.getElementById('memberRole').value;
+                    const description = document.getElementById('memberDescription').value;
+                    const order = parseInt(document.getElementById('memberOrder').value);
+                    const isActive = document.getElementById('memberActive').checked;
+
+                    // Get current image from preview
+                    const imagePreview = document.getElementById('memberImagePreview');
+                    const currentImage = imagePreview.querySelector('img');
+                    const imagePath = currentImage ? currentImage.src : null;
+
+                    const memberData = {
+                        name: name,
+                        role: role,
+                        description: description,
+                        order: order,
+                        isActive: isActive,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    if (imagePath) {
+                        memberData.image = imagePath;
+                    }
+
+                    if (memberId) {
+                        await db.collection('team').doc(memberId).update(memberData);
+                        this.showToast('Team member updated successfully!', 'success');
+                    } else {
+                        memberData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                        await db.collection('team').add(memberData);
+                        this.showToast('Team member added successfully!', 'success');
+                    }
+
+                    document.querySelector('.modal-overlay').remove();
+                    this.loadTeamMembers();
+                } catch (error) {
+                    console.error('Error saving team member:', error);
+                    this.showToast('Error saving team member', 'error');
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            async deleteTeamMember(memberId) {
+                if (confirm('Are you sure you want to delete this team member?')) {
+                    try {
+                        this.showLoading(true);
+                        await db.collection('team').doc(memberId).delete();
+                        this.showToast('Team member deleted successfully!', 'success');
+                        this.loadTeamMembers();
+                    } catch (error) {
+                        console.error('Error deleting team member:', error);
+                        this.showToast('Error deleting team member', 'error');
+                    } finally {
+                        this.showLoading(false);
+                    }
+                }
             }
 
             editEvents() {
-                this.showToast('Events editor - coming soon', 'info');
+                this.showEventModal();
+            }
+
+            showEventModal(event = null) {
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>${event ? 'Edit Event' : 'Add New Event'}</h3>
+                            <button class="modal-close">&times;</button>
+                        </div>
+                        <form id="eventForm" class="modal-body">
+                            <div class="form-group">
+                                <label for="eventTitle">Event Title</label>
+                                <input type="text" id="eventTitle" name="title" value="${event ? event.title : ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventDate">Date</label>
+                                <input type="text" id="eventDate" name="date" value="${event ? event.date : ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventAuthor">Author</label>
+                                <input type="text" id="eventAuthor" name="author" value="${event ? event.author : ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventCategory">Category</label>
+                                <select id="eventCategory" name="category" required>
+                                    <option value="All" ${event && event.category === 'All' ? 'selected' : ''}>All</option>
+                                    <option value="youth" ${event && event.category === 'youth' ? 'selected' : ''}>Youth</option>
+                                    <option value="adult" ${event && event.category === 'adult' ? 'selected' : ''}>Adult</option>
+                                    <option value="family" ${event && event.category === 'family' ? 'selected' : ''}>Family</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="eventDescription">Description</label>
+                                <textarea id="eventDescription" name="description" rows="6" placeholder="Enter description. Each paragraph will be automatically separated. Use double line breaks for new paragraphs." required>${event ? (Array.isArray(event.description) ? event.description.join('\n\n') : event.description) : ''}</textarea>
+                                <small class="form-help">Tip: Use double line breaks to create separate paragraphs. The system will automatically convert this into structured content.</small>
+                                <div id="descriptionPreview" class="description-preview" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px; display: none;">
+                                    <strong>Preview:</strong>
+                                    <div id="previewContent"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Event Images</label>
+                                <div id="imagePreview" class="image-preview">
+                                    ${event && event.images ? event.images.map(img => `
+                                        <div class="image-item">
+                                            <img src="${getImageUrl(img)}" alt="Event image">
+                                            <button type="button" class="remove-image" onclick="cmsApp.removeImage(this)">×</button>
+                                        </div>
+                                    `).join('') : ''}
+                                </div>
+                                <input type="file" id="imageUpload" accept="image/*" multiple style="display: none;">
+                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('imageUpload').click()">
+                                    <i class="fas fa-plus"></i> Add Images
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="eventPublished" name="isPublished" ${event && event.isPublished ? 'checked' : ''}>
+                                    <span class="checkmark"></span>
+                                    Published
+                                </label>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="eventFeatured" name="featured" ${event && event.featured ? 'checked' : ''}>
+                                    <span class="checkmark"></span>
+                                    Featured
+                                </label>
+                            </div>
+                        </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary modal-save" onclick="cmsApp.saveEvent('${event ? event.id : ''}')">${event ? 'Update' : 'Create'} Event</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+
+                // Event listeners
+                modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+                modal.querySelector('.modal-cancel').addEventListener('click', () => modal.remove());
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.remove();
+                });
+
+                // Description preview functionality
+                const descriptionTextarea = document.getElementById('eventDescription');
+                const previewDiv = document.getElementById('descriptionPreview');
+                const previewContent = document.getElementById('previewContent');
+                
+                descriptionTextarea.addEventListener('input', () => {
+                    const text = descriptionTextarea.value;
+                    if (text.trim()) {
+                        const paragraphs = this.parseDescriptionToParagraphs(text);
+                        if (paragraphs.length > 0) {
+                            previewContent.innerHTML = paragraphs.map(para => `<p style="margin: 5px 0;">${para}</p>`).join('');
+                            previewDiv.style.display = 'block';
+                        } else {
+                            previewDiv.style.display = 'none';
+                        }
+                    } else {
+                        previewDiv.style.display = 'none';
+                    }
+                });
+
+                // Image upload handler
+                const imageUpload = modal.querySelector('#imageUpload');
+                imageUpload.addEventListener('change', (e) => {
+                    this.handleImageUpload(e.target.files);
+                });
+            }
+
+            // Utility function to parse description into paragraphs
+            parseDescriptionToParagraphs(description) {
+                if (!description) return [];
+                
+                // Split by double line breaks or single line breaks if no double breaks exist
+                const paragraphs = description
+                    .split(/\n\s*\n/)  // Split by double line breaks
+                    .map(para => para.trim())  // Trim whitespace
+                    .filter(para => para.length > 0);  // Remove empty paragraphs
+                
+                // If no double line breaks found, try single line breaks
+                if (paragraphs.length === 1 && description.includes('\n')) {
+                    return description
+                        .split('\n')
+                        .map(para => para.trim())
+                        .filter(para => para.length > 0);
+                }
+                
+                return paragraphs;
+            }
+
+
+
+            async saveEvent(eventId = null) {
+                try {
+                    const form = document.getElementById('eventForm');
+                    const formData = new FormData(form);
+                    
+                    // Get current images from preview
+                    const imagePreview = document.getElementById('imagePreview');
+                    const currentImages = Array.from(imagePreview.querySelectorAll('.image-item img')).map(img => img.src);
+                    
+                    // Get description from textarea
+                    const rawDescription = formData.get('description');
+                    const descriptionParagraphs = this.parseDescriptionToParagraphs(rawDescription);
+                    
+                    const eventData = {
+                        title: formData.get('title'),
+                        date: formData.get('date'),
+                        author: formData.get('author'),
+                        category: formData.get('category'),
+                        description: descriptionParagraphs,  // Store as array of paragraphs
+                        descriptionText: rawDescription,  // Keep original text for editing
+                        images: currentImages,
+                        isPublished: document.getElementById('eventPublished').checked,
+                        featured: document.getElementById('eventFeatured').checked,
+                        isActive: true,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    if (eventId) {
+                        await db.collection('events').doc(eventId).update(eventData);
+                        this.showToast('Event updated successfully!', 'success');
+                    } else {
+                        eventData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                        await db.collection('events').add(eventData);
+                        this.showToast('Event created successfully!', 'success');
+                    }
+
+                    // Close modal and refresh data
+                    document.querySelector('.modal-overlay').remove();
+                    this.loadEvents();
+                    this.loadDashboardData();
+                } catch (error) {
+                    console.error('Error saving event:', error);
+                    this.showToast('Error saving event', 'error');
+                }
+            }
+
+            async editEvent(eventId) {
+                try {
+                    const eventDoc = await db.collection('events').doc(eventId).get();
+                    if (eventDoc.exists) {
+                        const eventData = { id: eventId, ...eventDoc.data() };
+                        this.showEventModal(eventData);
+                    } else {
+                        this.showToast('Event not found', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error loading event:', error);
+                    this.showToast('Error loading event', 'error');
+                }
+            }
+
+            async deleteEvent(eventId) {
+                if (confirm('Are you sure you want to delete this event?')) {
+                    try {
+                        await db.collection('events').doc(eventId).delete();
+                        this.showToast('Event deleted successfully!', 'success');
+                        this.loadEvents();
+                        this.loadDashboardData();
+                    } catch (error) {
+                        console.error('Error deleting event:', error);
+                        this.showToast('Error deleting event', 'error');
+                    }
+                }
+            }
+
+            async handleImageUpload(files) {
+                if (!files || files.length === 0) return;
+
+                for (let file of files) {
+                    try {
+                        this.showToast('Uploading image...', 'info');
+                        
+                        // Convert to WebP
+                        const webpBlob = await this.convertToWebP(file);
+                        
+                        // Upload to Firebase Storage
+                        const fileName = `events/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.webp`;
+                        const storageRef = firebase.storage().ref().child(fileName);
+                        const snapshot = await storageRef.put(webpBlob);
+                        const downloadURL = await snapshot.ref.getDownloadURL();
+                        
+                        // Add to preview
+                        this.addImageToPreview(downloadURL);
+                        
+                        this.showToast('Image uploaded successfully!', 'success');
+                    } catch (error) {
+                        console.error('Error uploading image:', error);
+                        this.showToast('Error uploading image', 'error');
+                    }
+                }
+            }
+
+            async convertToWebP(file) {
+                return new Promise((resolve, reject) => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const img = new Image();
+                    
+                    img.onload = () => {
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0);
+                        
+                        canvas.toBlob((blob) => {
+                            if (blob) {
+                                resolve(blob);
+                            } else {
+                                reject(new Error('Failed to convert to WebP'));
+                            }
+                        }, 'image/webp', 0.8);
+                    };
+                    
+                    img.onerror = () => reject(new Error('Failed to load image'));
+                    img.src = URL.createObjectURL(file);
+                });
+            }
+
+            addImageToPreview(imageUrl) {
+                const imagePreview = document.getElementById('imagePreview');
+                const imageItem = document.createElement('div');
+                imageItem.className = 'image-item';
+                imageItem.innerHTML = `
+                    <img src="${imageUrl}" alt="Event image">
+                    <button type="button" class="remove-image" onclick="cmsApp.removeImage(this)">×</button>
+                `;
+                imagePreview.appendChild(imageItem);
+            }
+
+            removeImage(button) {
+                button.parentElement.remove();
             }
 
             editCommunities() {
-                this.showToast('Communities editor - coming soon', 'info');
+                this.showCommunityModal();
+            }
+
+            async editCommunity(communityId) {
+                try {
+                    const communityDoc = await db.collection('communities').doc(communityId).get();
+                    if (communityDoc.exists) {
+                        const communityData = { id: communityId, ...communityDoc.data() };
+                        this.showCommunityModal(communityData);
+                    } else {
+                        this.showToast('Community not found', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error loading community:', error);
+                    this.showToast('Error loading community', 'error');
+                }
+            }
+
+            async deleteCommunity(communityId) {
+                if (confirm('Are you sure you want to delete this community?')) {
+                    try {
+                        this.showLoading(true);
+                        await db.collection('communities').doc(communityId).delete();
+                        this.showToast('Community deleted successfully!', 'success');
+                        this.loadCommunities();
+                    } catch (error) {
+                        console.error('Error deleting community:', error);
+                        this.showToast('Error deleting community', 'error');
+                    } finally {
+                        this.showLoading(false);
+                    }
+                }
+            }
+
+            showCommunityModal(community = null) {
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>${community ? 'Edit Community' : 'Add Community'}</h3>
+                            <button class="modal-close">&times;</button>
+                        </div>
+                        <form id="communityForm">
+                            <div class="form-group">
+                                <label for="communityName">Name</label>
+                                <input type="text" id="communityName" name="name" value="${community ? community.name : ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="communityLocation">Location</label>
+                                <input type="text" id="communityLocation" name="location" value="${community ? community.location : ''}" placeholder="e.g., Majiwada, Highland, Waghbil">
+                            </div>
+                            <div class="form-group">
+                                <label for="communityFeastDay">Feast Day</label>
+                                <input type="text" id="communityFeastDay" name="feast_day" value="${community ? community.feast_day : ''}" placeholder="e.g., 28 July, 13 June">
+                            </div>
+                            <div class="form-group">
+                                <label for="communityPPC">PPC (Parish Pastoral Council)</label>
+                                <input type="text" id="communityPPC" name="ppc" value="${community ? community.ppc : ''}" placeholder="PPC member name">
+                            </div>
+                            <div class="form-group">
+                                <label for="communitySCC">SCC (Small Christian Community)</label>
+                                <input type="text" id="communitySCC" name="scc" value="${community ? community.scc : ''}" placeholder="SCC coordinator name">
+                            </div>
+                            <div class="form-group">
+                                <label for="communityNYG">NYG (National Youth Group)</label>
+                                <input type="text" id="communityNYG" name="nyg" value="${community ? community.nyg : ''}" placeholder="e.g., Youth Force, God's Clan">
+                            </div>
+                            <div class="form-group">
+                                <label for="communitySocieties">Societies (one per line)</label>
+                                <textarea id="communitySocieties" name="societies" rows="6" placeholder="Enter each society on a new line">${community && community.societies ? community.societies.join('\n') : ''}</textarea>
+                                <small class="form-help">Enter each society name on a separate line</small>
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="communityActive" name="isActive" ${community && community.isActive !== false ? 'checked' : ''}>
+                                    <span class="checkmark"></span>
+                                    Active
+                                </label>
+                            </div>
+                        </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary modal-save" onclick="cmsApp.saveCommunity('${community ? community.id : ''}')">${community ? 'Update' : 'Add'} Community</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+
+                // Event listeners
+                modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+                modal.querySelector('.modal-cancel').addEventListener('click', () => modal.remove());
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.remove();
+                });
+            }
+
+            async saveCommunity(communityId = null) {
+                try {
+                    this.showLoading(true);
+
+                    const name = document.getElementById('communityName').value;
+                    const location = document.getElementById('communityLocation').value;
+                    const feastDay = document.getElementById('communityFeastDay').value;
+                    const ppc = document.getElementById('communityPPC').value;
+                    const scc = document.getElementById('communitySCC').value;
+                    const nyg = document.getElementById('communityNYG').value;
+                    const societiesText = document.getElementById('communitySocieties').value;
+                    const isActive = document.getElementById('communityActive').checked;
+
+                    // Convert societies text to array
+                    const societies = societiesText.split('\n')
+                        .map(society => society.trim())
+                        .filter(society => society.length > 0);
+
+                    const communityData = {
+                        name: name,
+                        location: location,
+                        feast_day: feastDay,
+                        ppc: ppc,
+                        scc: scc,
+                        nyg: nyg,
+                        societies: societies,
+                        isActive: isActive,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    if (communityId) {
+                        await db.collection('communities').doc(communityId).update(communityData);
+                        this.showToast('Community updated successfully!', 'success');
+                    } else {
+                        communityData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                        await db.collection('communities').add(communityData);
+                        this.showToast('Community added successfully!', 'success');
+                    }
+
+                    document.querySelector('.modal-overlay').remove();
+                    this.loadCommunities();
+                } catch (error) {
+                    console.error('Error saving community:', error);
+                    this.showToast('Error saving community', 'error');
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            async deleteCommunity(communityId) {
+                if (confirm('Are you sure you want to delete this community?')) {
+                    try {
+                        this.showLoading(true);
+                        await db.collection('communities').doc(communityId).delete();
+                        this.showToast('Community deleted successfully!', 'success');
+                        this.loadCommunities();
+                    } catch (error) {
+                        console.error('Error deleting community:', error);
+                        this.showToast('Error deleting community', 'error');
+                    } finally {
+                        this.showLoading(false);
+                    }
+                }
             }
 
             editAssociations() {
-                this.showToast('Associations editor - coming soon', 'info');
+                this.showAssociationModal();
+            }
+
+            async showAssociationModal(associationId = null) {
+                let association = null;
+                if (associationId) {
+                    try {
+                        const doc = await db.collection('associations').doc(associationId).get();
+                        if (doc.exists) {
+                            association = { id: doc.id, ...doc.data() };
+                        }
+                    } catch (error) {
+                        console.error('Error loading association:', error);
+                        this.showToast('Error loading association', 'error');
+                        return;
+                    }
+                }
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>${association ? 'Edit Association' : 'Add Association'}</h3>
+                            <button class="modal-close">&times;</button>
+                        </div>
+                        <form id="associationForm">
+                            <div class="form-group">
+                                <label for="associationTitle">Title</label>
+                                <input type="text" id="associationTitle" name="title" value="${association ? association.title : ''}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="associationDescription">Description</label>
+                                <textarea id="associationDescription" name="description" rows="4" placeholder="Enter association description" required>${association ? association.description : ''}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="associationOrder">Display Order</label>
+                                <input type="number" id="associationOrder" name="order" value="${association ? association.order : ''}" placeholder="Order in which to display (1, 2, 3...)" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="associationActive" name="isActive" ${association && association.isActive !== false ? 'checked' : ''}>
+                                    <span class="checkmark"></span>
+                                    Active
+                                </label>
+                            </div>
+                        </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary modal-save" onclick="cmsApp.saveAssociation('${association ? association.id : ''}')">${association ? 'Update' : 'Add'} Association</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+
+                // Event listeners
+                modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+                modal.querySelector('.modal-cancel').addEventListener('click', () => modal.remove());
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.remove();
+                });
+            }
+
+            async saveAssociation(associationId = null) {
+                try {
+                    this.showLoading(true);
+
+                    const title = document.getElementById('associationTitle').value;
+                    const description = document.getElementById('associationDescription').value;
+                    const order = parseInt(document.getElementById('associationOrder').value) || 1;
+                    const isActive = document.getElementById('associationActive').checked;
+
+                    const associationData = {
+                        title: title,
+                        description: description,
+                        order: order,
+                        isActive: isActive,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    if (associationId) {
+                        await db.collection('associations').doc(associationId).update(associationData);
+                        this.showToast('Association updated successfully!', 'success');
+                    } else {
+                        associationData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                        await db.collection('associations').add(associationData);
+                        this.showToast('Association added successfully!', 'success');
+                    }
+
+                    document.querySelector('.modal-overlay').remove();
+                    this.loadAssociations();
+                } catch (error) {
+                    console.error('Error saving association:', error);
+                    this.showToast('Error saving association', 'error');
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            async deleteAssociation(associationId) {
+                if (confirm('Are you sure you want to delete this association?')) {
+                    try {
+                        this.showLoading(true);
+                        await db.collection('associations').doc(associationId).delete();
+                        this.showToast('Association deleted successfully!', 'success');
+                        this.loadAssociations();
+                    } catch (error) {
+                        console.error('Error deleting association:', error);
+                        this.showToast('Error deleting association', 'error');
+                    } finally {
+                        this.showLoading(false);
+                    }
+                }
             }
 
             refreshData() {
@@ -982,6 +2104,300 @@
                 setTimeout(() => {
                     toast.remove();
                 }, 5000);
+            }
+
+            addEvent() {
+                this.showEventModal();
+            }
+
+            addTeamMember() {
+                this.showTeamModal();
+            }
+
+            addCommunity() {
+                this.showCommunityModal();
+            }
+
+            addAssociation() {
+                this.showAssociationModal();
+            }
+
+            async loadAnalytics(page = 1, pageSize = 100) {
+                try {
+                    this.showLoading(true);
+                    this.currentAnalyticsPage = page; // Store current page
+                    const content = document.getElementById('analyticsContent');
+                    
+                    // Get analytics data from the last 30 days
+                    const thirtyDaysAgo = new Date();
+                    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                    
+                    // Calculate offset for pagination
+                    const offset = (page - 1) * pageSize;
+                    
+                    const snapshot = await db.collection('analytics')
+                        .where('timestamp', '>=', thirtyDaysAgo)
+                        .orderBy('timestamp', 'desc')
+                        .limit(1000)
+                        .get();
+                    
+                    const allAnalytics = [];
+                    snapshot.forEach(doc => {
+                        allAnalytics.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    // Process analytics data for stats (use all data for accurate stats)
+                    const stats = this.processAnalyticsData(allAnalytics);
+                    
+                    // Paginate the data for display
+                    const totalRecords = allAnalytics.length;
+                    const totalPages = Math.ceil(totalRecords / pageSize);
+                    const paginatedAnalytics = allAnalytics.slice(offset, offset + pageSize);
+                    
+                    content.innerHTML = `
+                        <div class="analytics-dashboard">
+                            <div class="analytics-overview">
+                                <div class="analytics-card">
+                                    <h3>Total Visitors</h3>
+                                    <div class="analytics-number">${stats.totalVisitors}</div>
+                                </div>
+                                <div class="analytics-card">
+                                    <h3>Page Views</h3>
+                                    <div class="analytics-number">${stats.totalPageViews}</div>
+                                </div>
+                                <div class="analytics-card">
+                                    <h3>Unique Visitors</h3>
+                                    <div class="analytics-number">${stats.uniqueVisitors}</div>
+                                </div>
+                                <div class="analytics-card">
+                                    <h3>New Visitors</h3>
+                                    <div class="analytics-number">${stats.newVisitors}</div>
+                                </div>
+                            </div>
+                            
+                <div class="analytics-table-section">
+                    <div class="analytics-section-header">
+                        <h3>All Visitors (Detailed View)</h3>
+                        <button class="btn btn-danger btn-sm" onclick="cmsApp.deleteAllAnalytics()" title="Delete all analytics records">
+                            <i class="fas fa-trash"></i> Delete All
+                        </button>
+                    </div>
+                    <div class="table-container">
+                                        <table class="analytics-table detailed-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>IP Address</th>
+                                                    <th>Country</th>
+                                                    <th>Region</th>
+                                                    <th>City</th>
+                                                    <th>ISP</th>
+                                                    <th>Page</th>
+                                                    <th>User Agent</th>
+                                                    <th>Screen Size</th>
+                                                    <th>Language</th>
+                                                    <th>Timestamp</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${paginatedAnalytics.map(visitor => `
+                                                    <tr>
+                                                        <td class="ip-address">${visitor.ipAddress}</td>
+                                                        <td>${visitor.country}</td>
+                                                        <td>${visitor.region}</td>
+                                                        <td>${visitor.city}</td>
+                                                        <td>${visitor.isp}</td>
+                                                        <td>${visitor.page}</td>
+                                                        <td class="user-agent">${visitor.userAgent ? visitor.userAgent.substring(0, 50) + '...' : 'N/A'}</td>
+                                                        <td>${visitor.screenResolution}</td>
+                                                        <td>${visitor.language}</td>
+                                                        <td>${this.formatDate(visitor.timestamp)}</td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-danger" onclick="cmsApp.deleteAnalyticsRecord('${visitor.id}')" title="Delete this record">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                `).join('')}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    
+                                    <!-- Pagination Controls -->
+                                    <div class="pagination-container">
+                                        <div class="pagination-info">
+                                            Showing ${offset + 1} to ${Math.min(offset + pageSize, totalRecords)} of ${totalRecords} records
+                                        </div>
+                                        <div class="pagination-controls">
+                                            <button class="btn btn-sm btn-secondary" onclick="cmsApp.loadAnalytics(1, 100)" ${page === 1 ? 'disabled' : ''}>
+                                                <i class="fas fa-angle-double-left"></i> First
+                                            </button>
+                                            <button class="btn btn-sm btn-secondary" onclick="cmsApp.loadAnalytics(${page - 1}, 100)" ${page === 1 ? 'disabled' : ''}>
+                                                <i class="fas fa-angle-left"></i> Previous
+                                            </button>
+                                            
+                                            <div class="pagination-pages">
+                                                ${this.generatePaginationPages(page, totalPages)}
+                                            </div>
+                                            
+                                            <button class="btn btn-sm btn-secondary" onclick="cmsApp.loadAnalytics(${page + 1}, 100)" ${page === totalPages ? 'disabled' : ''}>
+                                                Next <i class="fas fa-angle-right"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-secondary" onclick="cmsApp.loadAnalytics(${totalPages}, 100)" ${page === totalPages ? 'disabled' : ''}>
+                                                Last <i class="fas fa-angle-double-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                } catch (error) {
+                    console.error('Error loading analytics:', error);
+                    this.showToast('Error loading analytics data', 'error');
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
+            processAnalyticsData(analytics) {
+                const stats = {
+                    totalVisitors: analytics.length,
+                    totalPageViews: analytics.length,
+                    uniqueVisitors: new Set(analytics.map(a => a.ipAddress)).size,
+                    newVisitors: analytics.filter(a => a.isNewVisitor).length,
+                    topPages: {},
+                    topCountries: {},
+                    recentVisitors: analytics.slice(0, 10)
+                };
+                
+                // Process top pages
+                analytics.forEach(visit => {
+                    const page = visit.page || '/';
+                    stats.topPages[page] = (stats.topPages[page] || 0) + 1;
+                });
+                
+                // Process top countries
+                analytics.forEach(visit => {
+                    const country = visit.country || 'Unknown';
+                    stats.topCountries[country] = (stats.topCountries[country] || 0) + 1;
+                });
+                
+                // Convert to arrays and sort
+                stats.topPages = Object.entries(stats.topPages)
+                    .map(([page, views]) => ({ page, views }))
+                    .sort((a, b) => b.views - a.views)
+                    .slice(0, 5);
+                    
+                stats.topCountries = Object.entries(stats.topCountries)
+                    .map(([country, visitors]) => ({ country, visitors }))
+                    .sort((a, b) => b.visitors - a.visitors)
+                    .slice(0, 5);
+                
+                return stats;
+            }
+
+            formatDate(timestamp) {
+                if (!timestamp) return 'Unknown';
+                const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+                return date.toLocaleString();
+            }
+
+            generatePaginationPages(currentPage, totalPages) {
+                const pages = [];
+                const maxVisiblePages = 5;
+                
+                let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+                
+                // Adjust start page if we're near the end
+                if (endPage - startPage + 1 < maxVisiblePages) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+                
+                // Add first page and ellipsis if needed
+                if (startPage > 1) {
+                    pages.push(`<button class="btn btn-sm btn-secondary" onclick="cmsApp.loadAnalytics(1, 100)">1</button>`);
+                    if (startPage > 2) {
+                        pages.push(`<span class="pagination-ellipsis">...</span>`);
+                    }
+                }
+                
+                // Add visible page numbers
+                for (let i = startPage; i <= endPage; i++) {
+                    const isActive = i === currentPage ? 'btn-primary' : 'btn-secondary';
+                    pages.push(`<button class="btn btn-sm ${isActive}" onclick="cmsApp.loadAnalytics(${i}, 100)">${i}</button>`);
+                }
+                
+                // Add last page and ellipsis if needed
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        pages.push(`<span class="pagination-ellipsis">...</span>`);
+                    }
+                    pages.push(`<button class="btn btn-sm btn-secondary" onclick="cmsApp.loadAnalytics(${totalPages}, 100)">${totalPages}</button>`);
+                }
+                
+                return pages.join('');
+            }
+
+            async deleteAssociation(associationId) {
+                if (confirm('Are you sure you want to delete this association?')) {
+                    try {
+                        this.showLoading(true);
+                        await db.collection('associations').doc(associationId).delete();
+                        this.showToast('Association deleted successfully!', 'success');
+                        this.loadAssociations();
+                    } catch (error) {
+                        console.error('Error deleting association:', error);
+                        this.showToast('Error deleting association', 'error');
+                    } finally {
+                        this.showLoading(false);
+                    }
+                }
+            }
+
+            async deleteAnalyticsRecord(recordId) {
+                if (confirm('Are you sure you want to delete this analytics record?')) {
+                    try {
+                        this.showLoading(true);
+                        await db.collection('analytics').doc(recordId).delete();
+                        this.showToast('Analytics record deleted successfully!', 'success');
+                        // Refresh current page
+                        const currentPage = this.currentAnalyticsPage || 1;
+                        this.loadAnalytics(currentPage, 100);
+                    } catch (error) {
+                        console.error('Error deleting analytics record:', error);
+                        this.showToast('Error deleting analytics record', 'error');
+                    } finally {
+                        this.showLoading(false);
+                    }
+                }
+            }
+
+            async deleteAllAnalytics() {
+                if (confirm('Are you sure you want to delete ALL analytics records? This action cannot be undone!')) {
+                    try {
+                        this.showLoading(true);
+                        
+                        // Get all analytics records
+                        const snapshot = await db.collection('analytics').get();
+                        const batch = db.batch();
+                        
+                        snapshot.forEach(doc => {
+                            batch.delete(doc.ref);
+                        });
+                        
+                        await batch.commit();
+                        this.showToast('All analytics records deleted successfully!', 'success');
+                        this.loadAnalytics(); // Refresh the analytics data
+                    } catch (error) {
+                        console.error('Error deleting all analytics records:', error);
+                        this.showToast('Error deleting all analytics records', 'error');
+                    } finally {
+                        this.showLoading(false);
+                    }
+                }
             }
         }
 
