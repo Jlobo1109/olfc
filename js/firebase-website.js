@@ -99,7 +99,6 @@ class WebsiteContentLoader {
             const snapshot = await db.collection('events')
                 .where('isPublished', '==', true)
                 .get();
-
             
             const events = [];
             snapshot.forEach(doc => {
@@ -137,13 +136,13 @@ class WebsiteContentLoader {
             
             if (eventsContent) {
                 if (limitedEvents.length > 0) {
-                    eventsContent.innerHTML = `
+                    const eventsHTML = `
                         <h2>Events</h2>
                         <div class="event-cards">
                     ${limitedEvents.map(event => {
                         const imageUrl = event.images && event.images.length > 0 ? getImageUrl(event.images[0]) : '';
                         
-                        return `<div class="card event-card-clickable" onclick="console.log('Event card clicked'); showArticlesTab();">
+                        return `<div class="card event-card-clickable" onclick="handleEventCardClick()" style="cursor: pointer;">
                         ${imageUrl ? `<img class="event-card" src="${imageUrl}" alt="${event.title}">` : ''}
                         <div class="card-content">
                             <h3>${event.title}</h3>
@@ -151,6 +150,8 @@ class WebsiteContentLoader {
                     </div>`;
                     }).join("")}
                     </div>`;
+                    
+                    eventsContent.innerHTML = eventsHTML;
                 } else {
                     eventsContent.innerHTML = '<h2>Events</h2><p>No events available at the moment.</p>';
                 }
@@ -559,31 +560,105 @@ class WebsiteContentLoader {
                 team.push({ id: doc.id, ...data });
             });
 
+            // Separate priests and sisters
+            const priests = team.filter(member => 
+                member.role && (
+                    member.role.toLowerCase().includes('priest') || 
+                    member.role.toLowerCase().includes('deacon')
+                )
+            );
+            
+            const sisters = team.filter(member => 
+                member.role && member.role.toLowerCase().includes('sister')
+            );
 
             const teamContent = document.getElementById('parish-team');
             if (teamContent && team.length > 0) {
-                teamContent.innerHTML = `
-                    <h2>Parish Team</h2><br>
-                    <div class="team-cards">
-                    ${team.map(member => {
-                        
-                        // Try different possible image field names
-                        const imagePath = member.image || member.img_url || member.image_url;
-                        
-                        const imageUrl = imagePath ? getImageUrl(imagePath) : 'https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/team/default-avatar.webp';
-                        
-                        
-                        return `<div class="card">
-                            <img class="team-card" src="${imageUrl}" alt="${member.name}">
-                            <div class="card-content">
-                                <h3>${member.name}</h3>
-                                <p>${member.role || member.title}</p>
-                                <p>${member.description || member.desc}</p>
-                            </div>
-                        </div>`;
-                    }).join("")}
+                let html = `<h2>Parish Team</h2><br>`;
+                
+                // Add priests section
+                if (priests.length > 0) {
+                    html += `<div class="team-cards">
+                        ${priests.map(member => {
+                            const imagePath = member.image || member.img_url || member.image_url;
+                            const imageUrl = imagePath ? getImageUrl(imagePath) : 'https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/team/default-avatar.webp';
+                            
+                            return `<div class="card">
+                                <img class="team-card" src="${imageUrl}" alt="${member.name}">
+                                <div class="card-content">
+                                    <h3>${member.name}</h3>
+                                    <p>${member.role || member.title}</p>
+                                    <p>${member.description || member.desc}</p>
+                                </div>
+                            </div>`;
+                        }).join("")}
                     </div>`;
-            } else {
+                }
+                
+                // Add sisters section
+                if (sisters.length > 0) {
+                    // Load sisters section content from Firebase
+                    try {
+                        const sistersContentDoc = await db.collection('content').doc('sisters').get();
+                        const sistersContent = sistersContentDoc.exists ? sistersContentDoc.data() : null;
+                        
+                        const title = sistersContent?.title || 'Helpers of Mary';
+                        const description = sistersContent?.description || 'The Helpers of Mary are dedicated sisters who serve our parish community with love and devotion. They live in Seva Sadan house in Dhokali and provide spiritual guidance and support to our parishioners.';
+                        
+                        html += `
+                            <div class="sisters-section" style="margin-top: 40px;">
+                                <h2>${title}</h2>
+                                <p style="text-align: center; margin: 20px 0; font-size: 1.1rem; color: #666;">
+                                    ${description}
+                                </p>
+                                <div class="team-cards">
+                                    ${sisters.map(member => {
+                                        const imagePath = member.image || member.img_url || member.image_url;
+                                        const imageUrl = imagePath ? getImageUrl(imagePath) : 'https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/team/default-avatar.webp';
+                                        
+                                        return `<div class="card">
+                                            <img class="team-card" src="${imageUrl}" alt="${member.name}">
+                                            <div class="card-content">
+                                                <h3>${member.name}</h3>
+                                                <p>${member.role || member.title}</p>
+                                                <p>${member.description || member.desc}</p>
+                                            </div>
+                                        </div>`;
+                                    }).join("")}
+                                </div>
+                            </div>
+                        `;
+                    } catch (error) {
+                        console.error('Error loading sisters content:', error);
+                        // Fallback to default content
+                        html += `
+                            <div class="sisters-section" style="margin-top: 40px;">
+                                <h2>Helpers of Mary</h2>
+                                <p style="text-align: center; margin: 20px 0; font-size: 1.1rem; color: #666;">
+                                    The Helpers of Mary are dedicated sisters who serve our parish community with love and devotion. 
+                                    They live in Seva Sadan house in Dhokali and provide spiritual guidance and support to our parishioners.
+                                </p>
+                                <div class="team-cards">
+                                    ${sisters.map(member => {
+                                        const imagePath = member.image || member.img_url || member.image_url;
+                                        const imageUrl = imagePath ? getImageUrl(imagePath) : 'https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/team/default-avatar.webp';
+                                        
+                                        return `<div class="card">
+                                            <img class="team-card" src="${imageUrl}" alt="${member.name}">
+                                            <div class="card-content">
+                                                <h3>${member.name}</h3>
+                                                <p>${member.role || member.title}</p>
+                                                <p>${member.description || member.desc}</p>
+                                            </div>
+                                        </div>`;
+                                    }).join("")}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                teamContent.innerHTML = html;
             }
             this.hideLoading('parish-team');
         } catch (error) {
@@ -605,10 +680,7 @@ class WebsiteContentLoader {
                 communities.push({ id: doc.id, ...doc.data() });
             });
 
-            console.log('Communities loaded:', communities.length);
-
             const communitiesContent = document.getElementById('communities');
-            console.log('Communities content element:', communitiesContent);
             
             if (communitiesContent) {
                 if (communities.length > 0) {
@@ -623,10 +695,8 @@ class WebsiteContentLoader {
                     
                     // Set up the interactive functionality
                     this.setupCommunitiesInteractivity(communities);
-                    console.log('Communities HTML set successfully');
                 } else {
                     communitiesContent.innerHTML = '<h2>Communities</h2><p>No communities available at the moment.</p>';
-                    console.log('No communities found, showing fallback message');
                 }
             } else {
                 console.error('Communities content element not found!');
@@ -641,70 +711,84 @@ class WebsiteContentLoader {
     // Load associations content
     async loadAssociations() {
         try {
-            console.log('Starting to load associations...');
             const snapshot = await db.collection('associations').orderBy('order', 'asc').get();
-            console.log('Firestore query completed, snapshot size:', snapshot.size);
             
             if (snapshot.empty) {
-                console.log('No associations found');
+                this.hidePageLoading();
                 return;
             }
 
             const associations = [];
             snapshot.forEach(doc => {
                 const data = doc.data();
-                console.log('Association data:', data);
                 if (data.isActive) {
                     associations.push({ id: doc.id, ...data });
                 }
             });
 
-            console.log('Associations loaded:', associations.length);
-            console.log('Associations data:', associations);
             this.renderAssociations(associations);
+            this.hidePageLoading();
         } catch (error) {
             console.error('Error loading associations:', error);
+            this.hidePageLoading();
+        }
+    }
+
+    // Hide page loading indicator
+    hidePageLoading() {
+        const pageLoading = document.getElementById('page-loading');
+        const associationsContainer = document.getElementById('associations-container');
+        
+        if (pageLoading) {
+            pageLoading.style.display = 'none';
+        }
+        
+        if (associationsContainer) {
+            associationsContainer.style.display = 'flex'; // Use flex instead of block
         }
     }
 
     // Render associations into tabs
     renderAssociations(associations) {
-        console.log('Rendering associations:', associations);
         
         // Map association titles to tab IDs
         const tabMapping = {
+            'Parish Youth Council': 'pyc',
             'Legion of Mary': 'legion',
             'Altar Servers': 'altar-servers',
             'Lectors Ministry': 'liturgy',
             'Music Ministry': 'music',
-            'Eucharistic Ministry': 'eucharistic',
+            'Extraordinary Ministers of Holy Communion': 'eucharistic',
             'Ladies Sodality': 'ladies',
             'Charismatic Prayer Group': 'senior'
         };
 
         associations.forEach(association => {
-            console.log('Processing association:', association.title);
             const tabId = tabMapping[association.title];
-            console.log('Tab ID for', association.title, ':', tabId);
             
             if (tabId) {
-                const loadingElement = document.getElementById(`${tabId}-loading`);
+                // Update sidebar button title
+                const tabButton = document.querySelector(`[data-tab="${tabId}"]`);
+                if (tabButton) {
+                    tabButton.textContent = association.title;
+                }
+                
+                // Update content heading
+                const contentHeading = document.querySelector(`#${tabId} h2`);
+                if (contentHeading) {
+                    contentHeading.textContent = association.title;
+                }
+                
                 const contentElement = document.getElementById(`${tabId}-content`);
                 
-                console.log('Loading element:', loadingElement);
-                console.log('Content element:', contentElement);
-                
-                if (loadingElement) {
-                    loadingElement.style.display = 'none';
-                    console.log('Hidden loading for', tabId);
-                }
-                
                 if (contentElement) {
-                    contentElement.innerHTML = `<p>${association.description}</p>`;
-                    console.log('Set content for', tabId);
+                    // For PYC, use the HTML structure directly
+                    if (tabId === 'pyc') {
+                        contentElement.innerHTML = association.description;
+                    } else {
+                        contentElement.innerHTML = `<p>${association.description}</p>`;
+                    }
                 }
-            } else {
-                console.log('No tab mapping found for:', association.title);
             }
         });
     }
@@ -829,7 +913,6 @@ function getImageUrl(imagePath) {
 // Auto-load content based on current page
 document.addEventListener('DOMContentLoaded', function () {
     const currentPage = window.location.pathname.split('/').pop();
-    console.log('Current page detected:', currentPage);
 
     // Initialize content loader
     const contentLoader = new WebsiteContentLoader();
@@ -851,10 +934,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const tabToActivate = sessionStorage.getItem('activateTab');
             if (tabToActivate) {
                 sessionStorage.removeItem('activateTab');
+                // Wait a bit for the page to load, then activate the tab
+                setTimeout(() => {
+                    activateTab(tabToActivate);
+                }, 500);
             }
             break;
         case 'associations.html':
-            console.log('Loading associations for associations.html');
             contentLoader.loadAssociations();
             break;
         default:
@@ -864,15 +950,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Global function for showing specific tab
 function showTab(tabName) {
-    console.log('Showing tab:', tabName);
     // Check if we're on the parish page
     const currentPage = window.location.pathname.split('/').pop();
-    console.log('Current page:', currentPage);
-    console.log('Full pathname:', window.location.pathname);
     
     // Check if we're on parish page or if parish page exists in the current path
     if (currentPage === 'parish.html' || window.location.pathname.includes('parish.html')) {
-        console.log('Already on parish page, activating tab');
         // Wait for DOM to be ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => activateTab(tabName));
@@ -880,7 +962,6 @@ function showTab(tabName) {
             activateTab(tabName);
         }
     } else {
-        console.log('Not on parish page, navigating to parish page');
         // If not on parish page, navigate to parish page and then activate tab
         window.location.href = 'parish.html';
         // Store the tab to activate after navigation
@@ -888,30 +969,67 @@ function showTab(tabName) {
     }
 }
 
+// Make sure the function is globally available
+window.showTab = showTab;
+
 function activateTab(tabName) {
-    console.log('Activating tab:', tabName);
-    // Find the target tab and activate it
-    const targetTab = document.querySelector(`[data-tab="${tabName}"]`);
-    console.log('Target tab:', targetTab);
-    if (targetTab) {
-        console.log('Target tab found:', targetTab);
-        // Remove active class from all tabs and content
-        document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+        // Find the target tab and activate it
+        const targetTab = document.querySelector(`[data-tab="${tabName}"]`);
         
-        // Add active class to target tab and content
-        targetTab.classList.add('active');
-        const targetContent = document.getElementById(tabName);
-        console.log('Target content:', targetContent);
-        if (targetContent) {
-            console.log('Target content found:', targetContent);
-            targetContent.classList.add('active');
+        if (targetTab) {
+            // Remove active class from all tabs and content
+            document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            // Add active class to target tab and content
+            targetTab.classList.add('active');
+            const targetContent = document.getElementById(tabName);
+            
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+        } else {
+            // Try again after a short delay
+            setTimeout(() => {
+                const retryTab = document.querySelector(`[data-tab="${tabName}"]`);
+                if (retryTab) {
+                    activateTab(tabName);
+                }
+            }, 100);
         }
-    }
+    });
 }
+
+// Make sure the function is globally available
+window.activateTab = activateTab;
 
 // Function specifically for showing articles tab
 function showArticlesTab() {
-    console.log('Showing articles tab');
     showTab('articles');
 }
+
+// Make sure the function is globally available
+window.showArticlesTab = showArticlesTab;
+
+// Handle event card clicks
+function handleEventCardClick() {
+    try {
+        // Test if showArticlesTab is available
+        if (typeof showArticlesTab === 'function') {
+            showArticlesTab();
+        } else {
+            // Fallback: navigate to parish page
+            window.location.href = 'parish.html';
+        }
+    } catch (error) {
+        console.error('Error handling event card click:', error);
+        // Fallback: navigate to parish page
+        window.location.href = 'parish.html';
+    }
+}
+
+// Make sure the function is globally available
+window.handleEventCardClick = handleEventCardClick;
+

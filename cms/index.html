@@ -36,6 +36,9 @@
                 <li><a href="#team" data-section="team">
                         <i class="fas fa-users"></i> Parish Team
                     </a></li>
+                <li><a href="#sisters" data-section="sisters">
+                        <i class="fas fa-female"></i> Helpers of Mary
+                    </a></li>
                 <li><a href="#events" data-section="events">
                         <i class="fas fa-calendar-alt"></i> Events & Articles
                     </a></li>
@@ -189,6 +192,19 @@
                     </div>
                     <div class="content-list" id="teamList">
                         <!-- Team members list will be loaded here -->
+                    </div>
+                </section>
+
+                <!-- Sisters Section -->
+                <section id="sisters" class="content-section">
+                    <div class="section-header">
+                        <h2>Helpers of Mary</h2>
+                        <button class="btn btn-primary" id="editSistersContentBtn">
+                            <i class="fas fa-edit"></i> Edit Content
+                        </button>
+                    </div>
+                    <div class="content-preview" id="sistersPreview">
+                        <!-- Sisters content preview will be loaded here -->
                     </div>
                 </section>
 
@@ -367,6 +383,11 @@
                     this.addTeamMember();
                 });
 
+                // Sisters content
+                document.getElementById('editSistersContentBtn').addEventListener('click', () => {
+                    this.editSistersContent();
+                });
+
                 // Events management
                 document.getElementById('addEventBtn').addEventListener('click', () => {
                     this.addEvent();
@@ -465,6 +486,9 @@
                         break;
                     case 'team':
                         await this.loadTeamMembers();
+                        break;
+                    case 'sisters':
+                        await this.loadSistersContent();
                         break;
                     case 'events':
                         await this.loadEvents();
@@ -786,6 +810,54 @@
                 } catch (error) {
                     console.error('Error loading team members:', error);
                     this.showToast('Error loading team members', 'error');
+                }
+            }
+
+            async loadSistersContent() {
+                try {
+                    console.log('Loading sisters content for preview...');
+                    const doc = await db.collection('content').doc('sisters').get();
+                    const content = document.getElementById('sistersPreview');
+                    
+                    console.log('Sisters document exists:', doc.exists);
+                    console.log('Content element found:', !!content);
+                    
+                    if (doc.exists) {
+                        const data = doc.data();
+                        console.log('Sisters data for preview:', data);
+                        
+                        content.innerHTML = `
+                            <div class="content-card">
+                                <h3>Helpers of Mary Content</h3>
+                                <div class="content-preview">
+                                    <div class="preview-item">
+                                        <label><strong>Title:</strong></label>
+                                        <p>${data.title || 'Helpers of Mary'}</p>
+                                    </div>
+                                    <div class="preview-item">
+                                        <label><strong>Description:</strong></label>
+                                        <p>${data.description || 'No description available'}</p>
+                                    </div>
+                                    <div class="preview-item">
+                                        <label><strong>Last Updated:</strong></label>
+                                        <p>${data.lastUpdated ? new Date(data.lastUpdated.seconds * 1000).toLocaleString() : 'Unknown'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        console.log('Sisters preview content set successfully');
+                    } else {
+                        content.innerHTML = `
+                            <div class="content-card">
+                                <h3>Helpers of Mary Content</h3>
+                                <p>No content found. Click "Edit Content" to add sisters information.</p>
+                            </div>
+                        `;
+                        console.log('No sisters content found, showing default message');
+                    }
+                } catch (error) {
+                    console.error('Error loading sisters content:', error);
+                    this.showToast('Error loading sisters content', 'error');
                 }
             }
 
@@ -1215,6 +1287,112 @@
                 }
             }
 
+            editSistersContent() {
+                this.showSistersModal();
+            }
+
+            showSistersModal() {
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3>Edit Helpers of Mary Content</h3>
+                            <button class="modal-close">&times;</button>
+                        </div>
+                        <form id="sistersForm">
+                            <div class="form-group">
+                                <label for="sistersTitle">Title</label>
+                                <input type="text" id="sistersTitle" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sistersDescription">Description</label>
+                                <textarea id="sistersDescription" name="description" rows="6" placeholder="Enter description about the Helpers of Mary sisters..." required></textarea>
+                            </div>
+                        </form>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary modal-cancel">Cancel</button>
+                            <button type="button" class="btn btn-primary modal-save" onclick="cmsApp.saveSistersContent()">Save Changes</button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(modal);
+
+                // Event listeners
+                modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+                modal.querySelector('.modal-cancel').addEventListener('click', () => modal.remove());
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.remove();
+                });
+
+                // Load existing content after modal is rendered
+                setTimeout(() => {
+                    this.loadSistersContentForEdit();
+                }, 100);
+            }
+
+            async loadSistersContentForEdit() {
+                try {
+                    console.log('Loading sisters content for edit...');
+                    const doc = await db.collection('content').doc('sisters').get();
+                    console.log('Sisters document exists:', doc.exists);
+                    
+                    if (doc.exists) {
+                        const data = doc.data();
+                        console.log('Sisters data:', data);
+                        
+                        const titleField = document.getElementById('sistersTitle');
+                        const descField = document.getElementById('sistersDescription');
+                        
+                        if (titleField) {
+                            titleField.value = data.title || 'Helpers of Mary';
+                            console.log('Title field set to:', titleField.value);
+                        } else {
+                            console.error('Title field not found');
+                        }
+                        
+                        if (descField) {
+                            descField.value = data.description || '';
+                            console.log('Description field set to:', descField.value);
+                        } else {
+                            console.error('Description field not found');
+                        }
+                    } else {
+                        console.log('Sisters document does not exist');
+                    }
+                } catch (error) {
+                    console.error('Error loading sisters content:', error);
+                    this.showToast('Error loading sisters content', 'error');
+                }
+            }
+
+            async saveSistersContent() {
+                try {
+                    this.showLoading(true);
+
+                    const title = document.getElementById('sistersTitle').value;
+                    const description = document.getElementById('sistersDescription').value;
+
+                    const sistersData = {
+                        title: title,
+                        description: description,
+                        lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+
+                    await db.collection('content').doc('sisters').set(sistersData, { merge: true });
+                    
+                    this.showToast('Sisters content updated successfully!', 'success');
+                    document.querySelector('.modal-overlay').remove();
+                    this.loadSistersContent();
+                } catch (error) {
+                    console.error('Error saving sisters content:', error);
+                    this.showToast('Error saving sisters content', 'error');
+                } finally {
+                    this.showLoading(false);
+                }
+            }
+
             editMassSchedule() {
                 this.showMassModal();
             }
@@ -1455,7 +1633,7 @@
                 // Image upload handler
                 const imageUpload = modal.querySelector('#memberImageUpload');
                 imageUpload.addEventListener('change', (e) => {
-                    this.handleImageUpload(e.target.files);
+                    this.handleImageUpload(e.target.files, 'team');
                 });
             }
 
@@ -1635,7 +1813,7 @@
                 // Image upload handler
                 const imageUpload = modal.querySelector('#imageUpload');
                 imageUpload.addEventListener('change', (e) => {
-                    this.handleImageUpload(e.target.files);
+                    this.handleImageUpload(e.target.files, 'events');
                 });
             }
 
@@ -1737,7 +1915,7 @@
                 }
             }
 
-            async handleImageUpload(files) {
+            async handleImageUpload(files, context = 'events') {
                 if (!files || files.length === 0) return;
 
                 for (let file of files) {
@@ -1747,14 +1925,23 @@
                         // Convert to WebP
                         const webpBlob = await this.convertToWebP(file);
                         
+                        // Determine the correct preview ID and file path based on context
+                        let previewId, fileName;
+                        if (context === 'team') {
+                            previewId = 'memberImagePreview';
+                            fileName = `team/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.webp`;
+                        } else {
+                            previewId = 'imagePreview';
+                            fileName = `events/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.webp`;
+                        }
+                        
                         // Upload to Firebase Storage
-                        const fileName = `events/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.webp`;
                         const storageRef = firebase.storage().ref().child(fileName);
                         const snapshot = await storageRef.put(webpBlob);
                         const downloadURL = await snapshot.ref.getDownloadURL();
                         
                         // Add to preview
-                        this.addImageToPreview(downloadURL);
+                        this.addImageToPreview(downloadURL, previewId);
                         
                         this.showToast('Image uploaded successfully!', 'success');
                     } catch (error) {
@@ -1789,12 +1976,17 @@
                 });
             }
 
-            addImageToPreview(imageUrl) {
-                const imagePreview = document.getElementById('imagePreview');
+            addImageToPreview(imageUrl, previewId = 'imagePreview') {
+                const imagePreview = document.getElementById(previewId);
+                if (!imagePreview) {
+                    console.error(`Image preview container with ID '${previewId}' not found`);
+                    return;
+                }
+                
                 const imageItem = document.createElement('div');
                 imageItem.className = 'image-item';
                 imageItem.innerHTML = `
-                    <img src="${imageUrl}" alt="Event image">
+                    <img src="${imageUrl}" alt="Image">
                     <button type="button" class="remove-image" onclick="cmsApp.removeImage(this)">×</button>
                 `;
                 imagePreview.appendChild(imageItem);

@@ -33,93 +33,65 @@
     </header>
 
     <main>
+        <!-- Page Loading Indicator -->
+        <div id="page-loading" class="page-loading">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>Loading associations...</p>
+            </div>
+        </div>
+        
         <!-- Tabs -->
-        <div class="about-container">
+        <div class="about-container" id="associations-container" style="display: none;">
             <div class="tab-menu">
                 <h3>Associations</h3>
-                <button class="tab-link active" data-tab="pyc">PYC</button>
-                <button class="tab-link" data-tab="legion">Legion of Mary</button>
-                <button class="tab-link" data-tab="altar-servers">Altar Servers</button>
-                <button class="tab-link" data-tab="liturgy">Lectors Ministry</button>
-                <button class="tab-link" data-tab="music">Music Ministry</button>
-                <button class="tab-link" data-tab="eucharistic">Eucharistic Ministry</button>
-                <button class="tab-link" data-tab="ladies">Ladies Sodality</button>
-                <button class="tab-link" data-tab="senior">Charismatic Prayer Group</button>
+                <button class="tab-link active" data-tab="pyc">Loading...</button>
+                <button class="tab-link" data-tab="legion">Loading...</button>
+                <button class="tab-link" data-tab="altar-servers">Loading...</button>
+                <button class="tab-link" data-tab="liturgy">Loading...</button>
+                <button class="tab-link" data-tab="music">Loading...</button>
+                <button class="tab-link" data-tab="eucharistic">Loading...</button>
+                <button class="tab-link" data-tab="ladies">Loading...</button>
+                <button class="tab-link" data-tab="senior">Loading...</button>
             </div>
 
             <div id="pyc" class="tab-content active">
-                <h2>Parish Youth Council</h2><br>
-                <div class="event-cards">
-                    <div class="card">
-                        <!-- <img class="team-card" src="https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/event.jpeg" alt="Event 1"> -->
-                        <div class="card-content">
-                            <h3>Fr. Ashton Pinto</h3>
-                            <p>President</p>
-                        </div>
-                    </div>
-                </div>
+                <h2>Loading...</h2><br>
+                <div id="pyc-content"></div>
             </div>
 
             <div id="legion" class="tab-content">
-                <h2>Legion of Mary</h2><br>
-                <div class="loading-spinner" id="legion-loading">
-                    <div class="spinner"></div>
-                    <p>Loading...</p>
-                </div>
+                <h2>Loading...</h2><br>
                 <div id="legion-content"></div>
             </div>
 
             <div id="altar-servers" class="tab-content">
-                <h2>Altar Servers</h2><br>
-                <div class="loading-spinner" id="altar-servers-loading">
-                    <div class="spinner"></div>
-                    <p>Loading...</p>
-                </div>
+                <h2>Loading...</h2><br>
                 <div id="altar-servers-content"></div>
             </div>
 
             <div id="liturgy" class="tab-content">
-                <h2>Lectors Ministry</h2><br>
-                <div class="loading-spinner" id="liturgy-loading">
-                    <div class="spinner"></div>
-                    <p>Loading...</p>
-                </div>
+                <h2>Loading...</h2><br>
                 <div id="liturgy-content"></div>
             </div>
 
             <div id="music" class="tab-content">
-                <h2>Music Ministry</h2><br>
-                <div class="loading-spinner" id="music-loading">
-                    <div class="spinner"></div>
-                    <p>Loading...</p>
-                </div>
+                <h2>Loading...</h2><br>
                 <div id="music-content"></div>
             </div>
 
             <div id="eucharistic" class="tab-content">
-                <h2>Eucharistic Ministry</h2><br>
-                <div class="loading-spinner" id="eucharistic-loading">
-                    <div class="spinner"></div>
-                    <p>Loading...</p>
-                </div>
+                <h2>Loading...</h2><br>
                 <div id="eucharistic-content"></div>
             </div>
 
             <div id="ladies" class="tab-content">
-                <h2>Ladies Sodality</h2><br>
-                <div class="loading-spinner" id="ladies-loading">
-                    <div class="spinner"></div>
-                    <p>Loading...</p>
-                </div>
+                <h2>Loading...</h2><br>
                 <div id="ladies-content"></div>
             </div>
 
             <div id="senior" class="tab-content">
-                <h2>Charismatic Prayer Group</h2><br>
-                <div class="loading-spinner" id="senior-loading">
-                    <div class="spinner"></div>
-                    <p>Loading...</p>
-                </div>
+                <h2>Loading...</h2><br>
                 <div id="senior-content"></div>
             </div>
         </div>
