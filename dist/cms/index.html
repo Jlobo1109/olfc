@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="css/cms.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -311,12 +312,37 @@
         const storage = firebase.storage();
         const auth = firebase.auth();
 
+        // Connect to emulators if running locally
+        if (location.hostname === "localhost") {
+            const warningBanner = document.createElement('div');
+            warningBanner.style.background = '#ffcc00';
+            warningBanner.style.color = '#000';
+            warningBanner.style.textAlign = 'center';
+            warningBanner.style.padding = '5px';
+            warningBanner.style.position = 'fixed';
+            warningBanner.style.top = '0';
+            warningBanner.style.left = '0';
+            warningBanner.style.width = '100%';
+            warningBanner.style.zIndex = '9999';
+            warningBanner.textContent = 'Running in Emulator Mode';
+            document.body.prepend(warningBanner);
+
+            console.log("Using Firebase Emulators");
+            db.useEmulator("localhost", 8080);
+            auth.useEmulator("http://localhost:9099");
+            storage.useEmulator("localhost", 9199);
+        }
+
         // Helper function to get image URL
         function getImageUrl(imagePath) {
             if (imagePath.startsWith('http')) {
                 return imagePath; // Already a full URL
             }
-            return `https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/${imagePath}`;
+            // If in emulator, use emulator storage URL
+            if (location.hostname === "localhost") {
+                return `http://localhost:9199/v0/b/${firebaseConfig.storageBucket}/o/${encodeURIComponent(imagePath)}?alt=media`;
+            }
+            return `https://storage.googleapis.com/${firebaseConfig.storageBucket}/${imagePath}`;
         }
 
         // CMS Application
@@ -672,7 +698,7 @@
                 try {
                     const doc = await db.collection('content').doc('welcome').get();
                     const content = document.getElementById('welcomeForm');
-                    
+
                     if (doc.exists) {
                         const data = doc.data();
                         content.innerHTML = `
@@ -699,7 +725,7 @@
                 try {
                     const doc = await db.collection('content').doc('about').get();
                     const content = document.getElementById('aboutForm');
-                    
+
                     if (doc.exists) {
                         const data = doc.data();
                         content.innerHTML = `
@@ -726,7 +752,7 @@
                 try {
                     const doc = await db.collection('content').doc('mass').get();
                     const content = document.getElementById('massForm');
-                    
+
                     if (doc.exists) {
                         const data = doc.data();
                         content.innerHTML = `
@@ -772,13 +798,13 @@
                 try {
                     const snapshot = await db.collection('team').orderBy('order', 'asc').get();
                     const content = document.getElementById('teamList');
-                    
+
                     if (!snapshot.empty) {
                         const teamMembers = [];
                         snapshot.forEach(doc => {
                             teamMembers.push({ id: doc.id, ...doc.data() });
                         });
-                        
+
                         content.innerHTML = `
                             <div class="content-card">
                                 <h3>Parish Team</h3>
@@ -818,14 +844,14 @@
                     console.log('Loading sisters content for preview...');
                     const doc = await db.collection('content').doc('sisters').get();
                     const content = document.getElementById('sistersPreview');
-                    
+
                     console.log('Sisters document exists:', doc.exists);
                     console.log('Content element found:', !!content);
-                    
+
                     if (doc.exists) {
                         const data = doc.data();
                         console.log('Sisters data for preview:', data);
-                        
+
                         content.innerHTML = `
                             <div class="content-card">
                                 <h3>Helpers of Mary Content</h3>
@@ -865,26 +891,26 @@
                 try {
                     const snapshot = await db.collection('events').orderBy('date', 'desc').get();
                     const content = document.getElementById('eventsList');
-                    
+
                     if (!snapshot.empty) {
                         const events = [];
                         snapshot.forEach(doc => {
                             events.push({ id: doc.id, ...doc.data() });
                         });
-                        
+
                         content.innerHTML = `
                             <div class="content-card">
                                 <h3>Events & Articles</h3>
                                 <div class="events-list">
                                     ${events.map(event => {
-                                        // Format date properly
-                                        let displayDate = event.date;
-                                        if (event.date && typeof event.date === 'object' && event.date.seconds) {
-                                            const date = new Date(event.date.seconds * 1000);
-                                            displayDate = date.toLocaleDateString();
-                                        }
-                                        
-                                        return `
+                            // Format date properly
+                            let displayDate = event.date;
+                            if (event.date && typeof event.date === 'object' && event.date.seconds) {
+                                const date = new Date(event.date.seconds * 1000);
+                                displayDate = date.toLocaleDateString();
+                            }
+
+                            return `
                                         <div class="event-item">
                                             <div class="event-info">
                                                 <h4>${event.title || 'Untitled Event'}</h4>
@@ -907,7 +933,7 @@
                                             </div>
                                         </div>
                                         `;
-                                    }).join('')}
+                        }).join('')}
                                 </div>
                             </div>
                         `;
@@ -924,13 +950,13 @@
                 try {
                     const snapshot = await db.collection('communities').get();
                     const content = document.getElementById('communitiesList');
-                    
+
                     if (!snapshot.empty) {
                         const communities = [];
                         snapshot.forEach(doc => {
                             communities.push({ id: doc.id, ...doc.data() });
                         });
-                        
+
                         content.innerHTML = `
                             <div class="content-card">
                                 <h3>Communities</h3>
@@ -977,13 +1003,13 @@
                 try {
                     const snapshot = await db.collection('associations').get();
                     const content = document.getElementById('associationsList');
-                    
+
                     if (!snapshot.empty) {
                         const associations = [];
                         snapshot.forEach(doc => {
                             associations.push({ id: doc.id, ...doc.data() });
                         });
-                        
+
                         content.innerHTML = `
                             <div class="content-card">
                                 <h3>Associations</h3>
@@ -1118,7 +1144,7 @@
                 const contentTextarea = document.getElementById('welcomeContent');
                 const previewDiv = document.getElementById('welcomePreview');
                 const previewContent = document.getElementById('welcomePreviewContent');
-                
+
                 contentTextarea.addEventListener('input', () => {
                     const text = contentTextarea.value;
                     if (text.trim()) {
@@ -1165,7 +1191,7 @@
                     };
 
                     await db.collection('content').doc('welcome').set(welcomeData, { merge: true });
-                    
+
                     this.showToast('Welcome content updated successfully!', 'success');
                     document.querySelector('.modal-overlay').remove();
                     this.loadWelcomeContent();
@@ -1228,7 +1254,7 @@
                 const contentTextarea = document.getElementById('aboutContent');
                 const previewDiv = document.getElementById('aboutPreview');
                 const previewContent = document.getElementById('aboutPreviewContent');
-                
+
                 contentTextarea.addEventListener('input', () => {
                     const text = contentTextarea.value;
                     if (text.trim()) {
@@ -1275,7 +1301,7 @@
                     };
 
                     await db.collection('content').doc('about').set(aboutData, { merge: true });
-                    
+
                     this.showToast('About content updated successfully!', 'success');
                     document.querySelector('.modal-overlay').remove();
                     this.loadAboutContent();
@@ -1337,21 +1363,21 @@
                     console.log('Loading sisters content for edit...');
                     const doc = await db.collection('content').doc('sisters').get();
                     console.log('Sisters document exists:', doc.exists);
-                    
+
                     if (doc.exists) {
                         const data = doc.data();
                         console.log('Sisters data:', data);
-                        
+
                         const titleField = document.getElementById('sistersTitle');
                         const descField = document.getElementById('sistersDescription');
-                        
+
                         if (titleField) {
                             titleField.value = data.title || 'Helpers of Mary';
                             console.log('Title field set to:', titleField.value);
                         } else {
                             console.error('Title field not found');
                         }
-                        
+
                         if (descField) {
                             descField.value = data.description || '';
                             console.log('Description field set to:', descField.value);
@@ -1381,7 +1407,7 @@
                     };
 
                     await db.collection('content').doc('sisters').set(sistersData, { merge: true });
-                    
+
                     this.showToast('Sisters content updated successfully!', 'success');
                     document.querySelector('.modal-overlay').remove();
                     this.loadSistersContent();
@@ -1462,14 +1488,14 @@
                 try {
                     const doc = await db.collection('content').doc('mass').get();
                     const tableBody = document.getElementById('massScheduleTableBody');
-                    
+
                     if (doc.exists) {
                         const data = doc.data();
                         document.getElementById('massTitle').value = data.title || '';
-                        
+
                         // Clear existing rows
                         tableBody.innerHTML = '';
-                        
+
                         // Load existing schedule data
                         if (data.schedule && Array.isArray(data.schedule)) {
                             data.schedule.forEach((item, index) => {
@@ -1492,7 +1518,7 @@
             addMassScheduleRow(day = '', time = '', details = '') {
                 const tableBody = document.getElementById('massScheduleTableBody');
                 const rowIndex = tableBody.children.length;
-                
+
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>
@@ -1510,7 +1536,7 @@
                         </button>
                     </td>
                 `;
-                
+
                 tableBody.appendChild(row);
             }
 
@@ -1549,7 +1575,7 @@
                     };
 
                     await db.collection('content').doc('mass').set(massData, { merge: true });
-                    
+
                     this.showToast('Mass schedule updated successfully!', 'success');
                     document.querySelector('.modal-overlay').remove();
                     this.loadMassSchedule();
@@ -1794,7 +1820,7 @@
                 const descriptionTextarea = document.getElementById('eventDescription');
                 const previewDiv = document.getElementById('descriptionPreview');
                 const previewContent = document.getElementById('previewContent');
-                
+
                 descriptionTextarea.addEventListener('input', () => {
                     const text = descriptionTextarea.value;
                     if (text.trim()) {
@@ -1820,13 +1846,13 @@
             // Utility function to parse description into paragraphs
             parseDescriptionToParagraphs(description) {
                 if (!description) return [];
-                
+
                 // Split by double line breaks or single line breaks if no double breaks exist
                 const paragraphs = description
                     .split(/\n\s*\n/)  // Split by double line breaks
                     .map(para => para.trim())  // Trim whitespace
                     .filter(para => para.length > 0);  // Remove empty paragraphs
-                
+
                 // If no double line breaks found, try single line breaks
                 if (paragraphs.length === 1 && description.includes('\n')) {
                     return description
@@ -1834,7 +1860,7 @@
                         .map(para => para.trim())
                         .filter(para => para.length > 0);
                 }
-                
+
                 return paragraphs;
             }
 
@@ -1844,15 +1870,15 @@
                 try {
                     const form = document.getElementById('eventForm');
                     const formData = new FormData(form);
-                    
+
                     // Get current images from preview
                     const imagePreview = document.getElementById('imagePreview');
                     const currentImages = Array.from(imagePreview.querySelectorAll('.image-item img')).map(img => img.src);
-                    
+
                     // Get description from textarea
                     const rawDescription = formData.get('description');
                     const descriptionParagraphs = this.parseDescriptionToParagraphs(rawDescription);
-                    
+
                     const eventData = {
                         title: formData.get('title'),
                         date: formData.get('date'),
@@ -1921,10 +1947,10 @@
                 for (let file of files) {
                     try {
                         this.showToast('Uploading image...', 'info');
-                        
+
                         // Convert to WebP
                         const webpBlob = await this.convertToWebP(file);
-                        
+
                         // Determine the correct preview ID and file path based on context
                         let previewId, fileName;
                         if (context === 'team') {
@@ -1934,15 +1960,15 @@
                             previewId = 'imagePreview';
                             fileName = `events/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.webp`;
                         }
-                        
+
                         // Upload to Firebase Storage
                         const storageRef = firebase.storage().ref().child(fileName);
                         const snapshot = await storageRef.put(webpBlob);
                         const downloadURL = await snapshot.ref.getDownloadURL();
-                        
+
                         // Add to preview
                         this.addImageToPreview(downloadURL, previewId);
-                        
+
                         this.showToast('Image uploaded successfully!', 'success');
                     } catch (error) {
                         console.error('Error uploading image:', error);
@@ -1956,12 +1982,12 @@
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
                     const img = new Image();
-                    
+
                     img.onload = () => {
                         canvas.width = img.width;
                         canvas.height = img.height;
                         ctx.drawImage(img, 0, 0);
-                        
+
                         canvas.toBlob((blob) => {
                             if (blob) {
                                 resolve(blob);
@@ -1970,7 +1996,7 @@
                             }
                         }, 'image/webp', 0.8);
                     };
-                    
+
                     img.onerror = () => reject(new Error('Failed to load image'));
                     img.src = URL.createObjectURL(file);
                 });
@@ -1982,7 +2008,7 @@
                     console.error(`Image preview container with ID '${previewId}' not found`);
                     return;
                 }
-                
+
                 const imageItem = document.createElement('div');
                 imageItem.className = 'image-item';
                 imageItem.innerHTML = `
@@ -2319,33 +2345,33 @@
                     this.showLoading(true);
                     this.currentAnalyticsPage = page; // Store current page
                     const content = document.getElementById('analyticsContent');
-                    
+
                     // Get analytics data from the last 30 days
                     const thirtyDaysAgo = new Date();
                     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-                    
+
                     // Calculate offset for pagination
                     const offset = (page - 1) * pageSize;
-                    
+
                     const snapshot = await db.collection('analytics')
                         .where('timestamp', '>=', thirtyDaysAgo)
                         .orderBy('timestamp', 'desc')
                         .limit(1000)
                         .get();
-                    
+
                     const allAnalytics = [];
                     snapshot.forEach(doc => {
                         allAnalytics.push({ id: doc.id, ...doc.data() });
                     });
-                    
+
                     // Process analytics data for stats (use all data for accurate stats)
                     const stats = this.processAnalyticsData(allAnalytics);
-                    
+
                     // Paginate the data for display
                     const totalRecords = allAnalytics.length;
                     const totalPages = Math.ceil(totalRecords / pageSize);
                     const paginatedAnalytics = allAnalytics.slice(offset, offset + pageSize);
-                    
+
                     content.innerHTML = `
                         <div class="analytics-dashboard">
                             <div class="analytics-overview">
@@ -2364,6 +2390,22 @@
                                 <div class="analytics-card">
                                     <h3>New Visitors</h3>
                                     <div class="analytics-number">${stats.newVisitors}</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Charts Section -->
+                            <div class="analytics-charts">
+                                <div class="chart-container">
+                                    <h3>Visitor Trends (Last 7 Days)</h3>
+                                    <canvas id="visitorTrendChart" width="400" height="200"></canvas>
+                                </div>
+                                <div class="chart-container">
+                                    <h3>Visitors by Country</h3>
+                                    <canvas id="countryChart" width="300" height="300"></canvas>
+                                </div>
+                                <div class="chart-container">
+                                    <h3>Visitors by Region</h3>
+                                    <canvas id="regionChart" width="300" height="300"></canvas>
                                 </div>
                             </div>
                             
@@ -2444,7 +2486,12 @@
                             </div>
                         </div>
                     `;
-                    
+
+                    // Initialize charts after content is loaded
+                    setTimeout(() => {
+                        this.initializeCharts(allAnalytics);
+                    }, 100);
+
                 } catch (error) {
                     console.error('Error loading analytics:', error);
                     this.showToast('Error loading analytics data', 'error');
@@ -2461,33 +2508,198 @@
                     newVisitors: analytics.filter(a => a.isNewVisitor).length,
                     topPages: {},
                     topCountries: {},
+                    topRegions: {},
                     recentVisitors: analytics.slice(0, 10)
                 };
-                
+
                 // Process top pages
                 analytics.forEach(visit => {
                     const page = visit.page || '/';
                     stats.topPages[page] = (stats.topPages[page] || 0) + 1;
                 });
-                
+
                 // Process top countries
                 analytics.forEach(visit => {
                     const country = visit.country || 'Unknown';
                     stats.topCountries[country] = (stats.topCountries[country] || 0) + 1;
                 });
-                
+
+                // Process top regions
+                analytics.forEach(visit => {
+                    const region = visit.region || 'Unknown';
+                    stats.topRegions[region] = (stats.topRegions[region] || 0) + 1;
+                });
+
                 // Convert to arrays and sort
                 stats.topPages = Object.entries(stats.topPages)
                     .map(([page, views]) => ({ page, views }))
                     .sort((a, b) => b.views - a.views)
                     .slice(0, 5);
-                    
+
                 stats.topCountries = Object.entries(stats.topCountries)
                     .map(([country, visitors]) => ({ country, visitors }))
                     .sort((a, b) => b.visitors - a.visitors)
                     .slice(0, 5);
-                
+
+                stats.topRegions = Object.entries(stats.topRegions)
+                    .map(([region, visitors]) => ({ region, visitors }))
+                    .sort((a, b) => b.visitors - a.visitors)
+                    .slice(0, 5);
+
                 return stats;
+            }
+
+            initializeCharts(analytics) {
+                try {
+                    // 7-day visitor trend chart
+                    this.createVisitorTrendChart(analytics);
+
+                    // Country pie chart
+                    this.createCountryChart(analytics);
+
+                    // Region pie chart
+                    this.createRegionChart(analytics);
+                } catch (error) {
+                    console.error('Error initializing charts:', error);
+                }
+            }
+
+            createVisitorTrendChart(analytics) {
+                const ctx = document.getElementById('visitorTrendChart');
+                if (!ctx) return;
+
+                // Get last 7 days data
+                const last7Days = [];
+                const today = new Date();
+
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    last7Days.push(date.toISOString().split('T')[0]);
+                }
+
+                // Count visitors per day
+                const dailyVisitors = last7Days.map(date => {
+                    return analytics.filter(visit => {
+                        const visitDate = new Date(visit.timestamp?.toDate ? visit.timestamp.toDate() : visit.timestamp);
+                        return visitDate.toISOString().split('T')[0] === date;
+                    }).length;
+                });
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: last7Days.map(date => new Date(date).toLocaleDateString()),
+                        datasets: [{
+                            label: 'Visitors',
+                            data: dailyVisitors,
+                            borderColor: 'rgb(75, 192, 192)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            tension: 0.1,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            createCountryChart(analytics) {
+                const ctx = document.getElementById('countryChart');
+                if (!ctx) return;
+
+                // Count visitors by country
+                const countryData = {};
+                analytics.forEach(visit => {
+                    const country = visit.country || 'Unknown';
+                    countryData[country] = (countryData[country] || 0) + 1;
+                });
+
+                // Get top 5 countries
+                const sortedCountries = Object.entries(countryData)
+                    .sort(([, a], [, b]) => b - a)
+                    .slice(0, 5);
+
+                const colors = [
+                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'
+                ];
+
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: sortedCountries.map(([country]) => country),
+                        datasets: [{
+                            data: sortedCountries.map(([, count]) => count),
+                            backgroundColor: colors,
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            createRegionChart(analytics) {
+                const ctx = document.getElementById('regionChart');
+                if (!ctx) return;
+
+                // Count visitors by region
+                const regionData = {};
+                analytics.forEach(visit => {
+                    const region = visit.region || 'Unknown';
+                    regionData[region] = (regionData[region] || 0) + 1;
+                });
+
+                // Get top 5 regions
+                const sortedRegions = Object.entries(regionData)
+                    .sort(([, a], [, b]) => b - a)
+                    .slice(0, 5);
+
+                const colors = [
+                    '#FF9F40', '#FF6384', '#36A2EB', '#4BC0C0', '#9966FF'
+                ];
+
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: sortedRegions.map(([region]) => region),
+                        datasets: [{
+                            data: sortedRegions.map(([, count]) => count),
+                            backgroundColor: colors,
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
             }
 
             formatDate(timestamp) {
@@ -2499,15 +2711,15 @@
             generatePaginationPages(currentPage, totalPages) {
                 const pages = [];
                 const maxVisiblePages = 5;
-                
+
                 let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
                 let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-                
+
                 // Adjust start page if we're near the end
                 if (endPage - startPage + 1 < maxVisiblePages) {
                     startPage = Math.max(1, endPage - maxVisiblePages + 1);
                 }
-                
+
                 // Add first page and ellipsis if needed
                 if (startPage > 1) {
                     pages.push(`<button class="btn btn-sm btn-secondary" onclick="cmsApp.loadAnalytics(1, 100)">1</button>`);
@@ -2515,13 +2727,13 @@
                         pages.push(`<span class="pagination-ellipsis">...</span>`);
                     }
                 }
-                
+
                 // Add visible page numbers
                 for (let i = startPage; i <= endPage; i++) {
                     const isActive = i === currentPage ? 'btn-primary' : 'btn-secondary';
                     pages.push(`<button class="btn btn-sm ${isActive}" onclick="cmsApp.loadAnalytics(${i}, 100)">${i}</button>`);
                 }
-                
+
                 // Add last page and ellipsis if needed
                 if (endPage < totalPages) {
                     if (endPage < totalPages - 1) {
@@ -2529,7 +2741,7 @@
                     }
                     pages.push(`<button class="btn btn-sm btn-secondary" onclick="cmsApp.loadAnalytics(${totalPages}, 100)">${totalPages}</button>`);
                 }
-                
+
                 return pages.join('');
             }
 
@@ -2571,15 +2783,15 @@
                 if (confirm('Are you sure you want to delete ALL analytics records? This action cannot be undone!')) {
                     try {
                         this.showLoading(true);
-                        
+
                         // Get all analytics records
                         const snapshot = await db.collection('analytics').get();
                         const batch = db.batch();
-                        
+
                         snapshot.forEach(doc => {
                             batch.delete(doc.ref);
                         });
-                        
+
                         await batch.commit();
                         this.showToast('All analytics records deleted successfully!', 'success');
                         this.loadAnalytics(); // Refresh the analytics data

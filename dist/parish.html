@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - Our Lady of Fatima Church</title>
-    <link rel="stylesheet" href="/src/assets/css/style.css">
     <style>
     </style>
+  <script type="module" crossorigin src="/assets/firebase-website-Dvjqa-bi.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/firebase-website-yqTiiKyi.css">
 </head>
 
 <body>
@@ -33,67 +34,24 @@
     </header>
 
     <main>
-        <!-- Page Loading Indicator -->
-        <div id="page-loading" class="page-loading">
-            <div class="loading-spinner">
-                <div class="spinner"></div>
-                <p>Loading associations...</p>
-            </div>
-        </div>
-
         <!-- Tabs -->
-        <div class="about-container" id="associations-container" style="display: none;">
+        <div class="about-container">
             <div class="tab-menu">
-                <h3>Associations</h3>
-                <button class="tab-link active" data-tab="pyc">Loading...</button>
-                <button class="tab-link" data-tab="legion">Loading...</button>
-                <button class="tab-link" data-tab="altar-servers">Loading...</button>
-                <button class="tab-link" data-tab="liturgy">Loading...</button>
-                <button class="tab-link" data-tab="music">Loading...</button>
-                <button class="tab-link" data-tab="eucharistic">Loading...</button>
-                <button class="tab-link" data-tab="ladies">Loading...</button>
-                <button class="tab-link" data-tab="senior">Loading...</button>
+                <h3>Parish</h3>
+                <button class="tab-link active" data-tab="parish-team">Parish Team</button>
+                <!-- <button class="tab-link" data-tab="news">New/Notices</button> -->
+                <button class="tab-link" data-tab="articles">Events</button>
+                <button class="tab-link" data-tab="communities">Communities</button>
             </div>
 
-            <div id="pyc" class="tab-content active">
-                <h2>Loading...</h2><br>
-                <div id="pyc-content"></div>
-            </div>
+            <div id="parish-team" class="tab-content active"></div>
 
-            <div id="legion" class="tab-content">
-                <h2>Loading...</h2><br>
-                <div id="legion-content"></div>
-            </div>
+            <!-- <div id="news" class="tab-content"></div> -->
 
-            <div id="altar-servers" class="tab-content">
-                <h2>Loading...</h2><br>
-                <div id="altar-servers-content"></div>
-            </div>
+            <div id="articles" class="tab-content"></div>
 
-            <div id="liturgy" class="tab-content">
-                <h2>Loading...</h2><br>
-                <div id="liturgy-content"></div>
-            </div>
 
-            <div id="music" class="tab-content">
-                <h2>Loading...</h2><br>
-                <div id="music-content"></div>
-            </div>
-
-            <div id="eucharistic" class="tab-content">
-                <h2>Loading...</h2><br>
-                <div id="eucharistic-content"></div>
-            </div>
-
-            <div id="ladies" class="tab-content">
-                <h2>Loading...</h2><br>
-                <div id="ladies-content"></div>
-            </div>
-
-            <div id="senior" class="tab-content">
-                <h2>Loading...</h2><br>
-                <div id="senior-content"></div>
-            </div>
+            <div id="communities" class="tab-content"></div>
         </div>
     </main>
     <!-- Footer -->
@@ -116,25 +74,25 @@
                 const linkRight = link.getBoundingClientRect().right;
                 const menuRight = tabMenu.getBoundingClientRect().right;
 
-                if (linkRight >= menuRight - 5) {
+                if (linkRight >= menuRight - 50) {
                     // Scroll right by the width of one button
-                    tabMenu.scrollBy({ left: link.offsetWidth + 100, behavior: "smooth" });
+                    tabMenu.scrollBy({ left: link.offsetWidth, behavior: "smooth" });
                 }
 
                 // If clicked element is the first visible item
                 const linkLeft = link.getBoundingClientRect().left;
                 const menuLeft = tabMenu.getBoundingClientRect().left;
 
-                if (linkLeft <= menuLeft + 5) {
+                if (linkLeft <= menuLeft + 50) {
                     // Scroll left by the width of one button
-                    tabMenu.scrollBy({ left: -link.offsetWidth - 100, behavior: "smooth" });
+                    tabMenu.scrollBy({ left: -link.offsetWidth, behavior: "smooth" });
                 }
             });
         });
 
         document.addEventListener('DOMContentLoaded', function () {
-            const menuToggle = document.getElementById('menu-toggle');
-            const navLinks = document.getElementById('nav-links');
+            const menuToggle = document.getElementById('menu-toggle');   // <div id="menu-toggle">☰</div>
+            const navLinks = document.getElementById('nav-links');      // <ul id="nav-links" class="nav-links">...</ul>
             const navbar = document.querySelector('.navbar');
 
             if (!menuToggle || !navLinks) {
@@ -143,26 +101,43 @@
             }
 
             menuToggle.addEventListener('click', () => {
-                navLinks.classList.toggle('active');
-                navbar.classList.toggle('active');
+                // Support either CSS pattern:
+                navLinks.classList.toggle('active');   // .nav-links.active { display:flex }
+                navbar.classList.toggle('active');     // .navbar.active .nav-links { display:flex }
+
+                console.log('Menu btn clicked >>>>', menuToggle);
+                console.log('Nav Links >>>>>', navLinks);
             });
         });
-
         document.querySelectorAll('.tab-link').forEach(btn => {
             btn.addEventListener('click', () => {
+                // Remove active class from all tabs and content
                 document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
 
+                // Add active class to clicked tab
                 btn.classList.add('active');
-                document.getElementById(btn.dataset.tab).classList.add('active');
+
+                // Show corresponding content
+                const targetTab = btn.dataset.tab;
+                const targetContent = document.getElementById(targetTab);
+                if (targetContent) {
+                    targetContent.classList.add('active');
+                }
             });
         });
+
+        // Mobile nav toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navLinks = document.getElementById('nav-links');
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
     </script>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script type="module" src="/src/assets/js/analytics.js"></script>
-    <script type="module" src="/src/assets/js/firebase-website.js"></script>
 </body>
 
 </html>

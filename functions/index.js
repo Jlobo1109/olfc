@@ -11,12 +11,15 @@ const db = admin.firestore();
 const app = express();
 
 // Allow requests from your frontend
+// Using environment variables or a default list
 const allowedOrigins = [
     "https://olfatimachurch-b8123.web.app",
     "https://olfcmajiwada.com",
     "https://www.olfcmajiwada.com",
     "https://admin.olfcmajiwada.com",
     "http://localhost:3000", // For development
+    "http://localhost:5000", // For local hosting emulation
+    "http://127.0.0.1:5000"
 ];
 
 app.use(
@@ -33,38 +36,54 @@ app.use(
 
 app.use(express.json());
 
-// Authentication middleware - Simplified for now
-const authenticateUser = async (req, res, next) => {
+// --- Middleware ---
+
+// Authentication & Authorization Middleware (RBAC)
+const authenticateAdmin = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-            return res.status(401).json({ error: 'No token provided' });
+            return res.status(401).json({ error: 'Unauthorized: No token provided' });
         }
 
         const token = authHeader.split('Bearer ')[1];
         const decodedToken = await admin.auth().verifyIdToken(token);
+
+        // RBAC: Check for admin custom claim
+        if (decodedToken.admin !== true) {
+            console.warn(`Access denied: User ${decodedToken.email} is not an admin.`);
+            return res.status(403).json({ error: 'Forbidden: Insufficient permissions' });
+        }
+
         req.user = decodedToken;
-        
-        // For now, allow any authenticated user
-        // TODO: Add proper admin role checking later
-        console.log('Authenticated user:', decodedToken.email);
         next();
     } catch (error) {
         console.error('Authentication error:', error);
-        res.status(401).json({ error: 'Invalid token' });
+        res.status(401).json({ error: 'Unauthorized: Invalid token' });
     }
 };
 
-// Public content endpoints (no authentication required)
+// Input Validation Helper
+const validateBody = (requiredFields) => {
+    return (req, res, next) => {
+        const missingFields = requiredFields.filter(field => !req.body[field] && req.body[field] !== false);
+        if (missingFields.length > 0) {
+            return res.status(400).json({
+                error: 'Bad Request: Missing required fields',
+                missing: missingFields
+            });
+        }
+        next();
+    };
+};
+
+// --- Public Content Endpoints (Read-Only) ---
+
 app.get("/about/about_history", async (req, res) => {
     try {
         const docRef = db.collection("about_history").doc("main");
         const doc = await docRef.get();
-
-        if (!doc.exists) {
-            return res.status(404).json({ error: "Content not found" });
-        }
-
+        if (!doc.exists) return res.status(404).json({ error: "Content not found" });
         res.json(doc.data());
     } catch (error) {
         console.error("Error fetching about_history:", error);
@@ -72,16 +91,11 @@ app.get("/about/about_history", async (req, res) => {
     }
 });
 
-// Get hero content
 app.get("/content/hero", async (req, res) => {
     try {
         const docRef = db.collection("hero_content").doc("main");
         const doc = await docRef.get();
-
-        if (!doc.exists) {
-            return res.status(404).json({ error: "Content not found" });
-        }
-
+        if (!doc.exists) return res.status(404).json({ error: "Content not found" });
         res.json(doc.data());
     } catch (error) {
         console.error("Error fetching hero content:", error);
@@ -89,16 +103,11 @@ app.get("/content/hero", async (req, res) => {
     }
 });
 
-// Get welcome content
 app.get("/content/welcome", async (req, res) => {
     try {
         const docRef = db.collection("welcome_content").doc("main");
         const doc = await docRef.get();
-
-        if (!doc.exists) {
-            return res.status(404).json({ error: "Content not found" });
-        }
-
+        if (!doc.exists) return res.status(404).json({ error: "Content not found" });
         res.json(doc.data());
     } catch (error) {
         console.error("Error fetching welcome content:", error);
@@ -106,16 +115,11 @@ app.get("/content/welcome", async (req, res) => {
     }
 });
 
-// Get mass schedule
 app.get("/content/mass-schedule", async (req, res) => {
     try {
         const docRef = db.collection("mass_schedule").doc("main");
         const doc = await docRef.get();
-
-        if (!doc.exists) {
-            return res.status(404).json({ error: "Content not found" });
-        }
-
+        if (!doc.exists) return res.status(404).json({ error: "Content not found" });
         res.json(doc.data());
     } catch (error) {
         console.error("Error fetching mass schedule:", error);
@@ -123,7 +127,6 @@ app.get("/content/mass-schedule", async (req, res) => {
     }
 });
 
-// Get parish team
 app.get("/content/parish-team", async (req, res) => {
     try {
         const snapshot = await db.collection("parish_team")
@@ -135,7 +138,6 @@ app.get("/content/parish-team", async (req, res) => {
         snapshot.forEach(doc => {
             teamMembers.push({ id: doc.id, ...doc.data() });
         });
-
         res.json(teamMembers);
     } catch (error) {
         console.error("Error fetching parish team:", error);
@@ -143,7 +145,6 @@ app.get("/content/parish-team", async (req, res) => {
     }
 });
 
-// Get events
 app.get("/content/events", async (req, res) => {
     try {
         const category = req.query.category || 'All';
@@ -160,7 +161,6 @@ app.get("/content/events", async (req, res) => {
         snapshot.forEach(doc => {
             events.push({ id: doc.id, ...doc.data() });
         });
-
         res.json(events);
     } catch (error) {
         console.error("Error fetching events:", error);
@@ -168,7 +168,6 @@ app.get("/content/events", async (req, res) => {
     }
 });
 
-// Get communities
 app.get("/content/communities", async (req, res) => {
     try {
         const snapshot = await db.collection("communities")
@@ -180,7 +179,6 @@ app.get("/content/communities", async (req, res) => {
         snapshot.forEach(doc => {
             communities.push({ id: doc.id, ...doc.data() });
         });
-
         res.json(communities);
     } catch (error) {
         console.error("Error fetching communities:", error);
@@ -188,7 +186,6 @@ app.get("/content/communities", async (req, res) => {
     }
 });
 
-// Get associations
 app.get("/content/associations", async (req, res) => {
     try {
         const snapshot = await db.collection("associations")
@@ -200,7 +197,6 @@ app.get("/content/associations", async (req, res) => {
         snapshot.forEach(doc => {
             associations.push({ id: doc.id, ...doc.data() });
         });
-
         res.json(associations);
     } catch (error) {
         console.error("Error fetching associations:", error);
@@ -208,16 +204,11 @@ app.get("/content/associations", async (req, res) => {
     }
 });
 
-// Get site settings
 app.get("/content/site-settings", async (req, res) => {
     try {
         const docRef = db.collection("site_settings").doc("main");
         const doc = await docRef.get();
-
-        if (!doc.exists) {
-            return res.status(404).json({ error: "Content not found" });
-        }
-
+        if (!doc.exists) return res.status(404).json({ error: "Content not found" });
         res.json(doc.data());
     } catch (error) {
         console.error("Error fetching site settings:", error);
@@ -225,14 +216,18 @@ app.get("/content/site-settings", async (req, res) => {
     }
 });
 
-// Protected CMS endpoints (authentication required)
-// Update hero content
-app.put("/cms/hero", authenticateUser, async (req, res) => {
+// --- Protected CMS Endpoints (Admin Only) ---
+
+// All /cms routes require authentication and admin claim
+app.use("/cms", authenticateAdmin);
+
+app.put("/cms/hero", async (req, res) => {
     try {
         const docRef = db.collection("hero_content").doc("main");
         await docRef.set({
             ...req.body,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email
         }, { merge: true });
 
         res.json({ success: true, message: "Hero content updated successfully" });
@@ -242,13 +237,13 @@ app.put("/cms/hero", authenticateUser, async (req, res) => {
     }
 });
 
-// Update welcome content
-app.put("/cms/welcome", authenticateUser, async (req, res) => {
+app.put("/cms/welcome", async (req, res) => {
     try {
         const docRef = db.collection("welcome_content").doc("main");
         await docRef.set({
             ...req.body,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email
         }, { merge: true });
 
         res.json({ success: true, message: "Welcome content updated successfully" });
@@ -258,13 +253,13 @@ app.put("/cms/welcome", authenticateUser, async (req, res) => {
     }
 });
 
-// Update about history
-app.put("/cms/about-history", authenticateUser, async (req, res) => {
+app.put("/cms/about-history", async (req, res) => {
     try {
         const docRef = db.collection("about_history").doc("main");
         await docRef.set({
             ...req.body,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email
         }, { merge: true });
 
         res.json({ success: true, message: "About history updated successfully" });
@@ -274,13 +269,13 @@ app.put("/cms/about-history", authenticateUser, async (req, res) => {
     }
 });
 
-// Update mass schedule
-app.put("/cms/mass-schedule", authenticateUser, async (req, res) => {
+app.put("/cms/mass-schedule", async (req, res) => {
     try {
         const docRef = db.collection("mass_schedule").doc("main");
         await docRef.set({
             ...req.body,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email
         }, { merge: true });
 
         res.json({ success: true, message: "Mass schedule updated successfully" });
@@ -290,12 +285,12 @@ app.put("/cms/mass-schedule", authenticateUser, async (req, res) => {
     }
 });
 
-// Add team member
-app.post("/cms/team-member", authenticateUser, async (req, res) => {
+app.post("/cms/team-member", validateBody(['name', 'role']), async (req, res) => {
     try {
         const docRef = await db.collection("parish_team").add({
             ...req.body,
             lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email,
             isActive: true
         });
 
@@ -306,13 +301,13 @@ app.post("/cms/team-member", authenticateUser, async (req, res) => {
     }
 });
 
-// Update team member
-app.put("/cms/team-member/:id", authenticateUser, async (req, res) => {
+app.put("/cms/team-member/:id", async (req, res) => {
     try {
         const docRef = db.collection("parish_team").doc(req.params.id);
         await docRef.update({
             ...req.body,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email
         });
 
         res.json({ success: true, message: "Team member updated successfully" });
@@ -322,13 +317,13 @@ app.put("/cms/team-member/:id", authenticateUser, async (req, res) => {
     }
 });
 
-// Delete team member
-app.delete("/cms/team-member/:id", authenticateUser, async (req, res) => {
+app.delete("/cms/team-member/:id", async (req, res) => {
     try {
         const docRef = db.collection("parish_team").doc(req.params.id);
         await docRef.update({
             isActive: false,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email
         });
 
         res.json({ success: true, message: "Team member deleted successfully" });
@@ -338,13 +333,13 @@ app.delete("/cms/team-member/:id", authenticateUser, async (req, res) => {
     }
 });
 
-// Add event
-app.post("/cms/event", authenticateUser, async (req, res) => {
+app.post("/cms/event", validateBody(['title', 'date']), async (req, res) => {
     try {
         const docRef = await db.collection("events").add({
             ...req.body,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email,
             isActive: true,
             isPublished: true
         });
@@ -356,13 +351,13 @@ app.post("/cms/event", authenticateUser, async (req, res) => {
     }
 });
 
-// Update event
-app.put("/cms/event/:id", authenticateUser, async (req, res) => {
+app.put("/cms/event/:id", async (req, res) => {
     try {
         const docRef = db.collection("events").doc(req.params.id);
         await docRef.update({
             ...req.body,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email
         });
 
         res.json({ success: true, message: "Event updated successfully" });
@@ -372,13 +367,13 @@ app.put("/cms/event/:id", authenticateUser, async (req, res) => {
     }
 });
 
-// Delete event
-app.delete("/cms/event/:id", authenticateUser, async (req, res) => {
+app.delete("/cms/event/:id", async (req, res) => {
     try {
         const docRef = db.collection("events").doc(req.params.id);
         await docRef.update({
             isActive: false,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email
         });
 
         res.json({ success: true, message: "Event deleted successfully" });
@@ -388,12 +383,12 @@ app.delete("/cms/event/:id", authenticateUser, async (req, res) => {
     }
 });
 
-// Add community
-app.post("/cms/community", authenticateUser, async (req, res) => {
+app.post("/cms/community", validateBody(['name']), async (req, res) => {
     try {
         const docRef = await db.collection("communities").add({
             ...req.body,
             lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email,
             isActive: true
         });
 
@@ -404,13 +399,13 @@ app.post("/cms/community", authenticateUser, async (req, res) => {
     }
 });
 
-// Update community
-app.put("/cms/community/:id", authenticateUser, async (req, res) => {
+app.put("/cms/community/:id", async (req, res) => {
     try {
         const docRef = db.collection("communities").doc(req.params.id);
         await docRef.update({
             ...req.body,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email
         });
 
         res.json({ success: true, message: "Community updated successfully" });
@@ -420,13 +415,13 @@ app.put("/cms/community/:id", authenticateUser, async (req, res) => {
     }
 });
 
-// Delete community
-app.delete("/cms/community/:id", authenticateUser, async (req, res) => {
+app.delete("/cms/community/:id", async (req, res) => {
     try {
         const docRef = db.collection("communities").doc(req.params.id);
         await docRef.update({
             isActive: false,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email
         });
 
         res.json({ success: true, message: "Community deleted successfully" });
@@ -436,12 +431,12 @@ app.delete("/cms/community/:id", authenticateUser, async (req, res) => {
     }
 });
 
-// Add association
-app.post("/cms/association", authenticateUser, async (req, res) => {
+app.post("/cms/association", validateBody(['title']), async (req, res) => {
     try {
         const docRef = await db.collection("associations").add({
             ...req.body,
             lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email,
             isActive: true
         });
 
@@ -452,13 +447,13 @@ app.post("/cms/association", authenticateUser, async (req, res) => {
     }
 });
 
-// Update association
-app.put("/cms/association/:id", authenticateUser, async (req, res) => {
+app.put("/cms/association/:id", async (req, res) => {
     try {
         const docRef = db.collection("associations").doc(req.params.id);
         await docRef.update({
             ...req.body,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email
         });
 
         res.json({ success: true, message: "Association updated successfully" });
@@ -468,13 +463,13 @@ app.put("/cms/association/:id", authenticateUser, async (req, res) => {
     }
 });
 
-// Delete association
-app.delete("/cms/association/:id", authenticateUser, async (req, res) => {
+app.delete("/cms/association/:id", async (req, res) => {
     try {
         const docRef = db.collection("associations").doc(req.params.id);
         await docRef.update({
             isActive: false,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email
         });
 
         res.json({ success: true, message: "Association deleted successfully" });
@@ -484,13 +479,13 @@ app.delete("/cms/association/:id", authenticateUser, async (req, res) => {
     }
 });
 
-// Update site settings
-app.put("/cms/site-settings", authenticateUser, async (req, res) => {
+app.put("/cms/site-settings", async (req, res) => {
     try {
         const docRef = db.collection("site_settings").doc("main");
         await docRef.set({
             ...req.body,
-            lastUpdated: admin.firestore.FieldValue.serverTimestamp()
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            lastUpdatedBy: req.user.email
         }, { merge: true });
 
         res.json({ success: true, message: "Site settings updated successfully" });
@@ -500,5 +495,5 @@ app.put("/cms/site-settings", authenticateUser, async (req, res) => {
     }
 });
 
-
 exports.api = functions.https.onRequest(app);
+

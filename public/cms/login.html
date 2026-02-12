@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OLFC CMS Login</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/cms.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #666;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1><i class="fas fa-church"></i> OLFC CMS</h1>
+                <p>Content Management System</p>
+            </div>
+
+            <div class="error-message" id="errorMessage">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="errorText"></span>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Signing in...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script>
+        // Firebase Configuration - Browser-compatible approach
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4VkZb5Avvz6At_umIMNgsw7u0TbBP5VM",
+            authDomain: "olfatimachurch-b8123.firebaseapp.com",
+            projectId: "olfatimachurch-b8123",
+            storageBucket: "olfatimachurch-b8123.firebasestorage.app",
+            messagingSenderId: "148360742215",
+            appId: "1:148360742215:web:4caac837a9ff30298ef862",
+            measurementId: "G-GW38JPL144"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        class LoginApp {
+            constructor() {
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // Login form
+                document.getElementById('loginForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.handleLogin();
+                });
+            }
+
+            async handleLogin() {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                if (!email || !password) {
+                    this.showError('Please fill in all fields');
+                    return;
+                }
+
+                try {
+                    this.showLoading(true);
+                    this.hideError();
+
+                    await auth.signInWithEmailAndPassword(email, password);
+
+                    // Redirect to dashboard
+                    window.location.href = 'index.html';
+                } catch (error) {
+                    this.showLoading(false);
+                    this.showError(this.getErrorMessage(error.code));
+                }
+            }
+
+
+            getErrorMessage(errorCode) {
+                switch (errorCode) {
+                    case 'auth/user-not-found':
+                        return 'No account found with this email address';
+                    case 'auth/wrong-password':
+                        return 'Incorrect password';
+                    case 'auth/invalid-email':
+                        return 'Invalid email address';
+                    case 'auth/user-disabled':
+                        return 'This account has been disabled';
+                    case 'auth/too-many-requests':
+                        return 'Too many failed attempts. Please try again later';
+                    default:
+                        return 'Login failed. Please try again';
+                }
+            }
+
+            showError(message) {
+                const errorDiv = document.getElementById('errorMessage');
+                const errorText = document.getElementById('errorText');
+                errorText.textContent = message;
+                errorDiv.style.display = 'block';
+            }
+
+            hideError() {
+                document.getElementById('errorMessage').style.display = 'none';
+            }
+
+            showLoading(show) {
+                const loginBtn = document.getElementById('loginBtn');
+                const loading = document.getElementById('loading');
+
+                if (show) {
+                    loginBtn.disabled = true;
+                    loginBtn.style.display = 'none';
+                    loading.style.display = 'block';
+                } else {
+                    loginBtn.disabled = false;
+                    loginBtn.style.display = 'block';
+                    loading.style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize login app
+        new LoginApp();
+    </script>
+</body>
+
+</html>

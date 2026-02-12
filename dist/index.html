@@ -26,7 +26,9 @@
     <meta property="twitter:image"
         content="https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/hero.webp">
 
-    <link rel="stylesheet" href="/src/assets/css/style.css">
+  <script type="module" crossorigin src="/assets/main-BoL_TaZv.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/firebase-website-Dvjqa-bi.js">
+  <link rel="stylesheet" crossorigin href="/assets/firebase-website-yqTiiKyi.css">
 </head>
 
 <body>
@@ -161,32 +163,9 @@
     </footer>
     <!-- ...your HTML... -->
 
-    <script type="module">
-        document.addEventListener('DOMContentLoaded', function () {
-            const menuToggle = document.getElementById('menu-toggle');   // <div id="menu-toggle">☰</div>
-            const navLinks = document.getElementById('nav-links');      // <ul id="nav-links" class="nav-links">...</ul>
-            const navbar = document.querySelector('.navbar');
-
-            if (!menuToggle || !navLinks) {
-                console.warn('Missing #menu-toggle or #nav-links in the HTML.');
-                return;
-            }
-
-            menuToggle.addEventListener('click', () => {
-                // Support either CSS pattern:
-                navLinks.classList.toggle('active');   // .nav-links.active { display:flex }
-                navbar.classList.toggle('active');     // .navbar.active .nav-links { display:flex }
-
-                console.log('Menu btn clicked >>>>', menuToggle);
-                console.log('Nav Links >>>>>', navLinks);
-            });
-        });
-    </script>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script type="module" src="/src/assets/js/analytics.js"></script>
-    <script type="module" src="/src/assets/js/firebase-website.js"></script>
 
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">

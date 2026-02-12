@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - Our Lady of Fatima Church</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/src/assets/css/style.css">
     <style>
     </style>
 </head>
@@ -55,7 +55,10 @@
     </main>
     <!-- Footer -->
     <footer>
-        <p>Disclaimer: The information provided on this website is accurate and up to date to the best of our knowledge. However, certain details — such as Mass timings and other service schedules — are subject to change for various reasons. Parishioners are kindly requested to contact the Parish Office or check our official WhatsApp channel to confirm the latest information.</p>
+        <p>Disclaimer: The information provided on this website is accurate and up to date to the best of our knowledge.
+            However, certain details — such as Mass timings and other service schedules — are subject to change for
+            various reasons. Parishioners are kindly requested to contact the Parish Office or check our official
+            WhatsApp channel to confirm the latest information.</p>
     </footer>
     <!-- ...your HTML... -->
 
@@ -113,7 +116,7 @@
 
                 // Add active class to clicked tab
                 btn.classList.add('active');
-                
+
                 // Show corresponding content
                 const targetTab = btn.dataset.tab;
                 const targetContent = document.getElementById(targetTab);
@@ -134,8 +137,8 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="js/analytics.js"></script>
-    <script src="js/firebase-website.js"></script>
+    <script type="module" src="/src/assets/js/analytics.js"></script>
+    <script type="module" src="/src/assets/js/firebase-website.js"></script>
 </body>
 
 </html>

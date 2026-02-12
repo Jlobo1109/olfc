@@ -18,6 +18,13 @@ try {
     db = firebase.firestore(app);
 }
 
+// Connect to emulators if running locally
+if (location.hostname === "localhost") {
+    console.log("Using Firebase Emulators");
+    db.useEmulator("localhost", 8080);
+    // Note: Auth and Functions might be needed depending on usage, but DB is primary here
+}
+
 // Content loading functions
 class WebsiteContentLoader {
     constructor() {
@@ -58,6 +65,15 @@ class WebsiteContentLoader {
             this.hideLoading('hero-content');
         } catch (error) {
             console.error('Error loading hero content:', error);
+            const heroContent = document.getElementById('hero-content');
+            if (heroContent) {
+                heroContent.innerHTML = `
+                    <h1>Welcome to Our Lady of Fatima Church</h1>
+                    <div class="hero-buttons">
+                        <a href="about.html" class="btn btn-light">Our History</a>
+                    </div>
+                `;
+            }
             this.hideLoading('hero-content');
         }
     }
@@ -83,6 +99,10 @@ class WebsiteContentLoader {
             this.hideLoading('welcome-content');
         } catch (error) {
             console.error('Error loading welcome content:', error);
+            const welcomeContent = document.getElementById('welcome-content');
+            if (welcomeContent) {
+                welcomeContent.innerHTML = '<div class="error-message"><p>Unable to load welcome message. Please check back later.</p></div>';
+            }
             this.hideLoading('welcome-content');
         }
     }
@@ -93,13 +113,13 @@ class WebsiteContentLoader {
             // Check if we're on parish page (articles tab) or homepage (events-content)
             const currentPage = window.location.pathname.split('/').pop();
             const targetElementId = currentPage === 'parish.html' ? 'articles' : 'events-content';
-            
+
             this.showLoading(targetElementId);
-            
+
             const snapshot = await db.collection('events')
                 .where('isPublished', '==', true)
                 .get();
-            
+
             const events = [];
             snapshot.forEach(doc => {
                 const data = doc.data();
@@ -110,7 +130,7 @@ class WebsiteContentLoader {
             events.sort((a, b) => {
                 let dateA = a.date;
                 let dateB = b.date;
-                
+
                 // Handle Timestamp objects
                 if (dateA && typeof dateA === 'object' && dateA.seconds) {
                     dateA = new Date(dateA.seconds * 1000);
@@ -118,7 +138,7 @@ class WebsiteContentLoader {
                 if (dateB && typeof dateB === 'object' && dateB.seconds) {
                     dateB = new Date(dateB.seconds * 1000);
                 }
-                
+
                 // Handle string dates
                 if (typeof dateA === 'string') {
                     dateA = new Date(dateA);
@@ -126,14 +146,14 @@ class WebsiteContentLoader {
                 if (typeof dateB === 'string') {
                     dateB = new Date(dateB);
                 }
-                
+
                 return dateB - dateA; // Newest first
             });
-            
+
             const limitedEvents = events.slice(0, 3);
 
             const eventsContent = document.getElementById(targetElementId);
-            
+
             if (eventsContent) {
                 if (limitedEvents.length > 0) {
                     const eventsHTML = `
@@ -141,7 +161,7 @@ class WebsiteContentLoader {
                         <div class="event-cards">
                     ${limitedEvents.map(event => {
                         const imageUrl = event.images && event.images.length > 0 ? getImageUrl(event.images[0]) : '';
-                        
+
                         return `<div class="card event-card-clickable" onclick="handleEventCardClick()" style="cursor: pointer;">
                         ${imageUrl ? `<img class="event-card" src="${imageUrl}" alt="${event.title}">` : ''}
                         <div class="card-content">
@@ -150,7 +170,7 @@ class WebsiteContentLoader {
                     </div>`;
                     }).join("")}
                     </div>`;
-                    
+
                     eventsContent.innerHTML = eventsHTML;
                 } else {
                     eventsContent.innerHTML = '<h2>Events</h2><p>No events available at the moment.</p>';
@@ -170,12 +190,12 @@ class WebsiteContentLoader {
     // Load parish events with advanced features (like parish_content.js)
     async loadParishEvents() {
         try {
-            
+
             const snapshot = await db.collection('events')
                 .where('isPublished', '==', true)
                 .get();
 
-            
+
             const events = [];
             snapshot.forEach(doc => {
                 const data = doc.data();
@@ -186,7 +206,7 @@ class WebsiteContentLoader {
             events.sort((a, b) => {
                 let dateA = a.date;
                 let dateB = b.date;
-                
+
                 // Handle Timestamp objects
                 if (dateA && typeof dateA === 'object' && dateA.seconds) {
                     dateA = new Date(dateA.seconds * 1000);
@@ -194,7 +214,7 @@ class WebsiteContentLoader {
                 if (dateB && typeof dateB === 'object' && dateB.seconds) {
                     dateB = new Date(dateB.seconds * 1000);
                 }
-                
+
                 // Handle string dates
                 if (typeof dateA === 'string') {
                     dateA = new Date(dateA);
@@ -202,7 +222,7 @@ class WebsiteContentLoader {
                 if (typeof dateB === 'string') {
                     dateB = new Date(dateB);
                 }
-                
+
                 return dateB - dateA; // Newest first
             });
 
@@ -233,10 +253,10 @@ class WebsiteContentLoader {
 
                 // Set up event listeners
                 this.setupParishEventListeners();
-                
+
                 // Render initial events
                 this.renderParishArticles();
-                
+
             }
         } catch (error) {
             console.error('Error loading parish events:', error);
@@ -253,24 +273,24 @@ class WebsiteContentLoader {
 
         // Extract unique month-year combinations from events
         const monthYearMap = new Map();
-        
+
         events.forEach(event => {
             if (event.date) {
                 try {
                     const eventDate = new Date(event.date);
                     if (!isNaN(eventDate.getTime())) {
                         const monthYear = `${eventDate.getFullYear()}-${String(eventDate.getMonth() + 1).padStart(2, '0')}`;
-                        const displayText = eventDate.toLocaleDateString('en-US', { 
-                            year: 'numeric', 
-                            month: 'long' 
+                        const displayText = eventDate.toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long'
                         });
-                        
+
                         // Use Map to avoid duplicates and count events per month
                         if (!monthYearMap.has(monthYear)) {
-                            monthYearMap.set(monthYear, { 
-                                value: monthYear, 
+                            monthYearMap.set(monthYear, {
+                                value: monthYear,
                                 text: displayText,
-                                count: 0 
+                                count: 0
                             });
                         }
                         monthYearMap.get(monthYear).count++;
@@ -301,11 +321,11 @@ class WebsiteContentLoader {
     setupParishEventListeners() {
         const articleFilter = document.getElementById('articleFilter');
         const monthYearFilter = document.getElementById('monthYearFilter');
-        
+
         if (articleFilter) {
             articleFilter.addEventListener('change', () => this.applyParishArticleFilters());
         }
-        
+
         if (monthYearFilter) {
             monthYearFilter.addEventListener('change', () => this.applyParishArticleFilters());
         }
@@ -314,13 +334,13 @@ class WebsiteContentLoader {
     applyParishArticleFilters() {
         const articleFilter = document.getElementById('articleFilter');
         const monthYearFilter = document.getElementById('monthYearFilter');
-        
+
         const selectedCategory = articleFilter ? articleFilter.value : 'All';
         const selectedMonthYear = monthYearFilter ? monthYearFilter.value : 'All';
 
         window.filteredArticles = window.parishEvents.filter(event => {
             const matchesCategory = selectedCategory === 'All' || event.category === selectedCategory;
-            
+
             let matchesMonthYear = true;
             if (selectedMonthYear !== 'All' && event.date) {
                 try {
@@ -335,7 +355,7 @@ class WebsiteContentLoader {
                     matchesMonthYear = false;
                 }
             }
-            
+
             return matchesCategory && matchesMonthYear;
         });
         this.renderParishArticles();
@@ -353,10 +373,10 @@ class WebsiteContentLoader {
         }
 
         window.filteredArticles.forEach(article => {
-            
+
             const card = document.createElement('div');
             card.classList.add('article-card');
-            
+
             // Format date properly
             let displayDate = article.date;
             if (article.date && typeof article.date === 'object' && article.date.seconds) {
@@ -373,9 +393,9 @@ class WebsiteContentLoader {
                     `<div class="article-gallery">
                         <span class="gallery-prev">&#10092;</span>
                         ${article.images.map((image, index) => {
-                            const imageUrl = getImageUrl(image);
-                            return `<img src="${imageUrl}" alt="${article.title}" class="gallery-img ${index === 0 ? 'active' : ''}">`;
-                        }).join('')}
+                        const imageUrl = getImageUrl(image);
+                        return `<img src="${imageUrl}" alt="${article.title}" class="gallery-img ${index === 0 ? 'active' : ''}">`;
+                    }).join('')}
                         <span class="gallery-next">&#10093;</span>
                     </div>` : ''
                 }
@@ -395,7 +415,7 @@ class WebsiteContentLoader {
     // Render article description with paragraph support
     renderArticleDescription(description) {
         if (!description) return '<p class="short">No description available</p>';
-        
+
         // Handle both array format (new) and string format (legacy)
         let paragraphs = [];
         if (Array.isArray(description)) {
@@ -407,18 +427,18 @@ class WebsiteContentLoader {
                 .map(para => para.trim())
                 .filter(para => para.length > 0);
         }
-        
+
         if (paragraphs.length === 0) {
             return '<p class="short">No description available</p>';
         }
-        
+
         // Create short preview (first paragraph, truncated)
         const firstParagraph = paragraphs[0];
         const shortText = firstParagraph.length > 200 ? firstParagraph.substring(0, 200) + '...' : firstParagraph;
-        
+
         // Create full content (all paragraphs)
         const fullContent = paragraphs.map(para => `<p>${para}</p>`).join('');
-        
+
         return `
             <p class="short">${shortText}</p>
             <div class="full hidden">${fullContent}</div>
@@ -541,6 +561,10 @@ class WebsiteContentLoader {
             this.hideLoading('mass');
         } catch (error) {
             console.error('Error loading mass schedule:', error);
+            const massContent = document.getElementById('mass');
+            if (massContent) {
+                massContent.innerHTML = '<p class="error-message">Unable to load mass schedule. Please contact the parish office for details.</p>';
+            }
             this.hideLoading('mass');
         }
     }
@@ -549,7 +573,7 @@ class WebsiteContentLoader {
     async loadParishTeam() {
         try {
             this.showLoading('parish-team');
-            
+
             const snapshot = await db.collection('team')
                 .orderBy('order', 'asc')
                 .get();
@@ -561,29 +585,29 @@ class WebsiteContentLoader {
             });
 
             // Separate priests and sisters
-            const priests = team.filter(member => 
+            const priests = team.filter(member =>
                 member.role && (
-                    member.role.toLowerCase().includes('priest') || 
+                    member.role.toLowerCase().includes('priest') ||
                     member.role.toLowerCase().includes('deacon')
                 )
             );
-            
-            const sisters = team.filter(member => 
+
+            const sisters = team.filter(member =>
                 member.role && member.role.toLowerCase().includes('sister')
             );
 
             const teamContent = document.getElementById('parish-team');
             if (teamContent && team.length > 0) {
                 let html = `<h2>Parish Team</h2><br>`;
-                
+
                 // Add priests section
                 if (priests.length > 0) {
                     html += `<div class="team-cards">
                         ${priests.map(member => {
-                            const imagePath = member.image || member.img_url || member.image_url;
-                            const imageUrl = imagePath ? getImageUrl(imagePath) : 'https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/team/default-avatar.webp';
-                            
-                            return `<div class="card">
+                        const imagePath = member.image || member.img_url || member.image_url;
+                        const imageUrl = imagePath ? getImageUrl(imagePath) : 'https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/team/default-avatar.webp';
+
+                        return `<div class="card">
                                 <img class="team-card" src="${imageUrl}" alt="${member.name}">
                                 <div class="card-content">
                                     <h3>${member.name}</h3>
@@ -591,20 +615,20 @@ class WebsiteContentLoader {
                                     <p>${member.description || member.desc}</p>
                                 </div>
                             </div>`;
-                        }).join("")}
+                    }).join("")}
                     </div>`;
                 }
-                
+
                 // Add sisters section
                 if (sisters.length > 0) {
                     // Load sisters section content from Firebase
                     try {
                         const sistersContentDoc = await db.collection('content').doc('sisters').get();
                         const sistersContent = sistersContentDoc.exists ? sistersContentDoc.data() : null;
-                        
+
                         const title = sistersContent?.title || 'Helpers of Mary';
                         const description = sistersContent?.description || 'The Helpers of Mary are dedicated sisters who serve our parish community with love and devotion. They live in Seva Sadan house in Dhokali and provide spiritual guidance and support to our parishioners.';
-                        
+
                         html += `
                             <div class="sisters-section" style="margin-top: 40px;">
                                 <h2>${title}</h2>
@@ -613,10 +637,10 @@ class WebsiteContentLoader {
                                 </p>
                                 <div class="team-cards">
                                     ${sisters.map(member => {
-                                        const imagePath = member.image || member.img_url || member.image_url;
-                                        const imageUrl = imagePath ? getImageUrl(imagePath) : 'https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/team/default-avatar.webp';
-                                        
-                                        return `<div class="card">
+                            const imagePath = member.image || member.img_url || member.image_url;
+                            const imageUrl = imagePath ? getImageUrl(imagePath) : 'https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/team/default-avatar.webp';
+
+                            return `<div class="card">
                                             <img class="team-card" src="${imageUrl}" alt="${member.name}">
                                             <div class="card-content">
                                                 <h3>${member.name}</h3>
@@ -624,7 +648,7 @@ class WebsiteContentLoader {
                                                 <p>${member.description || member.desc}</p>
                                             </div>
                                         </div>`;
-                                    }).join("")}
+                        }).join("")}
                                 </div>
                             </div>
                         `;
@@ -640,10 +664,10 @@ class WebsiteContentLoader {
                                 </p>
                                 <div class="team-cards">
                                     ${sisters.map(member => {
-                                        const imagePath = member.image || member.img_url || member.image_url;
-                                        const imageUrl = imagePath ? getImageUrl(imagePath) : 'https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/team/default-avatar.webp';
-                                        
-                                        return `<div class="card">
+                            const imagePath = member.image || member.img_url || member.image_url;
+                            const imageUrl = imagePath ? getImageUrl(imagePath) : 'https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/team/default-avatar.webp';
+
+                            return `<div class="card">
                                             <img class="team-card" src="${imageUrl}" alt="${member.name}">
                                             <div class="card-content">
                                                 <h3>${member.name}</h3>
@@ -651,18 +675,22 @@ class WebsiteContentLoader {
                                                 <p>${member.description || member.desc}</p>
                                             </div>
                                         </div>`;
-                                    }).join("")}
+                        }).join("")}
                                 </div>
                             </div>
                         `;
                     }
                 }
-                
+
                 teamContent.innerHTML = html;
             }
             this.hideLoading('parish-team');
         } catch (error) {
             console.error('Error loading parish team:', error);
+            const teamContent = document.getElementById('parish-team');
+            if (teamContent) {
+                teamContent.innerHTML = '<p class="error-message">Unable to load parish team info.</p>';
+            }
             this.hideLoading('parish-team');
         }
     }
@@ -681,7 +709,7 @@ class WebsiteContentLoader {
             });
 
             const communitiesContent = document.getElementById('communities');
-            
+
             if (communitiesContent) {
                 if (communities.length > 0) {
                     communitiesContent.innerHTML = `
@@ -692,7 +720,7 @@ class WebsiteContentLoader {
                         </div>
                         <div class="community-cards" id="event-cards"></div>
                     `;
-                    
+
                     // Set up the interactive functionality
                     this.setupCommunitiesInteractivity(communities);
                 } else {
@@ -704,6 +732,10 @@ class WebsiteContentLoader {
             this.hideLoading('communities');
         } catch (error) {
             console.error('Error loading communities:', error);
+            const communitiesContent = document.getElementById('communities');
+            if (communitiesContent) {
+                communitiesContent.innerHTML = '<p class="error-message">Unable to load communities.</p>';
+            }
             this.hideLoading('communities');
         }
     }
@@ -712,7 +744,7 @@ class WebsiteContentLoader {
     async loadAssociations() {
         try {
             const snapshot = await db.collection('associations').orderBy('order', 'asc').get();
-            
+
             if (snapshot.empty) {
                 this.hidePageLoading();
                 return;
@@ -738,11 +770,11 @@ class WebsiteContentLoader {
     hidePageLoading() {
         const pageLoading = document.getElementById('page-loading');
         const associationsContainer = document.getElementById('associations-container');
-        
+
         if (pageLoading) {
             pageLoading.style.display = 'none';
         }
-        
+
         if (associationsContainer) {
             associationsContainer.style.display = 'flex'; // Use flex instead of block
         }
@@ -750,7 +782,7 @@ class WebsiteContentLoader {
 
     // Render associations into tabs
     renderAssociations(associations) {
-        
+
         // Map association titles to tab IDs
         const tabMapping = {
             'Parish Youth Council': 'pyc',
@@ -765,22 +797,22 @@ class WebsiteContentLoader {
 
         associations.forEach(association => {
             const tabId = tabMapping[association.title];
-            
+
             if (tabId) {
                 // Update sidebar button title
                 const tabButton = document.querySelector(`[data-tab="${tabId}"]`);
                 if (tabButton) {
                     tabButton.textContent = association.title;
                 }
-                
+
                 // Update content heading
                 const contentHeading = document.querySelector(`#${tabId} h2`);
                 if (contentHeading) {
                     contentHeading.textContent = association.title;
                 }
-                
+
                 const contentElement = document.getElementById(`${tabId}-content`);
-                
+
                 if (contentElement) {
                     // For PYC, use the HTML structure directly
                     if (tabId === 'pyc') {
@@ -832,7 +864,7 @@ class WebsiteContentLoader {
             filteredCommunities.forEach(community => {
                 const card = document.createElement("div");
                 card.classList.add("community_card");
-                
+
                 card.innerHTML = `
                     <div class="area-card-content">
                         <h3>${community.name || 'Community'}</h3>
@@ -844,9 +876,9 @@ class WebsiteContentLoader {
                     <!-- Overlay -->
                     <div class="society-overlay">
                         <h4>Societies</h4>
-                        <p>${community.societies && community.societies.length > 0 ? 
-                            community.societies.map(name => `${name}`).join("<br>") : 
-                            'No societies listed'}</p>
+                        <p>${community.societies && community.societies.length > 0 ?
+                        community.societies.map(name => `${name}`).join("<br>") :
+                        'No societies listed'}</p>
                     </div>`;
 
                 // Toggle overlay on card tap
@@ -892,12 +924,12 @@ const imageUrls = {
 
 // Helper function to get image URL
 function getImageUrl(imagePath) {
-    
+
     // If it's already a full URL, return as is
     if (imagePath && imagePath.startsWith('http')) {
         return imagePath;
     }
-    
+
     // If it's a relative path, construct the Firebase Storage URL
     if (imagePath) {
         // Encode the path for Firebase Storage
@@ -905,7 +937,7 @@ function getImageUrl(imagePath) {
         const fullUrl = `https://firebasestorage.googleapis.com/v0/b/olfatimachurch-b8123.firebasestorage.app/o/${encodedPath}?alt=media`;
         return fullUrl;
     }
-    
+
     // Fallback to default image
     return 'https://firebasestorage.googleapis.com/v0/b/olfatimachurch-b8123.firebasestorage.app/o/images%2Fevent.jpeg?alt=media';
 }
@@ -952,7 +984,7 @@ document.addEventListener('DOMContentLoaded', function () {
 function showTab(tabName) {
     // Check if we're on the parish page
     const currentPage = window.location.pathname.split('/').pop();
-    
+
     // Check if we're on parish page or if parish page exists in the current path
     if (currentPage === 'parish.html' || window.location.pathname.includes('parish.html')) {
         // Wait for DOM to be ready
@@ -977,16 +1009,16 @@ function activateTab(tabName) {
     requestAnimationFrame(() => {
         // Find the target tab and activate it
         const targetTab = document.querySelector(`[data-tab="${tabName}"]`);
-        
+
         if (targetTab) {
             // Remove active class from all tabs and content
             document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
+
             // Add active class to target tab and content
             targetTab.classList.add('active');
             const targetContent = document.getElementById(tabName);
-            
+
             if (targetContent) {
                 targetContent.classList.add('active');
             }
