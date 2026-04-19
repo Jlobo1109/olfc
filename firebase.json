@@ -8,6 +8,10 @@
     ],
     "rewrites": [
       {
+        "source": "/e/**",
+        "function": "api"
+      },
+      {
         "source": "/cms/**",
         "destination": "/cms/index.html"
       }

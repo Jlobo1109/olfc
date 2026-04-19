@@ -216,6 +216,77 @@ app.get("/content/site-settings", async (req, res) => {
     }
 });
 
+// --- Event Preview Endpoint (Dynamic OG Tags) ---
+app.get("/e/:id", async (req, res) => {
+    try {
+        const eventId = req.params.id;
+        const doc = await db.collection("events").doc(eventId).get();
+        
+        if (!doc.exists) {
+            return res.redirect("/parish.html");
+        }
+        
+        const event = doc.data();
+        const title = event.title || 'OLFC Event';
+        
+        let description = 'Join us for this event at Our Lady of Fatima Church.';
+        if (event.description) {
+            if (Array.isArray(event.description) && event.description.length > 0) {
+                description = event.description[0].substring(0, 150) + '...';
+            } else if (typeof event.description === 'string' && event.description.trim().length > 0) {
+                description = event.description.substring(0, 150) + '...';
+            }
+        }
+        
+        let imageUrl = 'https://storage.googleapis.com/olfatimachurch-b8123.firebasestorage.app/images/hero.webp';
+        if (event.images && event.images.length > 0) {
+            const imgPath = event.images[0];
+            if (imgPath.startsWith('http')) {
+                imageUrl = imgPath;
+            } else {
+                imageUrl = `https://firebasestorage.googleapis.com/v0/b/olfatimachurch-b8123.firebasestorage.app/o/${encodeURIComponent(imgPath)}?alt=media`;
+            }
+        }
+
+        const url = `https://olfcmajiwada.com/e/${eventId}`;
+        const redirectUrl = `/parish.html?event=${eventId}`;
+
+        const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title} | Our Lady of Fatima Church</title>
+    
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="${url}">
+    <meta property="og:title" content="${title}">
+    <meta property="og:description" content="${description}">
+    <meta property="og:image" itemprop="image" content="${imageUrl}">
+    
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="${url}">
+    <meta property="twitter:title" content="${title}">
+    <meta property="twitter:description" content="${description}">
+    <meta property="twitter:image" content="${imageUrl}">
+
+    <script>
+        window.location.replace("${redirectUrl}");
+    </script>
+</head>
+<body>
+    <p>Redirecting to event... <a href="${redirectUrl}">Click here if not redirected automatically.</a></p>
+</body>
+</html>`;
+
+        res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
+        res.status(200).send(html);
+    } catch (error) {
+        console.error("Error generating event preview:", error);
+        res.redirect("/parish.html");
+    }
+});
+
 // --- Protected CMS Endpoints (Admin Only) ---
 
 // All /cms routes require authentication and admin claim

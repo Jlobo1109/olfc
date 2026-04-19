@@ -386,7 +386,12 @@ class WebsiteContentLoader {
 
             card.innerHTML = `
                 <div class="article-header">
-                    <h3>${article.title}</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <h3>${article.title}</h3>
+                        <button type="button" class="btn-share" onclick="handleEventShare('${article.id}', '${article.title.replace(/'/g, "\\'")}')" title="Share Event" style="background: none; border: none; cursor: pointer; padding: 5px; color: var(--accent-color); display: flex; align-items: center; justify-content: center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+                        </button>
+                    </div>
                     <span class="meta">${displayDate} | ${article.author || 'Parish Office'}</span>
                 </div>
                 ${article.images && article.images.length > 0 ?
@@ -1065,3 +1070,52 @@ function handleEventCardClick() {
 // Make sure the function is globally available
 window.handleEventCardClick = handleEventCardClick;
 
+// Global function to share events
+window.handleEventShare = function(eventId, eventTitle) {
+    const shareUrl = `${window.location.origin}/e/${eventId}`;
+    const shareText = `Check out this event at Our Lady of Fatima Church: ${eventTitle}`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Our Lady of Fatima Church Event',
+            text: shareText,
+            url: shareUrl
+        }).catch(err => {
+            console.error('Error sharing:', err);
+        });
+    } else {
+        navigator.clipboard.writeText(`${shareText}\n${shareUrl}`).then(() => {
+            alert('Event link copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy text: ', err);
+            prompt('Copy this link to share:', shareUrl);
+        });
+    }
+};
+
+// Handle Deep Linking
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const eventId = urlParams.get('event');
+    
+    if (eventId) {
+        // Wait for content to load
+        const checkExist = setInterval(() => {
+            const elements = document.getElementsByClassName('article-card');
+            if (elements.length > 0) {
+                // Find matching card if possible (though we just scroll to the container in this version)
+                const articlesSection = document.getElementById('articles');
+                if (articlesSection) {
+                    articlesSection.scrollIntoView({ behavior: 'smooth' });
+                    // Give it a glow
+                    articlesSection.style.boxShadow = '0 0 20px rgba(var(--accent-rgb), 0.5)';
+                    setTimeout(() => { articlesSection.style.boxShadow = ''; }, 3000);
+                }
+                clearInterval(checkExist);
+            }
+        }, 500);
+        
+        // Timeout after 5 seconds
+        setTimeout(() => clearInterval(checkExist), 5000);
+    }
+});
