@@ -376,6 +376,8 @@ class WebsiteContentLoader {
 
             const card = document.createElement('div');
             card.classList.add('article-card');
+            card.id = `event-${article.id}`;
+            card.dataset.eventId = article.id;
 
             // Format date properly
             let displayDate = article.date;
@@ -1198,7 +1200,7 @@ window.handleEventCardClick = handleEventCardClick;
 
 // Global function to share events
 window.handleEventShare = function(eventId, eventTitle) {
-    const shareUrl = `${window.location.origin}/e/${eventId}`;
+    const shareUrl = `${window.location.origin}/parish.html?event=${eventId}`;
     const shareText = `Check out this event at Our Lady of Fatima Church: ${eventTitle}`;
     
     if (navigator.share) {
@@ -1225,23 +1227,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const eventId = urlParams.get('event');
     
     if (eventId) {
-        // Wait for content to load
+        const highlightEvent = () => {
+            const eventCard = document.getElementById(`event-${eventId}`);
+            if (eventCard) {
+                eventCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                eventCard.style.boxShadow = '0 0 20px rgba(var(--accent-rgb), 0.5)';
+                setTimeout(() => { eventCard.style.boxShadow = ''; }, 3000);
+                return true;
+            }
+            return false;
+        };
+
         const checkExist = setInterval(() => {
-            const elements = document.getElementsByClassName('article-card');
-            if (elements.length > 0) {
-                // Find matching card if possible (though we just scroll to the container in this version)
-                const articlesSection = document.getElementById('articles');
-                if (articlesSection) {
-                    articlesSection.scrollIntoView({ behavior: 'smooth' });
-                    // Give it a glow
-                    articlesSection.style.boxShadow = '0 0 20px rgba(var(--accent-rgb), 0.5)';
-                    setTimeout(() => { articlesSection.style.boxShadow = ''; }, 3000);
-                }
+            if (highlightEvent()) {
                 clearInterval(checkExist);
             }
         }, 500);
-        
-        // Timeout after 5 seconds
+
         setTimeout(() => clearInterval(checkExist), 5000);
     }
 });

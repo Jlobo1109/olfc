@@ -1,4 +1,4 @@
-const functions = require("firebase-functions");
+const { onRequest } = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 const express = require("express");
 const cors = require("cors");
@@ -14,6 +14,7 @@ const app = express();
 // Using environment variables or a default list
 const allowedOrigins = [
     "https://olfatimachurch-b8123.web.app",
+    "https://olfatimachurch-b8123.firebaseapp.com",
     "https://olfcmajiwada.com",
     "https://www.olfcmajiwada.com",
     "https://admin.olfcmajiwada.com",
@@ -22,10 +23,17 @@ const allowedOrigins = [
     "http://127.0.0.1:5000"
 ];
 
+const isAllowedOrigin = (origin) => {
+    if (!origin) return true;
+    if (allowedOrigins.includes(origin)) return true;
+    // Firebase Hosting preview channels (e.g. uat, PR previews)
+    return /^https:\/\/olfatimachurch-b8123--[a-z0-9-]+\.web\.app$/.test(origin);
+};
+
 app.use(
     cors({
         origin: (origin, callback) => {
-            if (!origin || allowedOrigins.includes(origin)) {
+            if (isAllowedOrigin(origin)) {
                 callback(null, true);
             } else {
                 callback(new Error("Not allowed by CORS"));
@@ -248,7 +256,9 @@ app.get("/e/:id", async (req, res) => {
             }
         }
 
-        const url = `https://olfcmajiwada.com/e/${eventId}`;
+        const host = req.get("x-forwarded-host") || req.get("host") || "olfcmajiwada.com";
+        const protocol = req.get("x-forwarded-proto") || "https";
+        const url = `${protocol}://${host}/e/${eventId}`;
         const redirectUrl = `/parish.html?event=${eventId}`;
 
         const html = `<!DOCTYPE html>
@@ -566,5 +576,5 @@ app.put("/cms/site-settings", async (req, res) => {
     }
 });
 
-exports.api = functions.https.onRequest(app);
+exports.api = onRequest({ region: "us-central1" }, app);
 
