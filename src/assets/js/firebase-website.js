@@ -947,12 +947,138 @@ function getImageUrl(imagePath) {
     return 'https://firebasestorage.googleapis.com/v0/b/olfatimachurch-b8123.firebasestorage.app/o/images%2Fevent.jpeg?alt=media';
 }
 
+// ===========================================
+// GLOBAL UI INTERACTION HELPERS
+// ===========================================
+
+// Mobile hamburger menu toggle
+function initMobileMenu() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const navLinks = document.getElementById('nav-links');
+    const navbar = document.querySelector('.navbar');
+
+    if (!menuToggle || !navLinks) {
+        return;
+    }
+
+    menuToggle.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+        navbar.classList.toggle('active');
+    });
+}
+
+// Highlight the active page in the navigation bar
+function highlightActiveNav() {
+    const navLinks = document.querySelectorAll('.navbar .nav-links a');
+    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+
+    navLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        // Extract page filename and hash
+        const hrefPage = href ? href.split('#')[0] : '';
+        const hrefHash = href && href.includes('#') ? '#' + href.split('#')[1] : '';
+
+        // If the current path is home, and href points to index.html
+        const isHome = currentPath === 'index.html' || currentPath === '';
+        const linkIsHome = hrefPage === 'index.html' || hrefPage === '';
+
+        if (isHome && linkIsHome && hrefHash) {
+            // Section link on home page (e.g. index.html#contact)
+            // Highlight it if the current URL hash matches
+            if (window.location.hash === hrefHash) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        } else if (hrefPage === currentPath || (isHome && linkIsHome && !hrefHash)) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+}
+
+// Global Tab Interaction and scroll behavior
+function initTabInteraction() {
+    // Tab switching event delegation
+    document.addEventListener('click', (e) => {
+        const tabLink = e.target.closest('.tab-link');
+        if (tabLink && tabLink.dataset.tab) {
+            activateTab(tabLink.dataset.tab);
+
+            // Tab menu scroll alignment
+            const tabMenu = tabLink.closest('.tab-menu');
+            if (tabMenu) {
+                const linkRight = tabLink.getBoundingClientRect().right;
+                const menuRight = tabMenu.getBoundingClientRect().right;
+                const linkLeft = tabLink.getBoundingClientRect().left;
+                const menuLeft = tabMenu.getBoundingClientRect().left;
+
+                // Determine dynamic threshold scroll offset
+                const threshold = 5;
+                if (linkRight >= menuRight - threshold) {
+                    tabMenu.scrollBy({ left: tabLink.offsetWidth + 10, behavior: 'smooth' });
+                } else if (linkLeft <= menuLeft + threshold) {
+                    tabMenu.scrollBy({ left: -tabLink.offsetWidth - 10, behavior: 'smooth' });
+                }
+            }
+        }
+    });
+}
+
+// Lightbox logic
+let currentSlideIndex = 0;
+let galleryImagesList = [];
+
+function openLightbox(imgSrc) {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    if (lightbox && lightboxImg) {
+        lightboxImg.src = imgSrc;
+        lightbox.style.display = 'flex';
+
+        // Find all gallery images to allow prev/next navigation
+        galleryImagesList = Array.from(document.querySelectorAll('.gallery-card img, .event-card')).map(img => img.src);
+        currentSlideIndex = galleryImagesList.indexOf(imgSrc);
+        if (currentSlideIndex === -1) {
+            galleryImagesList = [imgSrc];
+            currentSlideIndex = 0;
+        }
+    }
+}
+
+function closeLightbox() {
+    const lightbox = document.getElementById('lightbox');
+    if (lightbox) {
+        lightbox.style.display = 'none';
+    }
+}
+
+function changeSlide(direction) {
+    if (galleryImagesList.length <= 1) return;
+    currentSlideIndex = (currentSlideIndex + direction + galleryImagesList.length) % galleryImagesList.length;
+    const lightboxImg = document.getElementById('lightbox-img');
+    if (lightboxImg) {
+        lightboxImg.src = galleryImagesList[currentSlideIndex];
+    }
+}
+
+// Expose lightbox functions globally for inline HTML references
+window.openLightbox = openLightbox;
+window.closeLightbox = closeLightbox;
+window.changeSlide = changeSlide;
+
 // Auto-load content based on current page
 document.addEventListener('DOMContentLoaded', function () {
-    const currentPage = window.location.pathname.split('/').pop();
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
 
     // Initialize content loader
     const contentLoader = new WebsiteContentLoader();
+
+    // Initialize UI helpers
+    initMobileMenu();
+    highlightActiveNav();
+    initTabInteraction();
 
     switch (currentPage) {
         case 'index.html':

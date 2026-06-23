@@ -4,10 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - Our Lady of Fatima Church</title>
-    <style>
-    </style>
-  <script type="module" crossorigin src="/assets/firebase-website-Dvjqa-bi.js"></script>
+    <title>Parish - Our Lady of Fatima Church</title>
+  <script type="module" crossorigin src="/assets/firebase-website-BSFLwHgv.js"></script>
   <link rel="stylesheet" crossorigin href="/assets/firebase-website-yqTiiKyi.css">
 </head>
 
@@ -25,7 +23,7 @@
             </div>
 
             <ul class="nav-links" id="nav-links">
-                <li><a href="about.html" class="active">About</a></li>
+                <li><a href="about.html">About</a></li>
                 <li><a href="parish.html">Parish</a></li>
                 <li><a href="associations.html">Associations</a></li>
                 <li><a href="index.html#contact">Contact</a></li>
@@ -63,81 +61,10 @@
     </footer>
     <!-- ...your HTML... -->
 
-    <!-- Script -->
-    <script>
-        const tabMenu = document.querySelector(".tab-menu");
-        const tabLinks = document.querySelectorAll(".tab-menu .tab-link");
 
-        tabLinks.forEach((link, index) => {
-            link.addEventListener("click", () => {
-                // If clicked element is the last visible item
-                const linkRight = link.getBoundingClientRect().right;
-                const menuRight = tabMenu.getBoundingClientRect().right;
-
-                if (linkRight >= menuRight - 50) {
-                    // Scroll right by the width of one button
-                    tabMenu.scrollBy({ left: link.offsetWidth, behavior: "smooth" });
-                }
-
-                // If clicked element is the first visible item
-                const linkLeft = link.getBoundingClientRect().left;
-                const menuLeft = tabMenu.getBoundingClientRect().left;
-
-                if (linkLeft <= menuLeft + 50) {
-                    // Scroll left by the width of one button
-                    tabMenu.scrollBy({ left: -link.offsetWidth, behavior: "smooth" });
-                }
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            const menuToggle = document.getElementById('menu-toggle');   // <div id="menu-toggle">☰</div>
-            const navLinks = document.getElementById('nav-links');      // <ul id="nav-links" class="nav-links">...</ul>
-            const navbar = document.querySelector('.navbar');
-
-            if (!menuToggle || !navLinks) {
-                console.warn('Missing #menu-toggle or #nav-links in the HTML.');
-                return;
-            }
-
-            menuToggle.addEventListener('click', () => {
-                // Support either CSS pattern:
-                navLinks.classList.toggle('active');   // .nav-links.active { display:flex }
-                navbar.classList.toggle('active');     // .navbar.active .nav-links { display:flex }
-
-                console.log('Menu btn clicked >>>>', menuToggle);
-                console.log('Nav Links >>>>>', navLinks);
-            });
-        });
-        document.querySelectorAll('.tab-link').forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Remove active class from all tabs and content
-                document.querySelectorAll('.tab-link').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-                // Add active class to clicked tab
-                btn.classList.add('active');
-
-                // Show corresponding content
-                const targetTab = btn.dataset.tab;
-                const targetContent = document.getElementById(targetTab);
-                if (targetContent) {
-                    targetContent.classList.add('active');
-                }
-            });
-        });
-
-        // Mobile nav toggle
-        const menuToggle = document.getElementById('menu-toggle');
-        const navLinks = document.getElementById('nav-links');
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-
-    </script>
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </body>
 
 </html>
