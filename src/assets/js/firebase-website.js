@@ -1093,7 +1093,24 @@ document.addEventListener('DOMContentLoaded', function () {
             break;
         case 'parish.html':
             contentLoader.loadParishTeam();
-            contentLoader.loadParishEvents();
+            contentLoader.loadParishEvents().then(() => {
+                // After events are loaded and rendered, handle deep link
+                const urlParams = new URLSearchParams(window.location.search);
+                const sharedEventId = urlParams.get('event');
+                if (sharedEventId) {
+                    // Switch to the Events tab first
+                    activateTab('articles');
+                    // Wait for the tab to become visible, then scroll to the event
+                    setTimeout(() => {
+                        const eventCard = document.getElementById(`event-${sharedEventId}`);
+                        if (eventCard) {
+                            eventCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            eventCard.style.boxShadow = '0 0 20px rgba(var(--accent-rgb), 0.5)';
+                            setTimeout(() => { eventCard.style.boxShadow = ''; }, 3000);
+                        }
+                    }, 300);
+                }
+            });
             contentLoader.loadCommunities();
             // Check if we need to activate a specific tab after navigation
             const tabToActivate = sessionStorage.getItem('activateTab');
@@ -1221,29 +1238,6 @@ window.handleEventShare = function(eventId, eventTitle) {
     }
 };
 
-// Handle Deep Linking
-document.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const eventId = urlParams.get('event');
-    
-    if (eventId) {
-        const highlightEvent = () => {
-            const eventCard = document.getElementById(`event-${eventId}`);
-            if (eventCard) {
-                eventCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                eventCard.style.boxShadow = '0 0 20px rgba(var(--accent-rgb), 0.5)';
-                setTimeout(() => { eventCard.style.boxShadow = ''; }, 3000);
-                return true;
-            }
-            return false;
-        };
-
-        const checkExist = setInterval(() => {
-            if (highlightEvent()) {
-                clearInterval(checkExist);
-            }
-        }, 500);
-
-        setTimeout(() => clearInterval(checkExist), 5000);
-    }
-});
+// Deep linking is now handled in the parish.html case of the DOMContentLoaded
+// handler above (after loadParishEvents resolves), which ensures the Events tab
+// is activated and the event cards exist in the DOM before scrolling.
