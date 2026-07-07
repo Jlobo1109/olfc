@@ -1436,6 +1436,34 @@ class CMSApp {
     }
 
     showEventModal(event = null) {
+        let dateValueForInput = '';
+        if (event && event.date) {
+            const dateStr = event.date;
+            const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const match = dateStr.match(/([A-Z][a-z]{2})\s+(\d{1,2}),\s+(\d{4})/);
+            if (match) {
+                const monthIndex = monthNames.indexOf(match[1]);
+                if (monthIndex !== -1) {
+                    const mm = String(monthIndex + 1).padStart(2, '0');
+                    const dd = match[2].padStart(2, '0');
+                    const yyyy = match[3];
+                    dateValueForInput = `${yyyy}-${mm}-${dd}`;
+                }
+            }
+            if (!dateValueForInput) {
+                const parsed = new Date(dateStr);
+                if (!isNaN(parsed)) {
+                    // Try to avoid timezone shifting by using local components
+                    const yyyy = parsed.getFullYear();
+                    const mm = String(parsed.getMonth() + 1).padStart(2, '0');
+                    const dd = String(parsed.getDate()).padStart(2, '0');
+                    dateValueForInput = `${yyyy}-${mm}-${dd}`;
+                } else {
+                    dateValueForInput = event.date;
+                }
+            }
+        }
+
         const modal = document.createElement('div');
         modal.className = 'modal-overlay';
         modal.innerHTML = `
@@ -1451,7 +1479,7 @@ class CMSApp {
                     </div>
                     <div class="form-group">
                         <label for="eventDate">Date</label>
-                        <input type="text" id="eventDate" name="date" value="${event ? event.date : ''}" required>
+                        <input type="date" id="eventDate" name="date" value="${dateValueForInput}" required>
                     </div>
                     <div class="form-group">
                         <label for="eventAuthor">Author</label>
@@ -1582,9 +1610,17 @@ class CMSApp {
             const rawDescription = formData.get('description');
             const descriptionParagraphs = this.parseDescriptionToParagraphs(rawDescription);
 
+            // Format date to MMM DD, YYYY
+            let formattedDate = formData.get('date');
+            if (formattedDate && /^\d{4}-\d{2}-\d{2}$/.test(formattedDate)) {
+                const [year, month, day] = formattedDate.split('-');
+                const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                formattedDate = `${monthNames[parseInt(month, 10) - 1]} ${day}, ${year}`;
+            }
+
             const eventData = {
                 title: formData.get('title'),
-                date: formData.get('date'),
+                date: formattedDate,
                 author: formData.get('author'),
                 category: formData.get('category'),
                 description: descriptionParagraphs,  // Store as array of paragraphs
