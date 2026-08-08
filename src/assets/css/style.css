@@ -1314,12 +1314,33 @@ footer {
 /* ===========================================
    ACCOUNT POC - COMPACT DIGITAL ID CARD SYSTEM
    =========================================== */
+
+/* --- GLOBAL STYLE OVERRIDES FOR ACCOUNT PAGE --- */
+/* Kill global `section` padding & text-align that bleeds into card */
+.account-page-main section {
+    padding: 0;
+    text-align: left;
+}
+/* Kill global h2 decorative underline inside account page */
+.account-page-main h2::after {
+    display: none;
+    content: none;
+}
+/* Kill global h2 size/margin override inside account page */
+.account-page-main h2 {
+    font-size: inherit;
+    margin-bottom: 0;
+}
+/* Kill global h3::after if any */
+.account-page-main h3::after {
+    display: none;
+    content: none;
+}
+
 .account-page-main {
     min-height: calc(100vh - 140px);
     background: #f1f5f9;
     padding-bottom: 80px;
-    display: flex;
-    flex-direction: column;
 }
 
 .account-hero {
