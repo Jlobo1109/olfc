@@ -199,12 +199,10 @@ function renderFamilyCard(family) {
                         <div class="member-avatar ${member.gender === 'Female' ? 'female' : 'male'}">
                             ${getInitials(member.name)}
                         </div>
-                        <div class="member-info">
-                            <span class="member-name">${member.name}</span>
-                            <span class="member-relation-badge">${member.relation}</span>
-                        </div>
+                        <span class="member-name">${member.name}</span>
+                        <span class="member-relation-badge">${member.relation}</span>
                         <div class="member-row-arrow">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
                         </div>
                     </div>
                 `).join('')}
