@@ -52,6 +52,6 @@ Thumbs.db
 *.swp
 *.swo
 
-# Temporary files
-*.tmp
-*.temp
+# Build output
+dist/
+dist/*

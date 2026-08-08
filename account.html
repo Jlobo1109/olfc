@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parishioner Account | Our Lady of Fatima Church</title>
+    <meta name="description"
+        content="Parishioner Account Portal and Family Records - Our Lady of Fatima Church, Majiwada.">
+
+    <link rel="stylesheet" href="/src/assets/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Header/Navbar -->
+    <header>
+        <nav class="navbar">
+            <a href="index.html">
+                <div class="logo">Our Lady of Fatima Church</div>
+            </a>
+
+            <!-- Menu Button (hamburger) -->
+            <div class="menu-toggle" id="menu-toggle">
+                ☰
+            </div>
+
+            <ul class="nav-links" id="nav-links">
+                <li><a href="about.html">About</a></li>
+                <li><a href="parish.html">Parish</a></li>
+                <li><a href="associations.html">Associations</a></li>
+                <li><a href="account.html" class="active">Account</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="account-page-main">
+        <section class="account-hero">
+            <div class="account-hero-content">
+                <span class="account-badge">Parish Portal</span>
+                <h1>Parishioner Family Card</h1>
+                <p>Manage family details, parish registration, and sacramental history in one place.</p>
+            </div>
+        </section>
+
+        <!-- Family Selection & Search Controls (Demo Feature) -->
+        <section class="account-container">
+            <div class="family-selector-bar">
+                <div class="selector-label">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 4 0 0 0-4-4H5a4 4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 4 0 0 1 0 7.75"></path></svg>
+                    <span>Select Demo Family Record:</span>
+                </div>
+                <div class="selector-options" id="family-selector-options">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="account-loading" class="account-loading" style="display: none;">
+                <div class="spinner"></div>
+                <p>Fetching Family NoSQL Record from Firebase...</p>
+            </div>
+
+            <!-- Family Card UI -->
+            <div id="family-card-container" class="family-card-wrapper">
+                <!-- Populated dynamically by account.js -->
+            </div>
+        </section>
+
+        <!-- Bottom Sheet Sliding Modal for Member Sacraments & Info -->
+        <div id="bottom-sheet-backdrop" class="bottom-sheet-backdrop">
+            <div id="bottom-sheet" class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="member-modal-name">
+                <div class="sheet-drag-handle-wrapper" id="sheet-drag-handle">
+                    <div class="sheet-drag-handle"></div>
+                </div>
+                <button type="button" class="sheet-close-btn" id="sheet-close-btn" aria-label="Close modal">&times;</button>
+                
+                <div class="sheet-content" id="sheet-content">
+                    <!-- Populated dynamically when a member card is clicked -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>Disclaimer: The information displayed in this POC demo is for testing purposes. Our Lady of Fatima Church, Majiwada.</p>
+    </footer>
+
+    <!-- Firebase SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <!-- Account Page Logic -->
+    <script type="module" src="/src/assets/js/account.js"></script>
+</body>
+
+</html>
