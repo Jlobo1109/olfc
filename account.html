@@ -41,48 +41,42 @@
         <section class="account-hero">
             <div class="account-hero-content">
                 <span class="account-badge">Parish Portal</span>
-                <h1>Parishioner Family Card</h1>
-                <p>Manage family details, parish registration, and sacramental history in one place.</p>
+                <h1>Parishioner Account</h1>
+                <p>Digital Parish ID Card & Sacramental Records</p>
             </div>
         </section>
 
-        <!-- Family Selection & Search Controls (Demo Feature) -->
         <section class="account-container">
-            <div class="family-selector-bar">
-                <div class="selector-label">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 4 0 0 0-4-4H5a4 4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 4 0 0 1 0 7.75"></path></svg>
-                    <span>Select Demo Family Record:</span>
-                </div>
-                <div class="selector-options" id="family-selector-options">
-                    <!-- Populated dynamically via JS -->
-                </div>
-            </div>
-
             <!-- Loading State -->
             <div id="account-loading" class="account-loading" style="display: none;">
                 <div class="spinner"></div>
-                <p>Fetching Family NoSQL Record from Firebase...</p>
+                <p>Loading Parish ID Card...</p>
             </div>
 
-            <!-- Family Card UI -->
-            <div id="family-card-container" class="family-card-wrapper">
-                <!-- Populated dynamically by account.js -->
+            <!-- Replaceable Card Wrapper (Family Card & Member Card) -->
+            <div id="id-card-wrapper" class="id-card-wrapper">
+                <!-- Front View: Family ID Card -->
+                <div id="family-card-front" class="id-card-view family-view">
+                    <!-- Populated dynamically by account.js -->
+                </div>
+
+                <!-- Back View: Member ID Card (Replaces Family Card on Member Click) -->
+                <div id="member-card-back" class="id-card-view member-view">
+                    <!-- Member Card Nav Header -->
+                    <div class="member-card-nav">
+                        <button type="button" id="back-to-family-btn" class="back-nav-btn" aria-label="Return to Family Card">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                            <span>Back to Family Card</span>
+                        </button>
+                        <span class="member-card-badge">MEMBER ID CARD</span>
+                    </div>
+
+                    <div id="member-card-content" class="member-card-content">
+                        <!-- Populated dynamically when a member card is clicked -->
+                    </div>
+                </div>
             </div>
         </section>
-
-        <!-- Bottom Sheet Sliding Modal for Member Sacraments & Info -->
-        <div id="bottom-sheet-backdrop" class="bottom-sheet-backdrop">
-            <div id="bottom-sheet" class="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="member-modal-name">
-                <div class="sheet-drag-handle-wrapper" id="sheet-drag-handle">
-                    <div class="sheet-drag-handle"></div>
-                </div>
-                <button type="button" class="sheet-close-btn" id="sheet-close-btn" aria-label="Close modal">&times;</button>
-                
-                <div class="sheet-content" id="sheet-content">
-                    <!-- Populated dynamically when a member card is clicked -->
-                </div>
-            </div>
-        </div>
     </main>
 
     <!-- Footer -->
