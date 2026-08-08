@@ -1389,11 +1389,11 @@ footer {
 
 .account-container {
     width: 100%;
-    max-width: 560px;
+    max-width: 640px;
     margin: -45px auto 0;
     padding: 0 16px 40px;
     position: relative;
-    z-index: 2;
+    z-index: 2; 
 }
 
 /* Loading State */
@@ -1415,7 +1415,7 @@ footer {
 .id-card-wrapper {
     position: relative;
     width: 100%;
-    max-width: 540px;
+    max-width: 640px;
     margin: 0 auto;
     min-height: 0;
 }
