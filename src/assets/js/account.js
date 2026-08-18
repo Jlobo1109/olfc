@@ -120,6 +120,21 @@ function getInitials(name) {
     return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 }
 
+// Helper to render vector SVG icons for Sacraments
+function getSacramentIconSvg(sacramentName) {
+    const name = (sacramentName || '').toLowerCase();
+    if (name.includes('baptism')) {
+        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`;
+    } else if (name.includes('communion')) {
+        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10v4a5 5 0 0 1-10 0V3z"/><path d="M12 12v6"/><path d="M8 21h8"/><circle cx="12" cy="3" r="1.5"/></svg>`;
+    } else if (name.includes('confirmation')) {
+        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M12 8L8 4"/><path d="M12 8l4-4"/><path d="M4 13a8 8 0 0 0 16 0"/><line x1="12" y1="13" x2="12" y2="22"/></svg>`;
+    } else if (name.includes('matrimony') || name.includes('marriage')) {
+        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/></svg>`;
+    }
+    return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M7 7h10"/></svg>`;
+}
+
 // Load Family Record (from Firestore if available, else DEMO_FAMILY_NOSQL)
 async function loadFamilyRecord(familyId = "FAM-2024-0892") {
     const loadingEl = document.getElementById("account-loading");
@@ -260,11 +275,17 @@ function openMemberCard(memberId) {
         <div class="member-id-meta-grid">
             <div class="meta-card">
                 <span class="meta-card-label">Date of Birth (DOB)</span>
-                <span class="meta-card-value">🎂 ${formatDate(member.dob)}</span>
+                <span class="meta-card-value">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    ${formatDate(member.dob)}
+                </span>
             </div>
             <div class="meta-card">
                 <span class="meta-card-label">Sacraments Received</span>
-                <span class="meta-card-value highlight">✝️ ${sacramentsCount} Sacraments</span>
+                <span class="meta-card-value highlight">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" style="vertical-align: middle; margin-right: 4px;"><path d="M12 2v20M7 7h10"/></svg>
+                    ${sacramentsCount} Sacraments
+                </span>
             </div>
         </div>
 
@@ -276,7 +297,7 @@ function openMemberCard(memberId) {
                 <div class="sacraments-timeline">
                     ${member.sacraments.map(sac => `
                         <div class="timeline-item">
-                            <div class="timeline-icon">${sac.icon || '✝️'}</div>
+                            <div class="timeline-icon">${getSacramentIconSvg(sac.name)}</div>
                             <div class="timeline-content">
                                 <div class="sacrament-header">
                                     <h4 class="sacrament-name">${sac.name}</h4>
