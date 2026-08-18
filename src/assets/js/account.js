@@ -1,4 +1,4 @@
-// Account POC JS - Compact Digital ID Card System
+// Account POC JS - Compact Digital ID Card System & Parishioner Portal
 
 // Demo NoSQL Dataset for User Account
 const DEMO_FAMILY_NOSQL = {
@@ -9,6 +9,7 @@ const DEMO_FAMILY_NOSQL = {
     headOfFamily: "Joseph D'Souza",
     address: "B-402, Sacred Heart CHS, Majiwada, Thane (W)",
     contactPhone: "+91 98201 12345",
+    email: "joseph.dsouza@example.com",
     members: [
         {
             id: "mem_01",
@@ -17,10 +18,10 @@ const DEMO_FAMILY_NOSQL = {
             gender: "Male",
             dob: "1978-05-14",
             sacraments: [
-                { name: "Baptism", date: "1978-06-10", parish: "St. John the Baptist Church, Thane", icon: "💧", certId: "CERT-BAP-1978-0412" },
-                { name: "First Holy Communion", date: "1987-04-19", parish: "St. John the Baptist Church, Thane", icon: "🍞", certId: "CERT-FHC-1987-0189" },
-                { name: "Confirmation", date: "1993-11-21", parish: "St. John the Baptist Church, Thane", icon: "🕊️", certId: "CERT-CNF-1993-0304" },
-                { name: "Holy Matrimony", date: "2006-01-08", parish: "Our Lady of Fatima Church, Majiwada", icon: "💍", certId: "CERT-MAT-2006-0052" }
+                { name: "Baptism", date: "1978-06-10", parish: "St. John the Baptist Church, Thane", certId: "CERT-BAP-1978-0412" },
+                { name: "First Holy Communion", date: "1987-04-19", parish: "St. John the Baptist Church, Thane", certId: "CERT-FHC-1987-0189" },
+                { name: "Confirmation", date: "1993-11-21", parish: "St. John the Baptist Church, Thane", certId: "CERT-CNF-1993-0304" },
+                { name: "Holy Matrimony", date: "2006-01-08", parish: "Our Lady of Fatima Church, Majiwada", certId: "CERT-MAT-2006-0052" }
             ]
         },
         {
@@ -30,10 +31,10 @@ const DEMO_FAMILY_NOSQL = {
             gender: "Female",
             dob: "1982-11-03",
             sacraments: [
-                { name: "Baptism", date: "1982-12-05", parish: "St. Michael Church, Mahim", icon: "💧", certId: "CERT-BAP-1982-0881" },
-                { name: "First Holy Communion", date: "1991-05-12", parish: "St. Michael Church, Mahim", icon: "🍞", certId: "CERT-FHC-1991-0422" },
-                { name: "Confirmation", date: "1997-10-26", parish: "St. Michael Church, Mahim", icon: "🕊️", certId: "CERT-CNF-1997-0915" },
-                { name: "Holy Matrimony", date: "2006-01-08", parish: "Our Lady of Fatima Church, Majiwada", icon: "💍", certId: "CERT-MAT-2006-0052" }
+                { name: "Baptism", date: "1982-12-05", parish: "St. Michael Church, Mahim", certId: "CERT-BAP-1982-0881" },
+                { name: "First Holy Communion", date: "1991-05-12", parish: "St. Michael Church, Mahim", certId: "CERT-FHC-1991-0422" },
+                { name: "Confirmation", date: "1997-10-26", parish: "St. Michael Church, Mahim", certId: "CERT-CNF-1997-0915" },
+                { name: "Holy Matrimony", date: "2006-01-08", parish: "Our Lady of Fatima Church, Majiwada", certId: "CERT-MAT-2006-0052" }
             ]
         },
         {
@@ -41,11 +42,10 @@ const DEMO_FAMILY_NOSQL = {
             name: "Kevin D'Souza",
             relation: "Son",
             gender: "Male",
-            dob: "2008-09-22",
+            dob: "2010-09-22",
             sacraments: [
-                { name: "Baptism", date: "2008-10-19", parish: "Our Lady of Fatima Church, Majiwada", icon: "💧", certId: "CERT-BAP-2008-0114" },
-                { name: "First Holy Communion", date: "2017-04-30", parish: "Our Lady of Fatima Church, Majiwada", icon: "🍞", certId: "CERT-FHC-2017-0518" },
-                { name: "Confirmation", date: "2023-11-12", parish: "Our Lady of Fatima Church, Majiwada", icon: "🕊️", certId: "CERT-CNF-2023-0240" }
+                { name: "Baptism", date: "2010-10-19", parish: "Our Lady of Fatima Church, Majiwada", certId: "CERT-BAP-2010-0114" },
+                { name: "First Holy Communion", date: "2019-04-30", parish: "Our Lady of Fatima Church, Majiwada", certId: "CERT-FHC-2019-0518" }
             ]
         },
         {
@@ -53,14 +53,31 @@ const DEMO_FAMILY_NOSQL = {
             name: "Sarah D'Souza",
             relation: "Daughter",
             gender: "Female",
-            dob: "2014-03-18",
+            dob: "2017-03-18",
             sacraments: [
-                { name: "Baptism", date: "2014-04-13", parish: "Our Lady of Fatima Church, Majiwada", icon: "💧", certId: "CERT-BAP-2014-0677" },
-                { name: "First Holy Communion", date: "2022-05-08", parish: "Our Lady of Fatima Church, Majiwada", icon: "🍞", certId: "CERT-FHC-2022-0310" }
+                { name: "Baptism", date: "2017-04-13", parish: "Our Lady of Fatima Church, Majiwada", certId: "CERT-BAP-2017-0677" }
             ]
         }
     ]
 };
+
+// Default Parish Announcements
+const DEFAULT_ANNOUNCEMENTS = [
+    {
+        id: "notif_ann_01",
+        title: "⛪ Parish Mass Schedule Update",
+        desc: "Special Evening Mass scheduled for Feast Day this Sunday at 6:30 PM.",
+        timestamp: "Today",
+        type: "announcement"
+    },
+    {
+        id: "notif_ann_02",
+        title: "📜 Confirmation Catechism 2026",
+        desc: "Registration for Confirmation 2026 batch candidates is now open at the office.",
+        timestamp: "Yesterday",
+        type: "announcement"
+    }
+];
 
 // Active State
 let currentFamilyData = null;
@@ -86,7 +103,7 @@ function initFirebaseDB() {
     }
 }
 
-// Format Date string nicely (e.g. 2012-08-15 -> 15th August 2012)
+// Format Date string
 function formatDate(dateStr) {
     if (!dateStr) return 'N/A';
     const date = new Date(dateStr);
@@ -104,7 +121,6 @@ function formatDate(dateStr) {
     return `${day}${suffix} ${month} ${year}`;
 }
 
-// Calculate Age from DOB
 function calculateAge(dobStr) {
     if (!dobStr) return null;
     const dob = new Date(dobStr);
@@ -114,43 +130,95 @@ function calculateAge(dobStr) {
     return Math.abs(ageDate.getUTCFullYear() - 1970);
 }
 
-// Helper to render member avatar initials
 function getInitials(name) {
     if (!name) return "??";
     return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 }
 
-// Helper to render vector SVG icons for Sacraments
 function getSacramentIconSvg(sacramentName) {
     const name = (sacramentName || '').toLowerCase();
     if (name.includes('baptism')) {
-        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`;
+        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></svg>`;
     } else if (name.includes('communion')) {
-        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10v4a5 5 0 0 1-10 0V3z"/><path d="M12 12v6"/><path d="M8 21h8"/><circle cx="12" cy="3" r="1.5"/></svg>`;
+        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5"><path d="M7 3h10v4a5 5 0 0 1-10 0V3z"/><path d="M12 12v6"/><path d="M8 21h8"/><circle cx="12" cy="3" r="1.5"/></svg>`;
     } else if (name.includes('confirmation')) {
-        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="M12 8L8 4"/><path d="M12 8l4-4"/><path d="M4 13a8 8 0 0 0 16 0"/><line x1="12" y1="13" x2="12" y2="22"/></svg>`;
+        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2.5"><path d="M12 2v6"/><path d="M12 8L8 4"/><path d="M12 8l4-4"/><path d="M4 13a8 8 0 0 0 16 0"/><line x1="12" y1="13" x2="12" y2="22"/></svg>`;
     } else if (name.includes('matrimony') || name.includes('marriage')) {
-        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/></svg>`;
+        return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2.5"><circle cx="9" cy="12" r="5"/><circle cx="15" cy="12" r="5"/></svg>`;
     }
-    return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M7 7h10"/></svg>`;
+    return `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5"><path d="M12 2v20M7 7h10"/></svg>`;
 }
 
-// Load Family Record (from Firestore if available, else DEMO_FAMILY_NOSQL)
+// -------------------------------------------------------------
+// PARISHIONER AUTHENTICATION SYSTEM
+// -------------------------------------------------------------
+function initParishionerAuth() {
+    const authOverlay = document.getElementById('parishionerAuthOverlay');
+    const loginForm = document.getElementById('parishionerLoginForm');
+    const logoutNav = document.getElementById('parishionerLogoutNav');
+    const logoutBtn = document.getElementById('parishionerLogoutBtn');
+
+    const authSession = JSON.parse(sessionStorage.getItem('olfc_parishioner_session') || 'null');
+
+    if (authSession) {
+        if (authOverlay) authOverlay.style.display = 'none';
+        if (logoutNav) logoutNav.style.display = 'inline-block';
+        loadFamilyRecord(authSession.familyId || "FAM-2024-0892");
+    } else {
+        if (authOverlay) authOverlay.style.display = 'flex';
+        if (logoutNav) logoutNav.style.display = 'none';
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const inputId = document.getElementById('loginFamilyId').value.trim();
+            const password = document.getElementById('loginFamilyPassword').value;
+
+            // Demo authentication check
+            if (inputId && password) {
+                const sessionData = {
+                    familyId: inputId,
+                    authenticatedAt: new Date().toISOString()
+                };
+                sessionStorage.setItem('olfc_parishioner_session', JSON.stringify(sessionData));
+
+                if (authOverlay) authOverlay.style.display = 'none';
+                if (logoutNav) logoutNav.style.display = 'inline-block';
+                loadFamilyRecord(inputId);
+            }
+        });
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('olfc_parishioner_session');
+            if (authOverlay) authOverlay.style.display = 'flex';
+            if (logoutNav) logoutNav.style.display = 'none';
+        });
+    }
+}
+
+// Load Family Record
 async function loadFamilyRecord(familyId = "FAM-2024-0892") {
     const loadingEl = document.getElementById("account-loading");
     if (loadingEl) loadingEl.style.display = "flex";
 
     let familyRecord = null;
 
-    if (db) {
+    // First check localStorage office families if updated
+    try {
+        const storedFamilies = JSON.parse(localStorage.getItem('olfc_office_families') || '[]');
+        familyRecord = storedFamilies.find(f => f.familyId.toLowerCase() === familyId.toLowerCase() || f.id.toLowerCase() === familyId.toLowerCase());
+    } catch (e) {}
+
+    if (!familyRecord && db) {
         try {
             const docRef = await db.collection("families").doc(familyId).get();
             if (docRef.exists) {
                 familyRecord = { id: docRef.id, ...docRef.data() };
             }
-        } catch (e) {
-            console.log("Firestore fallback to local NoSQL dataset");
-        }
+        } catch (e) {}
     }
 
     if (!familyRecord) {
@@ -178,25 +246,22 @@ function renderFamilyCard(family) {
                     <span class="id-value">${family.familyId}</span>
                 </div>
             </div>
-            <h2 class="family-head-title">${family.headOfFamily} & Family</h2>
-            <div class="community-tag">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span>${family.communityName}</span>
-            </div>
+            <h2 class="family-head-title">${family.headOfFamily}</h2>
+            <p class="community-name">${family.communityName || 'Majiwada Parish Community'}</p>
         </div>
 
-        <!-- Meta Details Row -->
-        <div class="card-meta-row">
+        <!-- Key Meta Grid -->
+        <div class="card-meta-grid">
             <div class="meta-item">
-                <span class="meta-label">Date Joined Parish</span>
-                <span class="meta-value">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                    ${formatDate(family.joinedParishDate)}
-                </span>
+                <span class="meta-label">Joined Parish</span>
+                <span class="meta-value">${formatDate(family.joinedParishDate || '2012-08-15')}</span>
             </div>
-
             <div class="meta-item">
-                <span class="meta-label">Address</span>
+                <span class="meta-label">Contact Phone</span>
+                <span class="meta-value">${family.contactPhone || '+91 98201 12345'}</span>
+            </div>
+            <div class="meta-item full-width">
+                <span class="meta-label">Residential Address</span>
                 <span class="meta-value">${family.address}</span>
             </div>
         </div>
@@ -209,8 +274,8 @@ function renderFamilyCard(family) {
             </div>
 
             <div class="members-vertical-list">
-                ${family.members.map(member => `
-                    <div class="member-row-item" data-member-id="${member.id}" tabindex="0" role="button" aria-label="View member card for ${member.name}">
+                ${(family.members || []).map(member => `
+                    <div class="member-row-item" data-member-id="${member.id}" tabindex="0" role="button">
                         <div class="member-avatar ${member.gender === 'Female' ? 'female' : 'male'}">
                             ${getInitials(member.name)}
                         </div>
@@ -231,19 +296,12 @@ function renderFamilyCard(family) {
             const memberId = item.getAttribute('data-member-id');
             openMemberCard(memberId);
         });
-        item.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                const memberId = item.getAttribute('data-member-id');
-                openMemberCard(memberId);
-            }
-        });
     });
 
     renderParishionerNotifications();
 }
 
-// Render Back View: Member ID Card (Replaces Family Card with Animation)
+// Render Back View: Member ID Card
 function openMemberCard(memberId) {
     if (!currentFamilyData || !currentFamilyData.members) return;
 
@@ -277,17 +335,11 @@ function openMemberCard(memberId) {
         <div class="member-id-meta-grid">
             <div class="meta-card">
                 <span class="meta-card-label">Date of Birth (DOB)</span>
-                <span class="meta-card-value">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    ${formatDate(member.dob)}
-                </span>
+                <span class="meta-card-value">${formatDate(member.dob)}</span>
             </div>
             <div class="meta-card">
                 <span class="meta-card-label">Sacraments Received</span>
-                <span class="meta-card-value highlight">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" style="vertical-align: middle; margin-right: 4px;"><path d="M12 2v20M7 7h10"/></svg>
-                    ${sacramentsCount} Sacraments
-                </span>
+                <span class="meta-card-value highlight">${sacramentsCount} Sacraments</span>
             </div>
         </div>
 
@@ -307,14 +359,10 @@ function openMemberCard(memberId) {
                                 </div>
                                 <div class="sacrament-sub-info">
                                     <span class="sacrament-parish">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
                                         ${sac.parish || 'Our Lady of Fatima Church'}
                                     </span>
                                     ${sac.certId ? `
-                                        <span class="cert-id-tag">
-                                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                                            Cert ID: ${sac.certId}
-                                        </span>
+                                        <span class="cert-id-tag">Cert ID: ${sac.certId}</span>
                                     ` : ''}
                                 </div>
                                 <div style="margin-top: 0.5rem;">
@@ -340,149 +388,284 @@ function openMemberCard(memberId) {
         </div>
     `;
 
-    // Trigger card replace animation
     wrapper.classList.add("show-member");
-    
-    // Smooth scroll to top of card if needed
-    const rect = wrapper.getBoundingClientRect();
-    if (rect.top < 0 || rect.top > 100) {
-        window.scrollTo({ top: window.scrollY + rect.top - 80, behavior: 'smooth' });
+}
+
+function showFamilyCard() {
+    const wrapper = document.getElementById("id-card-wrapper");
+    if (wrapper) wrapper.classList.remove("show-member");
+}
+
+// -------------------------------------------------------------
+// PDF DOWNLOAD FUNCTION FOR FAMILY CARD
+// -------------------------------------------------------------
+function setupPdfDownload() {
+    const downloadBtn = document.getElementById('downloadFamilyPdfBtn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+            const cardElement = document.getElementById('family-card-front');
+            if (!cardElement) return;
+
+            const familyId = currentFamilyData ? currentFamilyData.familyId : 'FAM-CARD';
+
+            if (typeof html2pdf !== 'undefined') {
+                const opt = {
+                    margin: 10,
+                    filename: `Parish_Family_Card_${familyId}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                html2pdf().set(opt).from(cardElement).save();
+            } else {
+                window.print();
+            }
+        });
     }
 }
 
-// Request Official Certificate Handler (For Parishioners on Account Tab)
-window.requestOfficialCertificate = function(memberName, sacramentName, parishName) {
-    const purpose = prompt(`Request official ${sacramentName} Certificate for ${memberName}.\nPlease enter purpose (e.g. School Admission, Marriage Preparation, Official Record):`, "Official Parish Record");
-    if (!purpose) return;
-
-    try {
-        const approvals = JSON.parse(localStorage.getItem('olfc_office_approvals') || '[]');
-        const familyId = currentFamilyData ? currentFamilyData.familyId : 'FAM-2024-0892';
-        
-        const newRequest = {
-            id: `REQ-${Date.now().toString().slice(-6)}`,
-            type: 'certificate_request',
-            familyId: familyId,
-            headName: currentFamilyData ? currentFamilyData.headOfFamily : memberName,
-            requestedBy: `${memberName} (Parishioner Account)`,
-            requestedRole: 'parishioner',
-            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
-            details: {
-                memberName: memberName,
-                sacramentName: sacramentName,
-                parishName: parishName,
-                purpose: purpose
-            },
-            status: 'pending'
-        };
-
-        approvals.unshift(newRequest);
-        localStorage.setItem('olfc_office_approvals', JSON.stringify(approvals));
-        
-        renderParishionerNotifications();
-        alert(`Request submitted successfully!\n\nYour ${sacramentName} Certificate request has been sent to Our Lady of Fatima Parish Office for approval. Once approved, you can collect the hard copy from the parish office.`);
-    } catch (e) {
-        alert("Error submitting request. Please try again.");
-    }
-};
-
-// Render Notifications & Certificate Requests Panel on account.html
+// -------------------------------------------------------------
+// TOP-RIGHT NOTIFICATIONS & DISMISS HANDLER
+// -------------------------------------------------------------
 function renderParishionerNotifications() {
-    const notifContainer = document.getElementById('account-notifications-panel');
-    if (!notifContainer) return;
+    const notifList = document.getElementById('parishionerNotifList');
+    if (!notifList) return;
 
-    const approvals = JSON.parse(localStorage.getItem('olfc_office_approvals') || '[]');
     const familyId = currentFamilyData ? currentFamilyData.familyId : 'FAM-2024-0892';
 
-    // Filter requests for current family
-    const familyRequests = approvals.filter(a => a.familyId === familyId);
+    // Fetch dismissed list from localStorage
+    const dismissedIds = JSON.parse(localStorage.getItem(`dismissed_notifs_${familyId}`) || '[]');
 
-    if (familyRequests.length === 0) {
-        notifContainer.innerHTML = `
-            <div style="background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; padding: 1.25rem; text-align: center; color: #94a3b8; font-size: 0.85rem;">
-                No active certificate requests or office notifications.
+    // Get Office Approval requests status for current family
+    const officeApprovals = JSON.parse(localStorage.getItem('olfc_office_approvals') || '[]');
+    const familyApprovals = officeApprovals.filter(a => a.familyId.toLowerCase() === familyId.toLowerCase());
+
+    let notifItems = [];
+
+    // Map approvals into notifications
+    familyApprovals.forEach(req => {
+        let title = "📌 Request Status Update";
+        let desc = "";
+        let itemType = "pending";
+
+        if (req.type === 'certificate_request') {
+            title = `📜 ${req.details.sacramentName} Certificate Request`;
+        } else if (req.type === 'add_member') {
+            title = `👤 Member Addition Request (${req.details.memberName})`;
+        } else if (req.type === 'new_family' || req.type === 'delete_member') {
+            title = `🏠 Family Record Update Request`;
+        }
+
+        if (req.status === 'approved') {
+            itemType = "approved";
+            desc = `<strong>✅ APPROVED BY PARISH OFFICE!</strong> ${req.type === 'certificate_request' ? 'Your certificate is ready. Please visit the Parish Office to collect your printed copy.' : 'Your requested update has been updated in your record.'}`;
+        } else if (req.status === 'rejected') {
+            itemType = "rejected";
+            desc = `<strong>❌ Request Declined.</strong> Please contact the parish office for further details.`;
+        } else {
+            itemType = "pending";
+            desc = `Request ID: ${req.id} is currently under review by Parish Office Admin.`;
+        }
+
+        notifItems.push({
+            id: req.id,
+            title: title,
+            desc: desc,
+            timestamp: req.timestamp || 'Recent',
+            type: itemType
+        });
+    });
+
+    // Append default parish announcements if not dismissed
+    DEFAULT_ANNOUNCEMENTS.forEach(ann => {
+        notifItems.push(ann);
+    });
+
+    // Filter out dismissed
+    notifItems = notifItems.filter(item => !dismissedIds.includes(item.id));
+
+    if (notifItems.length === 0) {
+        notifList.innerHTML = `
+            <div style="text-align: center; color: #94a3b8; padding: 1.5rem; font-size: 0.85rem; border: 1px dashed #e2e8f0; border-radius: 10px;">
+                <i class="fas fa-bell-slash" style="font-size: 1.5rem; margin-bottom: 0.5rem; display: block; color: #cbd5e1;"></i>
+                No new notifications or pending updates.
             </div>
         `;
         return;
     }
 
-    notifContainer.innerHTML = `
-        <div style="background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1.25rem; margin-top: 1.5rem;">
-            <h4 style="color: white; font-size: 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                🔔 Certificate Requests & Office Status
-            </h4>
-            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                ${familyRequests.map(req => {
-                    let statusColor = '#fbbf24'; // pending
-                    let statusBg = 'rgba(217, 119, 6, 0.15)';
-                    let statusMessage = 'Under review by Parish Office Admin.';
-
-                    if (req.status === 'approved') {
-                        statusColor = '#34d399';
-                        statusBg = 'rgba(16, 185, 129, 0.15)';
-                        statusMessage = '✅ APPROVED! Certificate printed & ready. Please visit the Parish Office to collect your hard copy.';
-                    } else if (req.status === 'rejected') {
-                        statusColor = '#f87171';
-                        statusBg = 'rgba(239, 68, 68, 0.15)';
-                        statusMessage = '❌ Request not approved. Please contact parish office.';
-                    }
-
-                    return `
-                        <div style="background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.85rem 1rem;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-                                <strong style="color: white; font-size: 0.9rem;">${req.details.sacramentName || 'Sacrament'} Certificate - ${req.details.memberName}</strong>
-                                <span style="background: ${statusBg}; color: ${statusColor}; border: 1px solid ${statusColor}44; padding: 2px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">
-                                    ${req.status.toUpperCase()}
-                                </span>
-                            </div>
-                            <p style="font-size: 0.825rem; color: #cbd5e1; margin-top: 0.25rem;">
-                                ${statusMessage}
-                            </p>
-                            <span style="font-size: 0.725rem; color: #64748b;">Req ID: ${req.id} | Date: ${req.timestamp || 'Recent'}</span>
-                        </div>
-                    `;
-                }).join('')}
+    notifList.innerHTML = notifItems.map(item => `
+        <div class="notif-item ${item.type}">
+            <button class="btn-dismiss-notif" onclick="window.dismissNotification('${item.id}')" title="Dismiss">&times;</button>
+            <div class="notif-item-title">
+                <span>${item.title}</span>
             </div>
+            <div class="notif-item-desc">${item.desc}</div>
+            <div class="notif-item-meta">${item.timestamp}</div>
         </div>
-    `;
+    `).join('');
 }
 
-// Return to Family Card
-function showFamilyCard() {
-    const wrapper = document.getElementById("id-card-wrapper");
-    if (wrapper) {
-        wrapper.classList.remove("show-member");
+window.dismissNotification = function(notifId) {
+    const familyId = currentFamilyData ? currentFamilyData.familyId : 'FAM-2024-0892';
+    const dismissedIds = JSON.parse(localStorage.getItem(`dismissed_notifs_${familyId}`) || '[]');
+    if (!dismissedIds.includes(notifId)) {
+        dismissedIds.push(notifId);
+        localStorage.setItem(`dismissed_notifs_${familyId}`, JSON.stringify(dismissedIds));
+    }
+    renderParishionerNotifications();
+};
+
+function setupNotificationActions() {
+    const clearAllBtn = document.getElementById('clearAllNotifsBtn');
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', () => {
+            const familyId = currentFamilyData ? currentFamilyData.familyId : 'FAM-2024-0892';
+            const officeApprovals = JSON.parse(localStorage.getItem('olfc_office_approvals') || '[]');
+            const familyApprovals = officeApprovals.filter(a => a.familyId.toLowerCase() === familyId.toLowerCase());
+
+            const allIds = [...familyApprovals.map(a => a.id), ...DEFAULT_ANNOUNCEMENTS.map(a => a.id)];
+            localStorage.setItem(`dismissed_notifs_${familyId}`, JSON.stringify(allIds));
+            renderParishionerNotifications();
+        });
     }
 }
+
+// -------------------------------------------------------------
+// BOTTOM-RIGHT SERVICE REQUEST BUTTONS
+// -------------------------------------------------------------
+function setupServiceRequests() {
+    // 1. Certificate Request
+    document.getElementById('btnReqCertificate')?.addEventListener('click', () => {
+        if (!currentFamilyData) return;
+        const memberNames = (currentFamilyData.members || []).map(m => m.name).join(', ');
+        const memberName = prompt(`Select Family Member for Certificate:\n(${memberNames})`, currentFamilyData.headOfFamily);
+        if (!memberName) return;
+
+        const sacramentName = prompt("Select Sacrament (Baptism / Confirmation / First Holy Communion / Holy Matrimony):", "Baptism");
+        if (!sacramentName) return;
+
+        const purpose = prompt("Enter Purpose (e.g. School Record, Marriage Preparation, Official Verification):", "Official Verification");
+        if (!purpose) return;
+
+        submitParishionerRequest({
+            type: 'certificate_request',
+            familyId: currentFamilyData.familyId,
+            headName: currentFamilyData.headOfFamily,
+            requestedBy: `${memberName} (Parishioner Account)`,
+            requestedRole: 'parishioner',
+            details: {
+                memberName: memberName,
+                sacramentName: sacramentName,
+                parishName: "Our Lady of Fatima Church, Majiwada",
+                purpose: purpose
+            }
+        });
+    });
+
+    // 2. Data Update Request
+    document.getElementById('btnReqDataUpdate')?.addEventListener('click', () => {
+        if (!currentFamilyData) return;
+        const updateType = prompt("Select Update Type (1: Address, 2: Phone, 3: Email):", "1");
+        if (!updateType) return;
+
+        let fieldName = "Address";
+        let currentValue = currentFamilyData.address;
+        if (updateType === "2") { fieldName = "Contact Phone"; currentValue = currentFamilyData.contactPhone; }
+        else if (updateType === "3") { fieldName = "Email"; currentValue = currentFamilyData.email || ""; }
+
+        const newValue = prompt(`Enter updated ${fieldName} (Current: ${currentValue}):`, currentValue);
+        if (!newValue || newValue === currentValue) return;
+
+        submitParishionerRequest({
+            type: 'new_family', // routed to office data review
+            familyId: currentFamilyData.familyId,
+            headName: currentFamilyData.headOfFamily,
+            requestedBy: `${currentFamilyData.headOfFamily} (Parishioner Account)`,
+            requestedRole: 'parishioner',
+            details: {
+                fieldName: fieldName,
+                oldValue: currentValue,
+                newValue: newValue,
+                reason: 'Parishioner requested info update from Account Portal'
+            }
+        });
+    });
+
+    // 3. Add Member Request
+    document.getElementById('btnReqAddMember')?.addEventListener('click', () => {
+        if (!currentFamilyData) return;
+        const name = prompt("Enter New Member Full Name:");
+        if (!name) return;
+        const relation = prompt("Enter Relation (e.g. Son, Daughter, Spouse, Mother):", "Son");
+        const dob = prompt("Enter Date of Birth (YYYY-MM-DD):", "2015-05-20");
+
+        submitParishionerRequest({
+            type: 'add_member',
+            familyId: currentFamilyData.familyId,
+            headName: currentFamilyData.headOfFamily,
+            requestedBy: `${currentFamilyData.headOfFamily} (Parishioner Account)`,
+            requestedRole: 'parishioner',
+            details: {
+                memberName: name,
+                relation: relation || 'Member',
+                gender: 'Other',
+                dob: dob || '2010-01-01'
+            }
+        });
+    });
+}
+
+function submitParishionerRequest(reqData) {
+    try {
+        const officeApprovals = JSON.parse(localStorage.getItem('olfc_office_approvals') || '[]');
+        const newReq = {
+            id: `REQ-${Date.now().toString().slice(-6)}`,
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+            status: 'pending',
+            ...reqData
+        };
+        officeApprovals.unshift(newReq);
+        localStorage.setItem('olfc_office_approvals', JSON.stringify(officeApprovals));
+
+        renderParishionerNotifications();
+        alert(`Request submitted successfully to Parish Office!\n\nReq ID: ${newReq.id}\nYou can track the status under Notifications & Updates.`);
+    } catch (e) {
+        alert("Failed to submit request. Please try again.");
+    }
+}
+
+// Global window helpers
+window.requestOfficialCertificate = function(memberName, sacramentName, parishName) {
+    submitParishionerRequest({
+        type: 'certificate_request',
+        familyId: currentFamilyData ? currentFamilyData.familyId : 'FAM-2024-0892',
+        headName: currentFamilyData ? currentFamilyData.headOfFamily : memberName,
+        requestedBy: `${memberName} (Parishioner Account)`,
+        requestedRole: 'parishioner',
+        details: {
+            memberName: memberName,
+            sacramentName: sacramentName,
+            parishName: parishName,
+            purpose: 'Official Certificate Verification'
+        }
+    });
+};
 
 // Setup Event Listeners
 function setupEventListeners() {
-    // Mobile Navbar Hamburger Toggle
-    const menuToggle = document.getElementById('menu-toggle');
-    const navLinks = document.getElementById('nav-links');
-    if (menuToggle && navLinks) {
-        menuToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-    }
+    setupPdfDownload();
+    setupNotificationActions();
+    setupServiceRequests();
 
-    // Back to Family Card button
     const backBtn = document.getElementById("back-to-family-btn");
     if (backBtn) {
         backBtn.addEventListener("click", showFamilyCard);
     }
-
-    // Keyboard navigation (Escape key returns to Family Card)
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-            showFamilyCard();
-        }
-    });
 }
 
-// Initialize Page
 document.addEventListener("DOMContentLoaded", () => {
     initFirebaseDB();
+    initParishionerAuth();
     setupEventListeners();
-    loadFamilyRecord();
 });

@@ -13,7 +13,6 @@ const CURRENT_MONTH = CURRENT_DATE.getMonth(); // 0-11 (May is 4)
 document.addEventListener('DOMContentLoaded', () => {
     initAuthSession();
     initNavigation();
-    initRoleSwitcher();
     renderAll();
     setupEventListeners();
 });
@@ -29,6 +28,7 @@ function initAuthSession() {
     if (authUser) {
         currentRole = authUser.role || 'admin';
         if (authOverlay) authOverlay.classList.remove('active');
+        updateRoleUI(authUser);
     } else {
         if (authOverlay) authOverlay.classList.add('active');
     }
@@ -44,7 +44,7 @@ function initAuthSession() {
                 sessionStorage.setItem('olfc_office_session', JSON.stringify(staff));
                 currentRole = staff.role;
                 if (authOverlay) authOverlay.classList.remove('active');
-                updateRoleUI();
+                updateRoleUI(staff);
                 renderAll();
                 showToast(`Welcome back, ${staff.name}! Authenticated as ${staff.role === 'admin' ? 'Parish Admin' : 'Office Member'}.`, 'success');
             } catch (err) {
@@ -62,24 +62,13 @@ function initAuthSession() {
     }
 }
 
-// Role Switcher Setup
-function initRoleSwitcher() {
-    const roleSelect = document.getElementById('roleSelect');
-    const rolePill = document.getElementById('rolePill');
+function updateRoleUI(staffUser) {
+    const user = staffUser || JSON.parse(sessionStorage.getItem('olfc_office_session') || 'null');
+    if (!user) return;
 
-    if (roleSelect) {
-        roleSelect.value = currentRole;
-        roleSelect.addEventListener('change', (e) => {
-            currentRole = e.target.value;
-            updateRoleUI();
-            renderAll();
-            showToast(`Role switched to ${currentRole === 'admin' ? 'Admin (Priest)' : 'Office Member'}`, 'success');
-        });
-    }
-    updateRoleUI();
-}
+    currentRole = user.role || 'admin';
 
-function updateRoleUI() {
+    // Topbar pill update
     const rolePill = document.getElementById('rolePill');
     if (rolePill) {
         if (currentRole === 'admin') {
@@ -91,14 +80,16 @@ function updateRoleUI() {
         }
     }
 
+    // Sidebar user profile update
+    const userNameEl = document.getElementById('sidebarUserName');
+    const userRoleEl = document.getElementById('sidebarUserRole');
+    if (userNameEl) userNameEl.textContent = user.name || 'Staff Member';
+    if (userRoleEl) userRoleEl.textContent = user.designation || (currentRole === 'admin' ? 'Parish Priest (Admin)' : 'Office Member');
+
     // Toggle staff section visibility
     const staffNavLink = document.getElementById('nav-staff');
     if (staffNavLink) {
-        if (currentRole === 'admin') {
-            staffNavLink.style.display = 'flex';
-        } else {
-            staffNavLink.style.display = 'flex'; // Visible but displays permission notice inside
-        }
+        staffNavLink.style.display = 'flex';
     }
 }
 

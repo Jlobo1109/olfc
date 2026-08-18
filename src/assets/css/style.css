@@ -2022,4 +2022,203 @@ footer {
     box-shadow: 0 4px 8px rgba(37, 99, 235, 0.35);
 }
 
+/* ===========================================
+   ACCOUNT PAGE 2-COLUMN GRID & NOTIFICATIONS
+   =========================================== */
+.account-grid-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+    margin-top: 1rem;
+}
+
+@media (max-width: 1024px) {
+    .account-grid-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Download PDF Action Button */
+.btn-download-pdf {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(217, 119, 6, 0.15);
+    color: #d97706;
+    border: 1px solid rgba(217, 119, 6, 0.3);
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-download-pdf:hover {
+    background: #d97706;
+    color: white;
+}
+
+/* Right Column Cards */
+.account-card-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.account-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 1.25rem;
+}
+
+.account-card-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+}
+
+.btn-text-action {
+    background: none;
+    border: none;
+    color: #e11d48;
+    font-size: 0.775rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.btn-text-action:hover {
+    text-decoration: underline;
+}
+
+/* Notification Items */
+.notif-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.notif-item {
+    position: relative;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #3b82f6;
+    border-radius: 10px;
+    padding: 1rem 2.2rem 1rem 1rem;
+    transition: transform 0.2s ease;
+}
+
+.notif-item.approved { border-left-color: #10b981; }
+.notif-item.rejected { border-left-color: #ef4444; }
+.notif-item.announcement { border-left-color: #d97706; }
+
+.notif-item-title {
+    font-size: 0.925rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.notif-item-desc {
+    font-size: 0.835rem;
+    color: #475569;
+    line-height: 1.45;
+}
+
+.notif-item-meta {
+    font-size: 0.725rem;
+    color: #94a3b8;
+    margin-top: 0.5rem;
+}
+
+.btn-dismiss-notif {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+.btn-dismiss-notif:hover {
+    color: #ef4444;
+    background: #fee2e2;
+}
+
+/* Quick Services Card */
+.services-buttons-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+}
+
+.service-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.service-action-btn:hover {
+    background: #ffffff;
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.12);
+}
+
+.service-action-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.service-action-info h4 {
+    font-size: 0.925rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.15rem;
+}
+
+.service-action-info p {
+    font-size: 0.785rem;
+    color: #64748b;
+    margin: 0;
+}
+
+
 
