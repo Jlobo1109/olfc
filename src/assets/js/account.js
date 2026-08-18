@@ -241,9 +241,15 @@ function renderFamilyCard(family) {
         <div class="card-header">
             <div class="header-top-row">
                 <span class="card-badge">PARISH FAMILY CARD</span>
-                <div class="card-id-pill">
-                    <span class="id-label">UNIQUE ID</span>
-                    <span class="id-value">${family.familyId}</span>
+                <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+                    <div class="card-id-pill">
+                        <span class="id-label">UNIQUE ID</span>
+                        <span class="id-value">${family.familyId}</span>
+                    </div>
+                    <button type="button" id="downloadFamilyPdfBtn" title="Download Family Card as PDF" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.22);border-radius:6px;padding:4px 10px;color:#e0a96d;cursor:pointer;display:flex;align-items:center;gap:5px;font-size:0.72rem;font-weight:700;transition:background 0.2s;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3v12M7 13l5 5 5-5"/><path d="M4 20h16"/></svg>
+                        Download
+                    </button>
                 </div>
             </div>
             <h2 class="family-head-title">${family.headOfFamily}</h2>
@@ -297,6 +303,12 @@ function renderFamilyCard(family) {
             openMemberCard(memberId);
         });
     });
+
+    // Attach download button inside the re-rendered card
+    const downloadBtn = document.getElementById('downloadFamilyPdfBtn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', triggerFamilyCardPdf);
+    }
 
     renderParishionerNotifications();
 }
@@ -399,29 +411,45 @@ function showFamilyCard() {
 // -------------------------------------------------------------
 // PDF DOWNLOAD FUNCTION FOR FAMILY CARD
 // -------------------------------------------------------------
-function setupPdfDownload() {
-    const downloadBtn = document.getElementById('downloadFamilyPdfBtn');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', () => {
-            const cardElement = document.getElementById('family-card-front');
-            if (!cardElement) return;
+function triggerFamilyCardPdf() {
+    // Clone only the family-card-front so member card & chrome are excluded
+    const cardElement = document.getElementById('family-card-front');
+    if (!cardElement) return;
 
-            const familyId = currentFamilyData ? currentFamilyData.familyId : 'FAM-CARD';
+    const familyId = currentFamilyData ? currentFamilyData.familyId : 'FAM-CARD';
 
-            if (typeof html2pdf !== 'undefined') {
-                const opt = {
-                    margin: 10,
-                    filename: `Parish_Family_Card_${familyId}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true },
-                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
-                html2pdf().set(opt).from(cardElement).save();
-            } else {
-                window.print();
-            }
+    if (typeof html2pdf !== 'undefined') {
+        // Build a clean printable clone
+        const clone = cardElement.cloneNode(true);
+        // Remove download button from clone so it doesn't appear in PDF
+        const dlBtn = clone.querySelector('#downloadFamilyPdfBtn');
+        if (dlBtn) dlBtn.parentElement.removeChild(dlBtn);
+
+        // Wrap clone in a temporary container matching the card's rendered width
+        const wrapper = document.createElement('div');
+        wrapper.style.cssText = 'width:520px;font-family:Inter,Arial,sans-serif;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:none;';
+        wrapper.appendChild(clone);
+        document.body.appendChild(wrapper);
+
+        const opt = {
+            margin: [8, 8, 8, 8],
+            filename: `Parish_Family_Card_${familyId}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, letterRendering: true, width: 520 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(wrapper).save().then(() => {
+            document.body.removeChild(wrapper);
         });
+    } else {
+        window.print();
     }
+}
+
+function setupPdfDownload() {
+    // PDF download is attached dynamically inside renderFamilyCard()
+    // This is kept as a stub for backward compatibility
 }
 
 // -------------------------------------------------------------
@@ -532,86 +560,151 @@ function setupNotificationActions() {
 }
 
 // -------------------------------------------------------------
-// BOTTOM-RIGHT SERVICE REQUEST BUTTONS
+// BOTTOM-RIGHT SERVICE REQUEST — INLINE FORM PANELS
 // -------------------------------------------------------------
+function buildInlineForm(panelId, fields, onSubmit) {
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+
+    // Toggle: if already open, close it
+    if (panel.style.display === 'block') {
+        panel.style.display = 'none';
+        return;
+    }
+
+    // Close all other panels first
+    document.querySelectorAll('.svc-inline-panel').forEach(p => p.style.display = 'none');
+
+    let fieldsHtml = fields.map(f => {
+        if (f.type === 'select') {
+            return `<div class="svc-form-field">
+                <label class="svc-form-label">${f.label}</label>
+                <select id="svc_${f.key}" class="svc-form-input">
+                    ${f.options.map(o => `<option value="${o.value}">${o.label}</option>`).join('')}
+                </select>
+            </div>`;
+        }
+        return `<div class="svc-form-field">
+            <label class="svc-form-label">${f.label}</label>
+            <input type="${f.type || 'text'}" id="svc_${f.key}" class="svc-form-input" placeholder="${f.placeholder || ''}" value="${f.defaultVal || ''}">
+        </div>`;
+    }).join('');
+
+    panel.innerHTML = `
+        <div class="svc-inline-form">
+            ${fieldsHtml}
+            <div class="svc-form-actions">
+                <button type="button" class="svc-btn-submit" id="svc_submit_${panelId}">Submit Request</button>
+                <button type="button" class="svc-btn-cancel" id="svc_cancel_${panelId}">Cancel</button>
+            </div>
+            <div class="svc-form-success" id="svc_success_${panelId}" style="display:none;"></div>
+        </div>
+    `;
+
+    panel.style.display = 'block';
+
+    document.getElementById(`svc_submit_${panelId}`).addEventListener('click', () => {
+        const values = {};
+        fields.forEach(f => {
+            values[f.key] = (document.getElementById(`svc_${f.key}`)?.value || '').trim();
+        });
+        const err = onSubmit(values);
+        if (!err) {
+            const successEl = document.getElementById(`svc_success_${panelId}`);
+            if (successEl) {
+                successEl.textContent = '✅ Request submitted! You can track the status in Notifications.';
+                successEl.style.display = 'block';
+            }
+            setTimeout(() => { panel.style.display = 'none'; }, 2400);
+        }
+    });
+
+    document.getElementById(`svc_cancel_${panelId}`).addEventListener('click', () => {
+        panel.style.display = 'none';
+    });
+}
+
 function setupServiceRequests() {
     // 1. Certificate Request
     document.getElementById('btnReqCertificate')?.addEventListener('click', () => {
         if (!currentFamilyData) return;
-        const memberNames = (currentFamilyData.members || []).map(m => m.name).join(', ');
-        const memberName = prompt(`Select Family Member for Certificate:\n(${memberNames})`, currentFamilyData.headOfFamily);
-        if (!memberName) return;
-
-        const sacramentName = prompt("Select Sacrament (Baptism / Confirmation / First Holy Communion / Holy Matrimony):", "Baptism");
-        if (!sacramentName) return;
-
-        const purpose = prompt("Enter Purpose (e.g. School Record, Marriage Preparation, Official Verification):", "Official Verification");
-        if (!purpose) return;
-
-        submitParishionerRequest({
-            type: 'certificate_request',
-            familyId: currentFamilyData.familyId,
-            headName: currentFamilyData.headOfFamily,
-            requestedBy: `${memberName} (Parishioner Account)`,
-            requestedRole: 'parishioner',
-            details: {
-                memberName: memberName,
-                sacramentName: sacramentName,
-                parishName: "Our Lady of Fatima Church, Majiwada",
-                purpose: purpose
-            }
+        const memberOptions = (currentFamilyData.members || []).map(m => ({ value: m.name, label: m.name }));
+        buildInlineForm('panelReqCertificate', [
+            { key: 'memberName', label: 'Family Member', type: 'select', options: memberOptions },
+            { key: 'sacramentName', label: 'Sacrament', type: 'select', options: [
+                { value: 'Baptism', label: 'Baptism' },
+                { value: 'First Holy Communion', label: 'First Holy Communion' },
+                { value: 'Confirmation', label: 'Confirmation' },
+                { value: 'Holy Matrimony', label: 'Holy Matrimony' }
+            ]},
+            { key: 'purpose', label: 'Purpose', placeholder: 'e.g. School Record, Marriage Preparation', defaultVal: 'Official Verification' }
+        ], (vals) => {
+            if (!vals.memberName || !vals.sacramentName || !vals.purpose) return 'missing';
+            submitParishionerRequest({
+                type: 'certificate_request',
+                familyId: currentFamilyData.familyId,
+                headName: currentFamilyData.headOfFamily,
+                requestedBy: `${vals.memberName} (Parishioner Account)`,
+                requestedRole: 'parishioner',
+                details: { memberName: vals.memberName, sacramentName: vals.sacramentName, parishName: 'Our Lady of Fatima Church, Majiwada', purpose: vals.purpose }
+            });
         });
     });
 
     // 2. Data Update Request
     document.getElementById('btnReqDataUpdate')?.addEventListener('click', () => {
         if (!currentFamilyData) return;
-        const updateType = prompt("Select Update Type (1: Address, 2: Phone, 3: Email):", "1");
-        if (!updateType) return;
-
-        let fieldName = "Address";
-        let currentValue = currentFamilyData.address;
-        if (updateType === "2") { fieldName = "Contact Phone"; currentValue = currentFamilyData.contactPhone; }
-        else if (updateType === "3") { fieldName = "Email"; currentValue = currentFamilyData.email || ""; }
-
-        const newValue = prompt(`Enter updated ${fieldName} (Current: ${currentValue}):`, currentValue);
-        if (!newValue || newValue === currentValue) return;
-
-        submitParishionerRequest({
-            type: 'new_family', // routed to office data review
-            familyId: currentFamilyData.familyId,
-            headName: currentFamilyData.headOfFamily,
-            requestedBy: `${currentFamilyData.headOfFamily} (Parishioner Account)`,
-            requestedRole: 'parishioner',
-            details: {
-                fieldName: fieldName,
-                oldValue: currentValue,
-                newValue: newValue,
-                reason: 'Parishioner requested info update from Account Portal'
-            }
+        buildInlineForm('panelReqDataUpdate', [
+            { key: 'fieldName', label: 'Field to Update', type: 'select', options: [
+                { value: 'Address', label: 'Residential Address' },
+                { value: 'Contact Phone', label: 'Contact Phone' },
+                { value: 'Email', label: 'Email Address' }
+            ]},
+            { key: 'newValue', label: 'New Value', placeholder: 'Enter updated information' }
+        ], (vals) => {
+            if (!vals.newValue) return 'missing';
+            let currentValue = currentFamilyData.address;
+            if (vals.fieldName === 'Contact Phone') currentValue = currentFamilyData.contactPhone;
+            else if (vals.fieldName === 'Email') currentValue = currentFamilyData.email || '';
+            submitParishionerRequest({
+                type: 'new_family',
+                familyId: currentFamilyData.familyId,
+                headName: currentFamilyData.headOfFamily,
+                requestedBy: `${currentFamilyData.headOfFamily} (Parishioner Account)`,
+                requestedRole: 'parishioner',
+                details: { fieldName: vals.fieldName, oldValue: currentValue, newValue: vals.newValue, reason: 'Parishioner requested info update from Account Portal' }
+            });
         });
     });
 
     // 3. Add Member Request
     document.getElementById('btnReqAddMember')?.addEventListener('click', () => {
         if (!currentFamilyData) return;
-        const name = prompt("Enter New Member Full Name:");
-        if (!name) return;
-        const relation = prompt("Enter Relation (e.g. Son, Daughter, Spouse, Mother):", "Son");
-        const dob = prompt("Enter Date of Birth (YYYY-MM-DD):", "2015-05-20");
-
-        submitParishionerRequest({
-            type: 'add_member',
-            familyId: currentFamilyData.familyId,
-            headName: currentFamilyData.headOfFamily,
-            requestedBy: `${currentFamilyData.headOfFamily} (Parishioner Account)`,
-            requestedRole: 'parishioner',
-            details: {
-                memberName: name,
-                relation: relation || 'Member',
-                gender: 'Other',
-                dob: dob || '2010-01-01'
-            }
+        buildInlineForm('panelReqAddMember', [
+            { key: 'memberName', label: 'Full Name', placeholder: 'Enter full name' },
+            { key: 'relation', label: 'Relation', type: 'select', options: [
+                { value: 'Son', label: 'Son' },
+                { value: 'Daughter', label: 'Daughter' },
+                { value: 'Spouse', label: 'Spouse' },
+                { value: 'Mother', label: 'Mother' },
+                { value: 'Father', label: 'Father' },
+                { value: 'Other', label: 'Other' }
+            ]},
+            { key: 'gender', label: 'Gender', type: 'select', options: [
+                { value: 'Male', label: 'Male' },
+                { value: 'Female', label: 'Female' }
+            ]},
+            { key: 'dob', label: 'Date of Birth', type: 'date' }
+        ], (vals) => {
+            if (!vals.memberName || !vals.dob) return 'missing';
+            submitParishionerRequest({
+                type: 'add_member',
+                familyId: currentFamilyData.familyId,
+                headName: currentFamilyData.headOfFamily,
+                requestedBy: `${currentFamilyData.headOfFamily} (Parishioner Account)`,
+                requestedRole: 'parishioner',
+                details: { memberName: vals.memberName, relation: vals.relation || 'Member', gender: vals.gender || 'Other', dob: vals.dob || '2010-01-01' }
+            });
         });
     });
 }
@@ -627,11 +720,9 @@ function submitParishionerRequest(reqData) {
         };
         officeApprovals.unshift(newReq);
         localStorage.setItem('olfc_office_approvals', JSON.stringify(officeApprovals));
-
         renderParishionerNotifications();
-        alert(`Request submitted successfully to Parish Office!\n\nReq ID: ${newReq.id}\nYou can track the status under Notifications & Updates.`);
     } catch (e) {
-        alert("Failed to submit request. Please try again.");
+        console.error('Failed to submit request', e);
     }
 }
 
