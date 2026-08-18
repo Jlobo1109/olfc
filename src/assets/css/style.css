@@ -1343,57 +1343,20 @@ footer {
 }
 
 .account-page-main {
-    min-height: calc(100vh - 140px);
+    min-height: calc(100vh - 60px);
     background: #eef2f6;
-    padding-bottom: 32px;
+    padding-top: 90px;
+    padding-bottom: 40px;
     font-family: 'Inter', Arial, sans-serif;
-}
-
-.account-hero {
-    background: var(--primary-color);
-    color: #fff;
-    padding: 120px 20px 90px;
-    text-align: center;
-}
-
-.account-hero-content {
-    max-width: 540px;
-    margin: 0 auto;
-}
-
-.account-badge {
-    display: inline-block;
-    background: rgba(224, 169, 109, 0.18);
-    color: #e0a96d;
-    border: 1px solid rgba(224, 169, 109, 0.4);
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    padding: 4px 12px;
-    border-radius: 16px;
-    margin-bottom: 10px;
-}
-
-.account-hero h1 {
-    font-size: 1.65rem;
-    margin-bottom: 6px;
-    font-weight: 700;
-    color: #ffffff;
-}
-
-.account-hero p {
-    font-size: 0.92rem;
-    color: #cbd5e1;
 }
 
 .account-container {
     width: 100%;
     max-width: 640px;
-    margin: -50px auto 0;
-    padding: 0 16px 40px;
+    margin: 0 auto;
+    padding: 0 16px;
     position: relative;
-    z-index: 2; 
+    z-index: 1; 
 }
 
 /* Loading State */
@@ -1954,17 +1917,9 @@ footer {
 }
 
 @media (max-width: 480px) {
-    .account-hero {
-        padding: 80px 12px 44px;
-    }
-
-    .account-hero h1 {
-        font-size: 1.35rem;
-    }
-
     .account-container {
         padding: 0 12px 20px;
-        margin-top: -28px;
+        margin: 0 auto;
     }
 
     .card-header,
