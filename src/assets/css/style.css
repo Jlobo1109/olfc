@@ -31,8 +31,12 @@
     box-sizing: border-box;
 }
 
-html, body {
-    height: 100%;
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -42,7 +46,7 @@ html, body {
 }
 
 main {
-    flex: 1;
+    flex: 1 0 auto;
 }
 
 /* ===========================================
@@ -1343,17 +1347,18 @@ footer {
 }
 
 .account-page-main {
-    min-height: calc(100vh - 60px);
+    flex: 1 0 auto;
+    width: 100%;
     background: #eef2f6;
     padding-top: 90px;
-    padding-bottom: 40px;
+    padding-bottom: 60px;
     font-family: 'Inter', Arial, sans-serif;
 }
 
 .account-container {
     width: 100%;
     max-width: 640px;
-    margin: 0 auto;
+    margin: 0 auto 20px auto;
     padding: 0 16px;
     position: relative;
     z-index: 1; 
