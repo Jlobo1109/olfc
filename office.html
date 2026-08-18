@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Dashboard | Our Lady of Fatima Church</title>
+    <meta name="description" content="Parish Office Family Account Management & Sacramental Dashboard - Our Lady of Fatima Church, Majiwada.">
+
+    <link rel="stylesheet" href="/src/assets/css/style.css">
+    <link rel="stylesheet" href="/src/assets/css/office.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body class="office-body">
+    <div class="office-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="office-sidebar" id="officeSidebar">
+            <div class="sidebar-header">
+                <div class="church-logo">
+                    <i class="fas fa-church"></i>
+                </div>
+                <div>
+                    <h2>OLFC Office</h2>
+                    <p>Majiwada Parish</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Main Navigation</div>
+                <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                    <div class="nav-link-content">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Analytics Dashboard</span>
+                    </div>
+                </a>
+                <a href="#families" class="nav-link" data-section="families">
+                    <div class="nav-link-content">
+                        <i class="fas fa-users"></i>
+                        <span>Family Directory</span>
+                    </div>
+                </a>
+                <a href="#bulk-upload" class="nav-link" data-section="bulk-upload">
+                    <div class="nav-link-content">
+                        <i class="fas fa-file-upload"></i>
+                        <span>Bulk Upload Data</span>
+                    </div>
+                </a>
+                <a href="#approvals" class="nav-link" data-section="approvals">
+                    <div class="nav-link-content">
+                        <i class="fas fa-tasks"></i>
+                        <span>Approval Queue</span>
+                    </div>
+                    <span class="badge-count" id="approvalBadge">0</span>
+                </a>
+                <a href="#reports" class="nav-link" data-section="reports">
+                    <div class="nav-link-content">
+                        <i class="fas fa-scroll"></i>
+                        <span>Sacrament Reports</span>
+                    </div>
+                </a>
+
+                <div class="nav-section-title" style="margin-top: 1rem;">Administration</div>
+                <a href="#staff" class="nav-link" data-section="staff" id="nav-staff">
+                    <div class="nav-link-content">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Staff Access</span>
+                    </div>
+                </a>
+            </nav>
+
+            <div class="sidebar-user-panel">
+                <div class="role-switcher-box">
+                    <label for="roleSelect"><i class="fas fa-toggle-on"></i> Demo Active Role:</label>
+                    <select id="roleSelect" class="role-select">
+                        <option value="admin">Admin (Priest)</option>
+                        <option value="office_member">Office Member</option>
+                    </select>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard Area -->
+        <main class="office-main">
+            <!-- Topbar -->
+            <header class="office-topbar">
+                <div class="topbar-left">
+                    <button class="toggle-sidebar-btn" id="sidebarToggle" aria-label="Toggle Sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="topbar-title" id="topbarTitle">Analytics & Demographics Dashboard</h1>
+                </div>
+                <div class="topbar-right">
+                    <div id="rolePill" class="role-pill admin">
+                        <i class="fas fa-user-shield"></i> Admin (Priest)
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Panels -->
+            <div class="office-content">
+
+                <!-- 1. DASHBOARD & ANALYTICS PANEL -->
+                <section id="section-dashboard" class="section-panel active">
+                    <!-- Key Performance Metrics -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon gold"><i class="fas fa-home"></i></div>
+                            <div class="stat-info">
+                                <h4>Total Families</h4>
+                                <div class="stat-value" id="statTotalFamilies">0</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                            <div class="stat-info">
+                                <h4>Total Parishioners</h4>
+                                <div class="stat-value" id="statTotalMembers">0</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red"><i class="fas fa-clock"></i></div>
+                            <div class="stat-info">
+                                <h4>Pending Requests</h4>
+                                <div class="stat-value" id="statPendingRequests">0</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon purple"><i class="fas fa-user-graduate"></i></div>
+                            <div class="stat-info">
+                                <h4>Youth (13-19 Yrs)</h4>
+                                <div class="stat-value" id="statYouthCount">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Grid -->
+                    <div class="charts-grid">
+                        <div class="chart-card">
+                            <h3><i class="fas fa-map-marker-alt" style="color: #fbbf24;"></i> Zone & Community Breakdown</h3>
+                            <div class="chart-container">
+                                <canvas id="zoneChartCtx"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <h3><i class="fas fa-users-line" style="color: #38bdf8;"></i> Parish Age Demographics</h3>
+                            <div class="chart-container">
+                                <canvas id="ageChartCtx"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card" style="grid-column: 1 / -1;">
+                            <h3><i class="fas fa-hands-praying" style="color: #34d399;"></i> Sacramental Completion Breakdown</h3>
+                            <div class="chart-container" style="height: 240px;">
+                                <canvas id="sacramentChartCtx"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. FAMILY & MEMBER DIRECTORY PANEL -->
+                <section id="section-families" class="section-panel">
+                    <div class="section-header">
+                        <div>
+                            <h2>Family & Parishioner Directory</h2>
+                            <p>Manage family records and office-assigned Family IDs.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="window.openAddFamilyModal()">
+                            <i class="fas fa-plus"></i> Register New Family
+                        </button>
+                    </div>
+
+                    <div class="filter-bar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="familySearchInput" placeholder="Search by Family ID, Head of Family, or Address...">
+                        </div>
+                        <select id="familyZoneFilter" class="form-select">
+                            <option value="all">All Zones / Communities</option>
+                            <option value="St. Anthony Community - Zone 3">St. Anthony Community - Zone 3</option>
+                            <option value="St. Joseph Community - Zone 1">St. Joseph Community - Zone 1</option>
+                            <option value="Sacred Heart Community - Zone 2">Sacred Heart Community - Zone 2</option>
+                        </select>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="office-table">
+                                <thead>
+                                    <tr>
+                                        <th>Family ID</th>
+                                        <th>Head of Family</th>
+                                        <th>Zone / Community</th>
+                                        <th>Address</th>
+                                        <th>Phone</th>
+                                        <th>Members</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="familiesTableBody">
+                                    <!-- Rendered dynamically by office.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. BULK UPLOAD PANEL -->
+                <section id="section-bulk-upload" class="section-panel">
+                    <div class="section-header">
+                        <div>
+                            <h2>Bulk Upload Parishioner Data</h2>
+                            <p>Download standard CSV template, populate family records, and import in bulk.</p>
+                        </div>
+                        <button class="btn btn-secondary" id="downloadCsvTemplateBtn">
+                            <i class="fas fa-file-csv"></i> Download CSV Template
+                        </button>
+                    </div>
+
+                    <div class="upload-card">
+                        <div class="dropzone-area" id="bulkDropzone">
+                            <div class="dropzone-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="dropzone-text">
+                                <h3>Drag & Drop CSV file here or click to browse</h3>
+                                <p>File must follow the structure provided in the downloadable template.</p>
+                            </div>
+                            <input type="file" id="bulkFileInput" accept=".csv" style="display: none;">
+                        </div>
+                    </div>
+
+                    <div id="bulkPreviewContainer" style="display: none;">
+                        <!-- Rendered dynamically upon file parse -->
+                    </div>
+                </section>
+
+                <!-- 4. APPROVAL REQUESTS PANEL -->
+                <section id="section-approvals" class="section-panel">
+                    <div class="section-header">
+                        <div>
+                            <h2>Approval Requests Queue</h2>
+                            <p>Requests raised by Office Members for Parish Priests approval.</p>
+                        </div>
+                    </div>
+
+                    <div class="filter-bar">
+                        <select id="approvalFilterSelect" class="form-select">
+                            <option value="all">All Request Statuses</option>
+                            <option value="pending">Pending Approval</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="office-table">
+                                <thead>
+                                    <tr>
+                                        <th>Req ID</th>
+                                        <th>Type</th>
+                                        <th>Family ID</th>
+                                        <th>Requested By</th>
+                                        <th>Details</th>
+                                        <th>Status</th>
+                                        <th>Action / Review</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="approvalsTableBody">
+                                    <!-- Rendered dynamically by office.js -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. SACRAMENTAL ELIGIBILITY REPORTS PANEL -->
+                <section id="section-reports" class="section-panel">
+                    <div class="section-header">
+                        <div>
+                            <h2>Sacramental Eligibility Reports</h2>
+                            <p>Annual eligibility batches for First Holy Communion (Age 9) and Confirmation (Age 16).</p>
+                        </div>
+                        <div class="report-year-selector">
+                            <label for="reportYearSelect"><i class="fas fa-calendar-alt"></i> Target Year:</label>
+                            <select id="reportYearSelect" class="form-select">
+                                <option value="2026">2026 Batch</option>
+                                <option value="2027">2027 Batch</option>
+                                <option value="2028">2028 Batch</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(217, 119, 6, 0.12); border: 1px solid rgba(217, 119, 6, 0.3); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; color: #fbbf24; font-size: 0.875rem;">
+                        <i class="fas fa-info-circle"></i> <strong>Annual May Rollover Rule:</strong> Sacramental candidate lists update once every year in the month of May. Students reaching age 9 (Communion) or age 16 (Confirmation) within the target year will automatically qualify.
+                    </div>
+
+                    <!-- Communion Report -->
+                    <div class="table-card" style="margin-bottom: 2rem;">
+                        <div style="padding: 1.25rem; border-bottom: 1px solid var(--office-card-border); background: rgba(15,23,42,0.4);">
+                            <h3 style="color: white; font-size: 1.1rem;"><i class="fas fa-bread-slice" style="color: #fbbf24;"></i> Eligible Candidates for First Holy Communion (Age 9)</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="office-table">
+                                <thead>
+                                    <tr>
+                                        <th>Candidate Name</th>
+                                        <th>Family ID</th>
+                                        <th>Zone / Community</th>
+                                        <th>Date of Birth</th>
+                                        <th>Parent / Head</th>
+                                        <th>Contact Phone</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="communionReportTableBody">
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Confirmation Report -->
+                    <div class="table-card">
+                        <div style="padding: 1.25rem; border-bottom: 1px solid var(--office-card-border); background: rgba(15,23,42,0.4);">
+                            <h3 style="color: white; font-size: 1.1rem;"><i class="fas fa-dove" style="color: #60a5fa;"></i> Eligible Candidates for Confirmation (Age 16)</h3>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="office-table">
+                                <thead>
+                                    <tr>
+                                        <th>Candidate Name</th>
+                                        <th>Family ID</th>
+                                        <th>Zone / Community</th>
+                                        <th>Date of Birth</th>
+                                        <th>Parent / Head</th>
+                                        <th>Contact Phone</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="confirmationReportTableBody">
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. STAFF & ACCESS CONTROL PANEL -->
+                <section id="section-staff" class="section-panel">
+                    <div class="section-header">
+                        <div>
+                            <h2>Staff & Role Management</h2>
+                            <p>Parish Priests (Admins) can create, update, and remove office staff accounts.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="window.openAddStaffModal()">
+                            <i class="fas fa-user-plus"></i> Add Office Member
+                        </button>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-responsive">
+                            <table class="office-table">
+                                <thead>
+                                    <tr>
+                                        <th>Staff Name</th>
+                                        <th>Designation</th>
+                                        <th>Email Address</th>
+                                        <th>Access Role</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="staffTableBody">
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification System -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- MODAL 1: REGISTER NEW FAMILY -->
+    <div id="addFamilyModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Register New Family</h3>
+                <button class="modal-close-btn" onclick="window.closeModal('addFamilyModal')">&times;</button>
+            </div>
+            <form id="createFamilyForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="newFamilyId">Family ID (Assigned by Office) *</label>
+                        <input type="text" id="newFamilyId" class="form-input" style="width: 100%;" placeholder="e.g. FAM-2026-004" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newHeadName">Head of Family Full Name *</label>
+                        <input type="text" id="newHeadName" class="form-input" style="width: 100%;" placeholder="e.g. Dominic Lobo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newCommunity">Zone / Community *</label>
+                        <select id="newCommunity" class="form-select" style="width: 100%;" required>
+                            <option value="St. Anthony Community - Zone 3">St. Anthony Community - Zone 3</option>
+                            <option value="St. Joseph Community - Zone 1">St. Joseph Community - Zone 1</option>
+                            <option value="Sacred Heart Community - Zone 2">Sacred Heart Community - Zone 2</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newAddress">Residential Address *</label>
+                        <input type="text" id="newAddress" class="form-input" style="width: 100%;" placeholder="e.g. D-102, Green Acres, Majiwada, Thane (W)" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPhone">Contact Phone Number *</label>
+                        <input type="text" id="newPhone" class="form-input" style="width: 100%;" placeholder="e.g. +91 98110 55443" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="window.closeModal('addFamilyModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save & Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: FAMILY DETAILS -->
+    <div id="familyDetailModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3>Family Record Details</h3>
+                <button class="modal-close-btn" onclick="window.closeModal('familyDetailModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="familyDetailModalBody">
+                <!-- Rendered dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="window.closeModal('familyDetailModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: ADD STAFF MEMBER -->
+    <div id="addStaffModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Add Office Staff Member</h3>
+                <button class="modal-close-btn" onclick="window.closeModal('addStaffModal')">&times;</button>
+            </div>
+            <form id="addStaffForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="staffName">Full Name *</label>
+                        <input type="text" id="staffName" class="form-input" style="width: 100%;" placeholder="e.g. Fr. Paul Rodrigues" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffEmail">Email Address *</label>
+                        <input type="email" id="staffEmail" class="form-input" style="width: 100%;" placeholder="e.g. paul@olfcmajiwada.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffDesignation">Designation *</label>
+                        <input type="text" id="staffDesignation" class="form-input" style="width: 100%;" placeholder="e.g. Asst. Parish Priest" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="staffRole">Role & Permissions *</label>
+                        <select id="staffRole" class="form-select" style="width: 100%;" required>
+                            <option value="office_member">Office Member (Operational & Approvals Submit)</option>
+                            <option value="admin">Admin (Parish Priest - Full Control)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="window.closeModal('addStaffModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Staff Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Main Application Logic -->
+    <script type="module" src="/src/assets/js/office.js"></script>
+</body>
+
+</html>

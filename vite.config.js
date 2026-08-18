@@ -13,6 +13,7 @@ export default defineConfig({
                 parish: 'parish.html',
                 associations: 'associations.html',
                 account: 'account.html',
+                office: 'office.html',
             },
         },
     },
