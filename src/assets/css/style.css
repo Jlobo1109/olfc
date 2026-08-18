@@ -1511,36 +1511,61 @@ footer {
     font-weight: 500;
 }
 
-/* Card Meta Details (Joined Date & Address) */
-.card-meta-row {
-    display: grid;
-    grid-template-columns: 0.8fr 1.2fr;
-    gap: 20px;
-    padding: 16px 24px;
+/* Card Meta Details – Icon Row Layout */
+.card-meta-details {
+    padding: 0 24px 6px;
+    display: flex;
+    flex-direction: column;
 }
 
-.meta-item {
+.card-meta-row-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 0;
+}
+
+.card-meta-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #2563eb;
+    margin-top: 1px;
+}
+
+.card-meta-text {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    min-width: 0;
 }
 
-.meta-label {
-    font-size: 0.7rem;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+.card-meta-label {
+    font-size: 0.67rem;
     font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.55px;
+    color: #94a3b8;
 }
 
-.meta-value {
+.card-meta-value {
     font-size: 0.9rem;
-    color: #1e293b;
     font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    color: #1e293b;
+    line-height: 1.35;
 }
+
+.card-meta-divider {
+    height: 1px;
+    background: #f1f5f9;
+    margin: 0 4px;
+}
+
 
 /* Members Vertical List Section */
 .card-members-section {

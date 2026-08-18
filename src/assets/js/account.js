@@ -256,21 +256,39 @@ function renderFamilyCard(family) {
             <p class="community-name">${family.communityName || 'Majiwada Parish Community'}</p>
         </div>
 
-        <!-- Key Meta Grid -->
-        <div class="card-meta-grid">
-            <div class="meta-item">
-                <span class="meta-label">Joined Parish</span>
-                <span class="meta-value">${formatDate(family.joinedParishDate || '2012-08-15')}</span>
+        <!-- Key Meta Details -->
+        <div class="card-meta-details">
+            <div class="card-meta-row-item">
+                <div class="card-meta-icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div class="card-meta-text">
+                    <span class="card-meta-label">Joined Parish</span>
+                    <span class="card-meta-value">${formatDate(family.joinedParishDate || '2012-08-15')}</span>
+                </div>
             </div>
-            <div class="meta-item">
-                <span class="meta-label">Contact Phone</span>
-                <span class="meta-value">${family.contactPhone || '+91 98201 12345'}</span>
+            <div class="card-meta-divider"></div>
+            <div class="card-meta-row-item">
+                <div class="card-meta-icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 5.66 5.66l.86-.86a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 21.22 16z"/></svg>
+                </div>
+                <div class="card-meta-text">
+                    <span class="card-meta-label">Contact Phone</span>
+                    <span class="card-meta-value">${family.contactPhone || '+91 98201 12345'}</span>
+                </div>
             </div>
-            <div class="meta-item full-width">
-                <span class="meta-label">Residential Address</span>
-                <span class="meta-value">${family.address}</span>
+            <div class="card-meta-divider"></div>
+            <div class="card-meta-row-item">
+                <div class="card-meta-icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                </div>
+                <div class="card-meta-text">
+                    <span class="card-meta-label">Residential Address</span>
+                    <span class="card-meta-value">${family.address}</span>
+                </div>
             </div>
         </div>
+
 
         <!-- Family Members Vertical List Section -->
         <div class="card-members-section">
