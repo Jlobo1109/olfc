@@ -97,6 +97,9 @@
                     <div id="rolePill" class="role-pill admin">
                         <i class="fas fa-user-shield"></i> Admin (Priest)
                     </div>
+                    <button id="logoutBtn" class="btn btn-secondary btn-sm" title="Secure Logout" style="display: inline-flex;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
                 </div>
             </header>
 
@@ -385,6 +388,48 @@
 
     <!-- Toast Notification System -->
     <div id="toastContainer" class="toast-container"></div>
+
+    <!-- SECURE OFFICE STAFF LOGIN OVERLAY -->
+    <div id="officeAuthOverlay" class="modal-overlay active" style="z-index: 2000; background: rgba(11, 19, 41, 0.95); backdrop-filter: blur(16px);">
+        <div class="modal-box" style="max-width: 440px; border: 1px solid var(--office-accent-gold);">
+            <div class="modal-header" style="text-align: center; justify-content: center; flex-direction: column; gap: 0.5rem; border-bottom: 1px solid var(--office-card-border);">
+                <div style="width: 54px; height: 54px; background: linear-gradient(135deg, #d97706, #f59e0b); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: white; margin: 0 auto;">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 style="font-size: 1.35rem; color: white; margin-top: 0.25rem;">Parish Office Portal</h3>
+                <p style="font-size: 0.825rem; color: #94a3b8; margin: 0;">Authorized Staff Login Required</p>
+            </div>
+            <form id="officeLoginForm">
+                <div class="modal-body" style="padding: 1.5rem;">
+                    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 8px; padding: 0.75rem; margin-bottom: 1.25rem; font-size: 0.775rem; color: #f87171; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-lock" style="font-size: 1.1rem;"></i>
+                        <span>Confidential Parishioner Records. Access restricted to verified office staff.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginEmail">Staff Email Address *</label>
+                        <input type="email" id="loginEmail" class="form-input" style="width: 100%;" placeholder="e.g. priest@olfcmajiwada.com" required value="priest@olfcmajiwada.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Password *</label>
+                        <input type="password" id="loginPassword" class="form-input" style="width: 100%;" placeholder="Enter password" required value="priest123">
+                    </div>
+
+                    <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid var(--office-card-border); border-radius: 8px; padding: 0.75rem; margin-bottom: 1rem; font-size: 0.775rem; color: #94a3b8;">
+                        <strong style="color: #fbbf24;">Demo Staff Credentials:</strong><br>
+                        • <strong>Parish Priest (Admin):</strong> <code>priest@olfcmajiwada.com</code> / <code>priest123</code><br>
+                        • <strong>Office Member:</strong> <code>rita.office@olfcmajiwada.com</code> / <code>office123</code>
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding: 1rem 1.5rem; justify-content: stretch;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 0.95rem;">
+                        <i class="fas fa-sign-in-alt"></i> Authenticate & Enter Dashboard
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- MODAL 1: REGISTER NEW FAMILY -->
     <div id="addFamilyModal" class="modal-overlay">

@@ -239,6 +239,8 @@ function renderFamilyCard(family) {
             }
         });
     });
+
+    renderParishionerNotifications();
 }
 
 // Render Back View: Member ID Card (Replaces Family Card with Animation)
@@ -315,6 +317,17 @@ function openMemberCard(memberId) {
                                         </span>
                                     ` : ''}
                                 </div>
+                                <div style="margin-top: 0.5rem;">
+                                    ${(sac.parish || '').toLowerCase().includes('fatima') || (sac.parish || '').toLowerCase().includes('olfc') || !sac.parish ? `
+                                        <button type="button" class="btn-request-cert" onclick="window.requestOfficialCertificate('${member.name}', '${sac.name}', '${sac.parish || 'Our Lady of Fatima Church, Majiwada'}')">
+                                            📜 Request Official Certificate
+                                        </button>
+                                    ` : `
+                                        <span style="font-size: 0.725rem; color: #64748b; font-style: italic;">
+                                            (Certificate issued by ${sac.parish})
+                                        </span>
+                                    `}
+                                </div>
                             </div>
                         </div>
                     `).join('')}
@@ -335,6 +348,103 @@ function openMemberCard(memberId) {
     if (rect.top < 0 || rect.top > 100) {
         window.scrollTo({ top: window.scrollY + rect.top - 80, behavior: 'smooth' });
     }
+}
+
+// Request Official Certificate Handler (For Parishioners on Account Tab)
+window.requestOfficialCertificate = function(memberName, sacramentName, parishName) {
+    const purpose = prompt(`Request official ${sacramentName} Certificate for ${memberName}.\nPlease enter purpose (e.g. School Admission, Marriage Preparation, Official Record):`, "Official Parish Record");
+    if (!purpose) return;
+
+    try {
+        const approvals = JSON.parse(localStorage.getItem('olfc_office_approvals') || '[]');
+        const familyId = currentFamilyData ? currentFamilyData.familyId : 'FAM-2024-0892';
+        
+        const newRequest = {
+            id: `REQ-${Date.now().toString().slice(-6)}`,
+            type: 'certificate_request',
+            familyId: familyId,
+            headName: currentFamilyData ? currentFamilyData.headOfFamily : memberName,
+            requestedBy: `${memberName} (Parishioner Account)`,
+            requestedRole: 'parishioner',
+            timestamp: new Date().toISOString().replace('T', ' ').slice(0, 16),
+            details: {
+                memberName: memberName,
+                sacramentName: sacramentName,
+                parishName: parishName,
+                purpose: purpose
+            },
+            status: 'pending'
+        };
+
+        approvals.unshift(newRequest);
+        localStorage.setItem('olfc_office_approvals', JSON.stringify(approvals));
+        
+        renderParishionerNotifications();
+        alert(`Request submitted successfully!\n\nYour ${sacramentName} Certificate request has been sent to Our Lady of Fatima Parish Office for approval. Once approved, you can collect the hard copy from the parish office.`);
+    } catch (e) {
+        alert("Error submitting request. Please try again.");
+    }
+};
+
+// Render Notifications & Certificate Requests Panel on account.html
+function renderParishionerNotifications() {
+    const notifContainer = document.getElementById('account-notifications-panel');
+    if (!notifContainer) return;
+
+    const approvals = JSON.parse(localStorage.getItem('olfc_office_approvals') || '[]');
+    const familyId = currentFamilyData ? currentFamilyData.familyId : 'FAM-2024-0892';
+
+    // Filter requests for current family
+    const familyRequests = approvals.filter(a => a.familyId === familyId);
+
+    if (familyRequests.length === 0) {
+        notifContainer.innerHTML = `
+            <div style="background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; padding: 1.25rem; text-align: center; color: #94a3b8; font-size: 0.85rem;">
+                No active certificate requests or office notifications.
+            </div>
+        `;
+        return;
+    }
+
+    notifContainer.innerHTML = `
+        <div style="background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1.25rem; margin-top: 1.5rem;">
+            <h4 style="color: white; font-size: 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                🔔 Certificate Requests & Office Status
+            </h4>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                ${familyRequests.map(req => {
+                    let statusColor = '#fbbf24'; // pending
+                    let statusBg = 'rgba(217, 119, 6, 0.15)';
+                    let statusMessage = 'Under review by Parish Office Admin.';
+
+                    if (req.status === 'approved') {
+                        statusColor = '#34d399';
+                        statusBg = 'rgba(16, 185, 129, 0.15)';
+                        statusMessage = '✅ APPROVED! Certificate printed & ready. Please visit the Parish Office to collect your hard copy.';
+                    } else if (req.status === 'rejected') {
+                        statusColor = '#f87171';
+                        statusBg = 'rgba(239, 68, 68, 0.15)';
+                        statusMessage = '❌ Request not approved. Please contact parish office.';
+                    }
+
+                    return `
+                        <div style="background: rgba(15,23,42,0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.85rem 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                                <strong style="color: white; font-size: 0.9rem;">${req.details.sacramentName || 'Sacrament'} Certificate - ${req.details.memberName}</strong>
+                                <span style="background: ${statusBg}; color: ${statusColor}; border: 1px solid ${statusColor}44; padding: 2px 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 700;">
+                                    ${req.status.toUpperCase()}
+                                </span>
+                            </div>
+                            <p style="font-size: 0.825rem; color: #cbd5e1; margin-top: 0.25rem;">
+                                ${statusMessage}
+                            </p>
+                            <span style="font-size: 0.725rem; color: #64748b;">Req ID: ${req.id} | Date: ${req.timestamp || 'Recent'}</span>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
 }
 
 // Return to Family Card

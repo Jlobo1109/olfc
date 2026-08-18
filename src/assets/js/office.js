@@ -11,11 +11,56 @@ const CURRENT_YEAR = CURRENT_DATE.getFullYear();
 const CURRENT_MONTH = CURRENT_DATE.getMonth(); // 0-11 (May is 4)
 
 document.addEventListener('DOMContentLoaded', () => {
+    initAuthSession();
     initNavigation();
     initRoleSwitcher();
     renderAll();
     setupEventListeners();
 });
+
+// Authentication Session Control
+function initAuthSession() {
+    const authOverlay = document.getElementById('officeAuthOverlay');
+    const loginForm = document.getElementById('officeLoginForm');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    const authUser = JSON.parse(sessionStorage.getItem('olfc_office_session') || 'null');
+
+    if (authUser) {
+        currentRole = authUser.role || 'admin';
+        if (authOverlay) authOverlay.classList.remove('active');
+    } else {
+        if (authOverlay) authOverlay.classList.add('active');
+    }
+
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const staff = officeDB.authenticateStaff(email, password);
+                sessionStorage.setItem('olfc_office_session', JSON.stringify(staff));
+                currentRole = staff.role;
+                if (authOverlay) authOverlay.classList.remove('active');
+                updateRoleUI();
+                renderAll();
+                showToast(`Welcome back, ${staff.name}! Authenticated as ${staff.role === 'admin' ? 'Parish Admin' : 'Office Member'}.`, 'success');
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        });
+    }
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('olfc_office_session');
+            if (authOverlay) authOverlay.classList.add('active');
+            showToast("Logged out successfully. Parish records locked.", "info");
+        });
+    }
+}
 
 // Role Switcher Setup
 function initRoleSwitcher() {
@@ -368,7 +413,7 @@ window.viewFamilyDetails = function(familyId) {
                             <td>${m.gender}</td>
                             <td>${calculateAge(m.dob)} yrs (${m.dob})</td>
                             <td>
-                                <div style="display: flex; flex-wrap: wrap; gap: 0.2rem;">
+                                <div style="display: flex; flex-wrap: wrap; gap: 0.3rem;">
                                     ${(m.sacraments || []).map(s => `
                                         <span class="status-badge approved" title="${s.parish} (${s.date})">
                                             ${s.name} ${s.certId ? '📜' : ''}
@@ -377,9 +422,7 @@ window.viewFamilyDetails = function(familyId) {
                                 </div>
                             </td>
                             <td>
-                                <button class="btn btn-secondary btn-sm" onclick="window.openCertRequestModal('${family.familyId}', '${m.name}')" title="Request Certificate">
-                                    📜 Cert
-                                </button>
+                                <span class="status-badge active"><i class="fas fa-check-circle"></i> Record Active</span>
                             </td>
                         </tr>
                     `).join('')}

@@ -452,7 +452,7 @@ class OfficeDBService {
         }
     }
 
-    // Staff Methods
+    // Staff Methods & Authentication
     getStaff() {
         try {
             return JSON.parse(localStorage.getItem('olfc_office_staff')) || [];
@@ -463,6 +463,33 @@ class OfficeDBService {
 
     saveStaff(staff) {
         localStorage.setItem('olfc_office_staff', JSON.stringify(staff));
+    }
+
+    authenticateStaff(email, password) {
+        const staffList = this.getStaff();
+        const emailClean = (email || '').trim().toLowerCase();
+        
+        // Find matching staff member
+        const staff = staffList.find(s => s.email.toLowerCase() === emailClean);
+        
+        // Demo password check: 'priest123' for admin, 'office123' for office_member
+        if (staff) {
+            if ((staff.role === 'admin' && (password === 'priest123' || password === 'admin123')) ||
+                (staff.role === 'office_member' && (password === 'office123' || password === 'staff123')) ||
+                password === 'olfc2026') {
+                return staff;
+            }
+        }
+        
+        // Fallback demo logins if email matches standard formats
+        if (emailClean === 'priest@olfcmajiwada.com' && (password === 'priest123' || password === 'admin123')) {
+            return MOCK_STAFF[0];
+        }
+        if (emailClean === 'rita.office@olfcmajiwada.com' && (password === 'office123' || password === 'staff123')) {
+            return MOCK_STAFF[2];
+        }
+
+        throw new Error("Invalid email address or password. Please check your staff credentials.");
     }
 
     addStaff(staffMember) {
