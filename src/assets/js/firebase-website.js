@@ -747,28 +747,64 @@ class WebsiteContentLoader {
         }
     }
 
+    // Format association description supporting both rich HTML and plain text paragraphs
+    formatAssociationDescription(description) {
+        if (!description) return '<p>No description available.</p>';
+        const trimmed = description.trim();
+        // If the description contains HTML tags (e.g. structured cards in PYC)
+        if (/<[a-z][\s\S]*>/i.test(trimmed)) {
+            return trimmed;
+        }
+        // Format plain text into paragraphs
+        return trimmed
+            .split(/\n\s*\n/)
+            .map(para => `<p>${para.trim().replace(/\n/g, '<br>')}</p>`)
+            .join('');
+    }
+
     // Load associations content
     async loadAssociations() {
         try {
-            const snapshot = await db.collection('associations').orderBy('order', 'asc').get();
-
-            if (snapshot.empty) {
-                this.hidePageLoading();
-                return;
+            let snapshot;
+            try {
+                snapshot = await db.collection('associations').orderBy('order', 'asc').get();
+            } catch (err) {
+                snapshot = await db.collection('associations').get();
             }
 
             const associations = [];
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                if (data.isActive) {
-                    associations.push({ id: doc.id, ...data });
-                }
-            });
+            if (!snapshot.empty) {
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.isActive !== false) {
+                        associations.push({ id: doc.id, ...data });
+                    }
+                });
+
+                // Sort in memory by order to ensure consistent display
+                associations.sort((a, b) => {
+                    const orderA = a.order !== undefined && a.order !== null ? Number(a.order) : 9999;
+                    const orderB = b.order !== undefined && b.order !== null ? Number(b.order) : 9999;
+                    return orderA - orderB;
+                });
+            }
 
             this.renderAssociations(associations);
             this.hidePageLoading();
         } catch (error) {
             console.error('Error loading associations:', error);
+            const container = document.getElementById('associations-container');
+            if (container) {
+                container.innerHTML = `
+                    <div class="tab-menu" id="associations-tab-menu">
+                        <h3>Associations</h3>
+                    </div>
+                    <div class="tab-content active">
+                        <h2>Associations</h2>
+                        <p class="error-message">Unable to load associations. Please check back later.</p>
+                    </div>
+                `;
+            }
             this.hidePageLoading();
         }
     }
@@ -787,48 +823,66 @@ class WebsiteContentLoader {
         }
     }
 
-    // Render associations into tabs
+    // Render associations into tabs dynamically
     renderAssociations(associations) {
+        const container = document.getElementById('associations-container');
+        if (!container) return;
 
-        // Map association titles to tab IDs
-        const tabMapping = {
-            'Parish Youth Council': 'pyc',
-            'Legion of Mary': 'legion',
-            'Altar Servers': 'altar-servers',
-            'Lectors Ministry': 'liturgy',
-            'Music Ministry': 'music',
-            'Extraordinary Ministers of Holy Communion': 'eucharistic',
-            'Ladies Sodality': 'ladies',
-            'Charismatic Prayer Group': 'senior'
-        };
+        let tabMenu = document.getElementById('associations-tab-menu');
+        if (!tabMenu) {
+            tabMenu = container.querySelector('.tab-menu');
+        }
 
-        associations.forEach(association => {
-            const tabId = tabMapping[association.title];
+        if (!tabMenu) {
+            tabMenu = document.createElement('div');
+            tabMenu.className = 'tab-menu';
+            tabMenu.id = 'associations-tab-menu';
+            container.prepend(tabMenu);
+        }
 
-            if (tabId) {
-                // Update sidebar button title
-                const tabButton = document.querySelector(`[data-tab="${tabId}"]`);
-                if (tabButton) {
-                    tabButton.textContent = association.title;
-                }
+        // Reset tab menu and remove old content panes
+        tabMenu.innerHTML = '<h3>Associations</h3>';
+        container.querySelectorAll('.tab-content').forEach(el => el.remove());
 
-                // Update content heading
-                const contentHeading = document.querySelector(`#${tabId} h2`);
-                if (contentHeading) {
-                    contentHeading.textContent = association.title;
-                }
+        if (associations.length === 0) {
+            const emptyContent = document.createElement('div');
+            emptyContent.className = 'tab-content active';
+            emptyContent.innerHTML = '<h2>Associations</h2><p>No associations available at the moment.</p>';
+            container.appendChild(emptyContent);
+            return;
+        }
 
-                const contentElement = document.getElementById(`${tabId}-content`);
+        associations.forEach((association, index) => {
+            const safeId = association.id ? association.id.replace(/[^a-zA-Z0-9_-]/g, '') : index;
+            const tabId = `assoc-${safeId}`;
+            const isActive = index === 0;
 
-                if (contentElement) {
-                    // For PYC, use the HTML structure directly
-                    if (tabId === 'pyc') {
-                        contentElement.innerHTML = association.description;
-                    } else {
-                        contentElement.innerHTML = `<p>${association.description}</p>`;
-                    }
-                }
-            }
+            // Create tab button
+            const button = document.createElement('button');
+            button.className = `tab-link ${isActive ? 'active' : ''}`;
+            button.dataset.tab = tabId;
+            button.textContent = association.title || 'Untitled';
+            tabMenu.appendChild(button);
+
+            // Create tab content pane
+            const contentPane = document.createElement('div');
+            contentPane.id = tabId;
+            contentPane.className = `tab-content ${isActive ? 'active' : ''}`;
+
+            const titleH2 = document.createElement('h2');
+            titleH2.textContent = association.title || 'Untitled';
+
+            const br = document.createElement('br');
+
+            const contentDiv = document.createElement('div');
+            contentDiv.id = `${tabId}-content`;
+            contentDiv.innerHTML = this.formatAssociationDescription(association.description);
+
+            contentPane.appendChild(titleH2);
+            contentPane.appendChild(br);
+            contentPane.appendChild(contentDiv);
+
+            container.appendChild(contentPane);
         });
     }
 
